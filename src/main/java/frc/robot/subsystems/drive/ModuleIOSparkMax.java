@@ -108,7 +108,7 @@ public class ModuleIOSparkMax implements ModuleIO {
 
     turnSparkMax.setInverted(isTurnMotorInverted);
     driveSparkMax.setSmartCurrentLimit(50);
-    turnSparkMax.setSmartCurrentLimit(40);
+    turnSparkMax.setSmartCurrentLimit(50);
     driveSparkMax.enableVoltageCompensation(12.0);
     turnSparkMax.enableVoltageCompensation(12.0);
 
@@ -188,6 +188,9 @@ public class ModuleIOSparkMax implements ModuleIO {
             .toArray();
     inputs.odometryTurnPositions =
         turnPositionQueue.stream().map(Rotation2d::fromRotations).toArray(Rotation2d[]::new);
+
+    inputs.temperatureDrive = driveSparkMax.getMotorTemperature();
+    inputs.temperatureTurn = turnSparkMax.getMotorTemperature();
     timestampQueue.clear();
     drivePositionQueue.clear();
     turnPositionQueue.clear();

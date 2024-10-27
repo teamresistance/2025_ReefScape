@@ -15,6 +15,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
@@ -86,6 +87,8 @@ public class Module {
    * updates need to be properly thread-locked.
    */
   public void updateInputs() {
+
+    SmartDashboard.putNumber("turnPID val", turnFeedback.getP());
     io.updateInputs(inputs);
 
     // Update ff and controllers

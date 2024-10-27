@@ -25,7 +25,7 @@ import frc.robot.subsystems.drive.Drive;
 import java.util.function.DoubleSupplier;
 
 public class DriveCommands {
-  private static final double DEADBAND = Constants.DEADBAND;
+  private static final double DEADBAND = Constants.joystick_headband;
 
   private DriveCommands() {}
 

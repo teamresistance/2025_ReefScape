@@ -25,7 +25,7 @@ public final class Constants {
   // Modes
   public static final Mode currentMode = Mode.REAL;
   // Deadband
-  public static final double DEADBAND = 0.15;
+  public static final double joystick_headband = 0.15;
   // Robot dimensions and speed
   public static final double MAX_LINEAR_SPEED = Units.feetToMeters(11.339);
   public static final double TRACK_WIDTH_X =
@@ -57,12 +57,14 @@ public final class Constants {
   public static final double ODOMETRY_FREQUENCY = 250.0;
   public static final double WHEEL_RADIUS = Units.inchesToMeters(2.05) * 1 / 1.1132075472;
   public static final boolean FIELD_MIRROR = false;
+
+  // Tuning
   public static boolean tuningMode = false;
   public static double drivekP = 0.001;
   public static double drivekD = 0.0;
   public static double ffkS = 0.03;
   public static double ffkV = 0.2;
-  public static double turnkP = 4.3;
+  public static double turnkP = 3.5;
   public static double turnkD = 0.0;
 
   public enum Mode {
