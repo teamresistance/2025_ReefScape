@@ -50,10 +50,10 @@ public class RobotContainer {
         drive =
             new Drive(
                 new GyroIOPigeon2(false),
-                new ModuleIOSparkMax(0),
-                new ModuleIOSparkMax(1),
-                new ModuleIOSparkMax(2),
-                new ModuleIOSparkMax(3));
+                new ModuleIOTalonD_SparkMaxT(0),
+                new ModuleIOTalonD_SparkMaxT(1),
+                new ModuleIOTalonD_SparkMaxT(2),
+                new ModuleIOTalonD_SparkMaxT(3));
         // drive = new Drive(
         // new GyroIOPigeon2(true),
         // new ModuleIOTalonFX(0),
