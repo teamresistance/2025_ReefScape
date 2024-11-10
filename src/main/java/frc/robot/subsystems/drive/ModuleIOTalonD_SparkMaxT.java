@@ -29,7 +29,6 @@ import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
-
 import java.util.OptionalDouble;
 import java.util.Queue;
 
@@ -52,17 +51,17 @@ public class ModuleIOTalonD_SparkMaxT implements ModuleIO {
 
   private final TalonFX driveTalon;
   private final CANSparkMax turnSparkMax;
-  
+
   private final RelativeEncoder turnRelativeEncoder;
   private final StatusSignal<Double> turnAbsolutePosition;
-  
+
   private final StatusSignal<Double> drivePosition;
   private final Queue<Double> drivePositionQueue;
   private final StatusSignal<Double> driveVelocity;
   private final StatusSignal<Double> driveAppliedVolts;
   private final StatusSignal<Double> driveCurrent;
   private final StatusSignal<Double> driveTemperature;
-  
+
   private final Queue<Double> timestampQueueSparkMax;
   private final Queue<Double> timestampQueueTalon;
   private final Queue<Double> turnPositionQueue;
@@ -119,7 +118,7 @@ public class ModuleIOTalonD_SparkMaxT implements ModuleIO {
     turnRelativeEncoder.setMeasurementPeriod(10);
     turnRelativeEncoder.setAverageDepth(2);
     turnSparkMax.setCANTimeout(0);
-    
+
     var driveConfig = new TalonFXConfiguration();
     driveConfig.CurrentLimits.SupplyCurrentLimit = 80.0;
     driveConfig.CurrentLimits.StatorCurrentLimit = 100.0;
@@ -127,7 +126,6 @@ public class ModuleIOTalonD_SparkMaxT implements ModuleIO {
     driveConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     driveTalon.getConfigurator().apply(driveConfig);
     setDriveBrakeMode(true);
-
 
     turnSparkMax.setPeriodicFramePeriod(
         PeriodicFrame.kStatus2, (int) (1000.0 / Module.ODOMETRY_FREQUENCY));
@@ -146,8 +144,7 @@ public class ModuleIOTalonD_SparkMaxT implements ModuleIO {
                     return OptionalDouble.empty();
                   }
                 });
-    
-       
+
     drivePosition = driveTalon.getPosition();
     drivePositionQueue =
         PhoenixOdometryThread.getInstance().registerSignal(driveTalon, driveTalon.getPosition());
@@ -155,10 +152,8 @@ public class ModuleIOTalonD_SparkMaxT implements ModuleIO {
     driveAppliedVolts = driveTalon.getMotorVoltage();
     driveCurrent = driveTalon.getSupplyCurrent();
     driveTemperature = driveTalon.getDeviceTemp();
-    
-    
-    BaseStatusSignal.setUpdateFrequencyForAll(
-        Module.ODOMETRY_FREQUENCY, drivePosition);
+
+    BaseStatusSignal.setUpdateFrequencyForAll(Module.ODOMETRY_FREQUENCY, drivePosition);
 
     BaseStatusSignal.setUpdateFrequencyForAll(50.0, turnAbsolutePosition);
     turnSparkMax.burnFlash();
@@ -170,9 +165,10 @@ public class ModuleIOTalonD_SparkMaxT implements ModuleIO {
 
     BaseStatusSignal.refreshAll(turnAbsolutePosition, drivePosition);
     inputs.drivePositionRad =
-         Units.rotationsToRadians(drivePosition.getValueAsDouble()) / DRIVE_GEAR_RATIO;
+        Units.rotationsToRadians(drivePosition.getValueAsDouble()) / DRIVE_GEAR_RATIO;
     inputs.driveVelocityRadPerSec =
-        Units.rotationsPerMinuteToRadiansPerSecond(driveVelocity.getValueAsDouble()) / DRIVE_GEAR_RATIO;
+        Units.rotationsPerMinuteToRadiansPerSecond(driveVelocity.getValueAsDouble())
+            / DRIVE_GEAR_RATIO;
     inputs.driveAppliedVolts = driveAppliedVolts.getValueAsDouble();
     inputs.driveCurrentAmps = new double[] {driveCurrent.getValueAsDouble()};
 
@@ -202,7 +198,7 @@ public class ModuleIOTalonD_SparkMaxT implements ModuleIO {
     drivePositionQueue.clear();
     turnPositionQueue.clear();
   }
-  
+
   @Override
   public void setDriveVoltage(double volts) {
     driveTalon.setControl(new VoltageOut(volts));
@@ -212,7 +208,7 @@ public class ModuleIOTalonD_SparkMaxT implements ModuleIO {
   public void setTurnVoltage(double volts) {
     turnSparkMax.setVoltage(volts);
   }
-  
+
   @Override
   public void setDriveBrakeMode(boolean enable) {
     var config = new MotorOutputConfigs();
