@@ -20,6 +20,7 @@ import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
+
 public class Module {
   static final double ODOMETRY_FREQUENCY = Constants.ODOMETRY_FREQUENCY;
   private static final double WHEEL_RADIUS = Constants.WHEEL_RADIUS;
