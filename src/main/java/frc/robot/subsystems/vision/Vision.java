@@ -56,7 +56,6 @@ public class Vision extends SubsystemBase {
           new PhotonPoseEstimator(
               aprilTagFieldLayout,
               PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-              cams[i],
               cameraTransforms[i]);
       poseEstimator[i].setReferencePose(drive.getPose());
     }

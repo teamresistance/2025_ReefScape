@@ -17,6 +17,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.subsystems.drive.ModuleIO.ModuleIOInputs;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
@@ -26,7 +27,7 @@ public class Module {
   private static final double WHEEL_RADIUS = Constants.WHEEL_RADIUS;
 
   private final ModuleIO io;
-  private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
+  private final ModuleIOInputs inputs = new ModuleIOInputs();
   private final int index;
 
   private SimpleMotorFeedforward driveFeedforward;
@@ -112,7 +113,8 @@ public class Module {
 
   public void periodic() {
 
-    Logger.processInputs("Drive/Module" + index, inputs);
+    // Logger.processInputs("Drive/Module" + index, inputs);
+    //TODO: Fix
 
     // On first cycle, reset relative turn encoder
     // Wait until absolute angle is nonzero in case it wasn't initialized yet
