@@ -17,6 +17,18 @@ public class ChooseReefCmd extends Command {
   private int rl = -1;
   private boolean exec;
 
+  /*
+   ChooseReefCmd(subsystem, level, pos, rl, exec)
+   - level is an int from 0-3 representing the targeted reef level (level 0 also works for recieving)
+   - pos is the int position around the reef from 0-5
+   - rl is an int either 0 or 1, 0 representing left and 1 representing right
+   - exec is a boolean as to if the robot will actually go to the selected position. if this is false it only updates the stored position
+   variables and the robot wont do a thing. only change to true if you want the robot to move
+   
+   - if you do not want to change a value, set it to -1 in the constructor (ie if i only wanted to execute the code (by setting exec to true))
+   - all my other values would be -1. example: new ChooseReefCmd(subsystem, -1, 4, -1, false) would set the position to 4 and change no other
+   values in the subsystem. if you put new ChooseReefCmd(subsystem, 0, 4, 0, false), it would set the level and rl variables to 0!!!
+   */
   public ChooseReefCmd(
       PhysicalReefInterfaceSubsystem subsystem, int level, int pos, int rl, boolean exec) {
     this.subsystem = subsystem;
