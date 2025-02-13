@@ -19,7 +19,8 @@ public class ChooseReefCmd extends Command {
 
   /*
    ChooseReefCmd(subsystem, level, pos, rl, exec)
-   - level is an int from 0-3 representing the targeted reef level (level 0 also works for recieving)
+   - level is an int from 0-3 representing the targeted reef level. level 1 and 0 may have the same elevator height BUT level 0 drops
+   the coral into the trough and level 1 puts it on the reef!!!! level 0 also works for recieving coral (maybe...)
    - pos is the int position around the reef from 0-5
    - rl is an int either 0 or 1, 0 representing left and 1 representing right
    - exec is a boolean as to if the robot will actually go to the selected position. if this is false it only updates the stored position

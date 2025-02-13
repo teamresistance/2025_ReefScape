@@ -84,8 +84,10 @@ public class RobotContainer {
     new JoystickButton(CoJoystick, 1)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, -1, -1, true));
     // level
-    new JoystickButton(CoJoystick, 3)
+    new JoystickButton(CoJoystick, 2)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, 0, -1, -1, false));
+    new JoystickButton(CoJoystick, 3)
+        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, 1, -1, -1, false));
     new JoystickButton(CoJoystick, 4)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, 2, -1, -1, false));
     new JoystickButton(CoJoystick, 6)
