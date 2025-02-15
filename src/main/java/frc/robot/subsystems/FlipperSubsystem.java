@@ -36,13 +36,8 @@ public class FlipperSubsystem extends SubsystemBase {
    * @return the opposite of the value of said boolean state.
    */
   public void grip() {
-    coralCenterMechanism.set(true);
-
-    try {
-      Thread.sleep(500);
-    } catch (InterruptedException e) {
-    }
-
+    coralCenterMechanism.setPulseDuration(0.5);
+    coralCenterMechanism.startPulse();
     hasCoral = CoralDetector.get();
     gripper.set(hasCoral);
     isGripped = gripper.get();
@@ -57,7 +52,8 @@ public class FlipperSubsystem extends SubsystemBase {
   /// rotator.set(ControlMode.position, motorTurnAmount);
   // }
   public void flipperReadyToScore() {
-    flipper.set(true);
+    flipper.setPulseDuration(1);
+    flipper.startPulse();
     isInScoringPosition = true;
   }
 
