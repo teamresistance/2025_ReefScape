@@ -30,14 +30,13 @@ public class TunerConstants {
   public static final CANBus kCANBus = new CANBus("", "./logs/example.hoot");
   // Theoretical free speed (m/s) at 12 V applied output;
   // This needs to be tuned to your individual robot
-  public static final LinearVelocity kSpeedAt12Volts =
-      MetersPerSecond.of(4.67868); // actual max speed
+  public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(4.67868); // actual max speed
   // the P value may need to be changed
   // The steer motor uses any SwerveModule.SteerRequestType control request with the
   // output type specified by SwerveModuleConstants.SteerMotorClosedLoopOutput
   private static final Slot0Configs steerGains =
       new Slot0Configs()
-          .withKP(35) // less force on steering motor, less jerky
+          .withKP(25) // less force on steering motor, less jerky
           .withKI(0)
           .withKD(0.5)
           .withKS(0.1)

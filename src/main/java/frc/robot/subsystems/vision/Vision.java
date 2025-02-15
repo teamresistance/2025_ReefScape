@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.GeomUtil;
@@ -28,18 +29,29 @@ public class Vision extends SubsystemBase {
       new Pose3d[] {
         // Front Left
         new Pose3d(
-            new Translation3d(0.1524, 0.4318, 0.2032), // Right camera translation (X, Y, Z)
-            new Rotation3d(0.0, 0.0873, 0.5236)),
+            new Translation3d(0.270, 0.334, 0.267), // Right camera translation (X, Y, Z)
+            new Rotation3d(0.0, Units.degreesToRadians(-12.63), Units.degreesToRadians(45))),
         // Front Right
         new Pose3d(
-            new Translation3d(0.1524, -0.4318, 0.2032), // Left camera translation (X, Y, Z)
-            new Rotation3d(0.0, 0.0873, -0.5236)) // in radians btw
+            new Translation3d(0.270, -0.334, 0.267), // Left camera translation (X, Y, Z)
+            new Rotation3d(
+                0.0,
+                Units.degreesToRadians(-12.63),
+                Units.degreesToRadians(-45))), // in radians btw
+        // Back Left
+        new Pose3d(
+            new Translation3d(-0.27, 0.334, 0.267), // Right camera translation (X, Y, Z)
+            new Rotation3d(0.0, Units.degreesToRadians(-12.63), Units.degreesToRadians(45 + 90))),
+        // Back Right
+        new Pose3d(
+            new Translation3d(-0.27, -0.334, 0.267), // Left camera translation (X, Y, Z)
+            new Rotation3d(
+                0.0,
+                Units.degreesToRadians(-12.63),
+                Units.degreesToRadians(-45 - 90))) // in radians btw
       };
-  AprilTagFieldLayout aprilTagFieldLayout;
+
   private final PhotonCamera[] cameras;
-  private Consumer<List<TimestampedVisionUpdate>> visionConsumer = (x) -> {};
-  private List<TimestampedVisionUpdate> visionUpdates;
-  private Supplier<Pose2d> poseSupplier = () -> new Pose2d();
   /* For shooting vs. path following in auto */
   private final double singleTagStdDevScalar = 100.0;
   private final double stdDevScalarAuto = 0.69420;
@@ -62,12 +74,16 @@ public class Vision extends SubsystemBase {
           },
           new double[] {0.008, 0.027, 0.015, 0.044, 0.04, 0.078, 0.049, 0.027, 0.059, 0.029, 0.068},
           1);
+  AprilTagFieldLayout aprilTagFieldLayout;
+  private Consumer<List<TimestampedVisionUpdate>> visionConsumer = (x) -> {};
+  private List<TimestampedVisionUpdate> visionUpdates;
+  private Supplier<Pose2d> poseSupplier = () -> new Pose2d();
 
   public Vision(PhotonCamera... cameras) throws IOException {
     this.cameras = cameras;
     try {
       aprilTagFieldLayout =
-          AprilTagFieldLayout.loadFromResource(AprilTagFields.k2025Reefscape.m_resourceFile);
+          AprilTagFieldLayout.loadFromResource(AprilTagFields.k2025ReefscapeWelded.m_resourceFile);
     } catch (IOException ignored) {
     }
   }

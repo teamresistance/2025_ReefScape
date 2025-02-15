@@ -44,8 +44,8 @@ public class RobotContainer {
 
   public final PhotonCamera frontLeftCamera = new PhotonCamera("front-left");
   public final PhotonCamera frontRightCamera = new PhotonCamera("front-right");
-  //  public final PhotonCamera backLeftCamera = new PhotonCamera("back-left");
-  //  public final PhotonCamera backRightCamera = new PhotonCamera("back-right");
+  public final PhotonCamera backLeftCamera = new PhotonCamera("back_left");
+  public final PhotonCamera backRightCamera = new PhotonCamera("back_right");
 
   public Vision aprilTagVision;
 
@@ -90,7 +90,8 @@ public class RobotContainer {
 
   private Vision configureAprilTagVision() {
     try {
-      aprilTagVision = new Vision(frontLeftCamera, frontRightCamera);
+      aprilTagVision =
+          new Vision(frontLeftCamera, frontRightCamera, backLeftCamera, backRightCamera);
     } catch (IOException e) {
       e.printStackTrace();
     }

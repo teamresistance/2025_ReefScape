@@ -72,8 +72,8 @@ public class Drive extends SubsystemBase {
       new CANBus(TunerConstants.DrivetrainConstants.CANBusName).isNetworkFD() ? 250.0 : 100.0;
   static final Lock odometryLock = new ReentrantLock();
   // PathPlanner config constants
-  private static final double ROBOT_MASS_KG = 74.088;
-  private static final double ROBOT_MOI = 6.883;
+  private static final double ROBOT_MASS_KG = 22.088;
+  private static final double ROBOT_MOI = 4.883;
   private static final double WHEEL_COF = 1.2;
   private static final RobotConfig PP_CONFIG =
       new RobotConfig(
