@@ -16,6 +16,8 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -39,22 +41,23 @@ import org.photonvision.PhotonCamera;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  // Subsystems
-  private final Drive drive;
-
   public final PhotonCamera frontLeftCamera = new PhotonCamera("front-left");
   public final PhotonCamera frontRightCamera = new PhotonCamera("front-right");
   public final PhotonCamera backLeftCamera = new PhotonCamera("back_left");
   public final PhotonCamera backRightCamera = new PhotonCamera("back_right");
-
-  public Vision aprilTagVision;
-
+  public final PhotonCamera frontCenterCamera = new PhotonCamera("front_center");
+  // Subsystems
+  private final Drive drive;
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
   private final CommandXboxController codriver = new CommandXboxController(1);
-
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
+  public Vision aprilTagVision;
+  // Create the target Transform2d (Translation and Rotation)
+  Translation2d targetTranslation = new Translation2d(14.26, 4.03); // X = 14, Y = 4
+  Rotation2d targetRotation = new Rotation2d(180.0 - 45); // No rotation
+  Transform2d targetTransform = new Transform2d(targetTranslation, targetRotation);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -91,7 +94,12 @@ public class RobotContainer {
   private Vision configureAprilTagVision() {
     try {
       aprilTagVision =
-          new Vision(frontLeftCamera, frontRightCamera, backLeftCamera, backRightCamera);
+          new Vision(
+              frontLeftCamera,
+              frontRightCamera,
+              backLeftCamera,
+              backRightCamera,
+              frontCenterCamera);
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -150,6 +158,8 @@ public class RobotContainer {
 
     // Switch to X pattern when X button is pressed
     driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+
+    driver.leftBumper().whileTrue(DriveCommands.goToTransform(drive, targetTransform));
 
     // Reset gyro to 0 when B button is pressed
     driver

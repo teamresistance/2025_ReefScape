@@ -48,7 +48,14 @@ public class Vision extends SubsystemBase {
             new Rotation3d(
                 0.0,
                 Units.degreesToRadians(-12.63),
-                Units.degreesToRadians(-45 - 90))) // in radians btw
+                Units.degreesToRadians(-45 - 90))), // in radians btw
+
+        // front_center
+        new Pose3d(
+            new Translation3d(
+                0.31, -0.03, Units.inchesToMeters(7.7)), // Left camera translation (X, Y, Z)
+            new Rotation3d(
+                0.0, Units.degreesToRadians(-13.5), Units.degreesToRadians(0))), // in radians btw
       };
 
   private final PhotonCamera[] cameras;

@@ -30,7 +30,8 @@ public class TunerConstants {
   public static final CANBus kCANBus = new CANBus("", "./logs/example.hoot");
   // Theoretical free speed (m/s) at 12 V applied output;
   // This needs to be tuned to your individual robot
-  public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(4.67868); // actual max speed
+  public static final LinearVelocity kSpeedAt12Volts =
+      MetersPerSecond.of(4.67868); // actual max speed // ACT at 4.67868
   // the P value may need to be changed
   // The steer motor uses any SwerveModule.SteerRequestType control request with the
   // output type specified by SwerveModuleConstants.SteerMotorClosedLoopOutput
@@ -46,7 +47,7 @@ public class TunerConstants {
   // When using closed-loop control, the drive motor uses the control
   // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
   private static final Slot0Configs driveGains =
-      new Slot0Configs().withKP(2.0).withKI(0).withKD(0).withKS(0.76572).withKV(0.11454);
+      new Slot0Configs().withKP(1.5).withKI(0).withKD(0).withKS(0.76572).withKV(0.11454);
   // The closed-loop output type to use for the steer motors;
   // This affects the PID/FF gains for the steer motors
   private static final ClosedLoopOutputType kSteerClosedLoopOutput = ClosedLoopOutputType.Voltage;
