@@ -154,9 +154,9 @@ public class PhoenixOdometryThread extends Thread {
         for (int i = 0; i < genericSignals.size(); i++) {
           genericQueues.get(i).offer(genericSignals.get(i).getAsDouble());
         }
-          for (Queue<Double> timestampQueue : timestampQueues) {
-              timestampQueue.offer(timestamp);
-          }
+        for (Queue<Double> timestampQueue : timestampQueues) {
+          timestampQueue.offer(timestamp);
+        }
       } finally {
         Drive.odometryLock.unlock();
       }
