@@ -13,6 +13,8 @@
 
 package frc.robot.commands;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -317,6 +319,14 @@ public class DriveCommands {
                 false); // Timeout to prevent infinite looping if the target is unreachable (adjust
     // as
     // needed)
+  }
+
+  public static Command goToTransformWithPathFinder(Transform2d targetTransform) {
+    return AutoBuilder.pathfindToPose(
+        new Pose2d(targetTransform.getTranslation(), targetTransform.getRotation()),
+        new PathConstraints(3.0, 4.0, Units.degreesToRadians(540), Units.degreesToRadians(720)),
+        0.0 // Goal end velocity in meters/sec
+        );
   }
 
   /** Measures the robot's wheel radius by spinning in a circle. */

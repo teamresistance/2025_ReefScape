@@ -61,7 +61,7 @@ public class PhoenixOdometryThread extends Thread {
 
   @Override
   public void start() {
-    if (timestampQueues.size() > 0) {
+    if (!timestampQueues.isEmpty()) {
       super.start();
     }
   }
@@ -154,9 +154,9 @@ public class PhoenixOdometryThread extends Thread {
         for (int i = 0; i < genericSignals.size(); i++) {
           genericQueues.get(i).offer(genericSignals.get(i).getAsDouble());
         }
-        for (int i = 0; i < timestampQueues.size(); i++) {
-          timestampQueues.get(i).offer(timestamp);
-        }
+          for (Queue<Double> timestampQueue : timestampQueues) {
+              timestampQueue.offer(timestamp);
+          }
       } finally {
         Drive.odometryLock.unlock();
       }
