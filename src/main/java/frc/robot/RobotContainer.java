@@ -21,12 +21,10 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commandgroups.ElevatorHighestCommandGroup;
-import frc.robot.commandgroups.ElevatorLowestCommandGroup;
-import frc.robot.commandgroups.ElevatorMiddleCommandGroup;
-import frc.robot.commandgroups.ScoreCommandGroup;
+import frc.robot.commandgroups.ElevatorCommandGroup;
 import frc.robot.commands.ChooseReefCmd;
-import frc.robot.commands.FlipperReceivingCommand;
+import frc.robot.commands.FlipperGripperCmd;
+import frc.robot.commands.FlipperScoreCmd;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.FlipperSubsystem;
 import frc.robot.subsystems.PhysicalReefInterfaceSubsystem;
@@ -74,10 +72,8 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     //
-    //    Experimental Physical Reef Interface
+    //    Codriver Bindings
     //
-    // Physical reef interface refers to a separate "joystick" which is a few buttons, similar to a
-    // macro keyboard
     final PhysicalReefInterfaceSubsystem m_PhysicalReefSubsystem =
         new PhysicalReefInterfaceSubsystem();
     // execute
@@ -112,11 +108,11 @@ public class RobotContainer {
     //
     //    Standard Joystick Bindings
     //
-    new JoystickButton(Joystick1, 1).onTrue(new ScoreCommandGroup(m_flipperSubsystem));
-    new JoystickButton(Joystick1, 5).onTrue(new FlipperReceivingCommand(m_flipperSubsystem));
-    new JoystickButton(Joystick1, 3).onTrue(new ElevatorLowestCommandGroup(m_elevatorSubsystem));
-    new JoystickButton(Joystick1, 4).onTrue(new ElevatorMiddleCommandGroup(m_elevatorSubsystem));
-    new JoystickButton(Joystick1, 6).onTrue(new ElevatorHighestCommandGroup(m_elevatorSubsystem));
+    new JoystickButton(Joystick1, 1).onTrue(new FlipperScoreCmd(m_flipperSubsystem));
+    new JoystickButton(Joystick1, 5).onTrue(new FlipperGripperCmd(m_flipperSubsystem));
+    new JoystickButton(Joystick1, 3).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 0));
+    new JoystickButton(Joystick1, 4).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 1));
+    new JoystickButton(Joystick1, 6).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 2));
   }
 
   //

@@ -10,50 +10,37 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class ElevatorSubsystem extends SubsystemBase {
-  Solenoid ElevatorPusher1 =
+  static Solenoid ElevatorPusher1 =
       new Solenoid(Constants.SolenoidModuleType, Constants.ElevatorSolenoid1Channel);
-  Solenoid ElevatorPusher2 =
+  static Solenoid ElevatorPusher2 =
       new Solenoid(Constants.SolenoidModuleType, Constants.ElevatorSolenoid2Channel);
-  public boolean firstStageSolenoidUp = false;
-  public boolean secondStageSolenoidUp = false;
-  public boolean firstStageSolenoidDown = false;
-  public boolean secondStageSolenoidDown = false;
 
   /** Creates a new ExampleSubsystem. */
   public ElevatorSubsystem() {}
 
-  /**
-   * An example method querying a boolean state of the subsystem (for example, a digital sensor).
-   *
-   * @return the opposite of the value of said boolean state.
-   */
-  public void raiseFirstStage() {
+  public static void raiseFirstStage() {
     ElevatorPusher1.setPulseDuration(1.0); // Assuming x is 1.0, replace with the correct value
-    ElevatorPusher1.set(true);
-    firstStageSolenoidUp = true;
+    ElevatorPusher1.startPulse();
   }
 
-  public void raiseSecondStage() {
-    raiseFirstStage();
+  public static void raiseSecondStage() {
     ElevatorPusher2.setPulseDuration(1.0); // Assuming x is 1.0, replace with the correct value
-    secondStageSolenoidUp = true;
+    ElevatorPusher2.startPulse();
   }
 
-  public void lowerSecondStage() {
-    ElevatorPusher2.set(false);
-    firstStageSolenoidDown = true;
-    lowerFirstStage();
-  }
-
-  public void lowerFirstStage() {
+  public static void lowerFirstStage() {
     ElevatorPusher1.set(false);
-    secondStageSolenoidDown = true;
+  }
+
+  public static void lowerSecondStage() {
+    ElevatorPusher2.set(false);
+    lowerFirstStage();
   }
 
   @Override
   public void periodic() {
-    SmartDashboard.putBoolean("First Stage Up?", firstStageSolenoidUp);
-    SmartDashboard.putBoolean("Second Stage Up?", secondStageSolenoidUp);
+    SmartDashboard.putBoolean("First Stage", ElevatorPusher1.get());
+    SmartDashboard.putBoolean("Second Stage", ElevatorPusher2.get());
   }
 
   @Override

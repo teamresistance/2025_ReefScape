@@ -11,21 +11,19 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class FlipperSubsystem extends SubsystemBase {
-  public boolean isInScoringPosition = false;
-  public boolean isInReceivingPosition = false;
-  public boolean isGripped = false;
-  public boolean hasCoral = false;
 
-  Solenoid gripper =
+  private boolean believesHasCoral = false;
+  private Solenoid gripper =
       new Solenoid(
           Constants.SolenoidModuleType,
           Constants
               .GripperSolenoidChannel); // The pneumatics hub channels that we are using are 0, 2,
   // and 5
-  Solenoid flipper = new Solenoid(Constants.SolenoidModuleType, Constants.FlipperSolenoidChannel);
-  Solenoid coralCenterMechanism =
+  private Solenoid flipper =
+      new Solenoid(Constants.SolenoidModuleType, Constants.FlipperSolenoidChannel);
+  private Solenoid coralCenterMechanism =
       new Solenoid(Constants.SolenoidModuleType, Constants.CentererSolenoidChannel);
-  DigitalInput CoralDetector = new DigitalInput(0);
+  private DigitalInput CoralDetector = new DigitalInput(0);
 
   /** Creates a new ExampleSubsystem. */
   public FlipperSubsystem() {}
@@ -35,46 +33,29 @@ public class FlipperSubsystem extends SubsystemBase {
    *
    * @return the opposite of the value of said boolean state.
    */
-  public void grip() {
-    coralCenterMechanism.setPulseDuration(0.5);
-    coralCenterMechanism.startPulse();
-    hasCoral = CoralDetector.get();
-    gripper.set(hasCoral);
-    isGripped = gripper.get();
+  public void flipperHoldingState() {
+    if (!believesHasCoral) {
+      coralCenterMechanism.setPulseDuration(0.5);
+      coralCenterMechanism.startPulse();
+      while (coralCenterMechanism.get()) {}
+      gripper.set(CoralDetector.get());
+      believesHasCoral = true;
+    } else if (believesHasCoral) {
+      gripper.set(false);
+      coralCenterMechanism.set(false);
+    }
   }
 
-  public void letGo() {
-    gripper.set(false);
-  }
-
-  /// public void clawSpinner(){
-  // double motorTurnAmount= angleToEncoderTicks(90);
-  /// rotator.set(ControlMode.position, motorTurnAmount);
-  // }
-  public void flipperReadyToScore() {
+  public void flipperScore() {
     flipper.setPulseDuration(1);
     flipper.startPulse();
-    isInScoringPosition = true;
-  }
-
-  public void flipperReadyToReceive() {
-    flipper.set(false);
-    isInReceivingPosition = true;
-  }
-
-  /// public void clawUnspinner(){
-  /// rotator.set(ControlMode.Position, -motorTurnAmount);
-  /// }
-
-  public void score() {
-    hasCoral = false;
   }
 
   @Override
   public void periodic() {
-    SmartDashboard.putBoolean("Has Coral?", hasCoral);
-    SmartDashboard.putBoolean("Is Gripped?", isGripped);
-    SmartDashboard.putBoolean("In Scoring Position?", isInScoringPosition);
+    SmartDashboard.putBoolean("Gripper Closed", gripper.get());
+    SmartDashboard.putBoolean("Thinks has coral", believesHasCoral);
+    SmartDashboard.putBoolean("Coral Secured and Gripped", (gripper.get() && CoralDetector.get()));
   }
 
   @Override

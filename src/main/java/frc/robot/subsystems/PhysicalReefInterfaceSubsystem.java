@@ -34,16 +34,16 @@ public class PhysicalReefInterfaceSubsystem extends SubsystemBase {
   // Add code to make the robot go to X location
 
   /*
-   ChooseVars(level, pos, rl) runs when an interface button is pressed but it does NOT execute the code
-   - level is an int from 0-3 representing the targeted reef level. level 1 and 0 may have the same elevator height BUT level 0 drops
-   the coral into the trough and level 1 puts it on the reef!!!! level 0 also works for recieving coral (maybe...)
-   - pos is the int position around the reef from 0-5
-   - rl is an int either 0 or 1, 0 representing left and 1 representing right
-   
-   - if you do not want to change a value, set it to -1 in the method (ie if i only wanted to execute the code (by setting exec to true))
-   - all my other values would be -1. example: ChooseVars(-1, 4, -1) would set the position to 4 and change no other
-   values in the subsystem. if you put new ChooseVars(0, 4, 0), it would set the level and rl variables to 0!!!
-   */
+  ChooseVars(level, pos, rl) runs when an interface button is pressed but it does NOT execute the code
+  - level is an int from 0-3 representing the targeted reef level. level 1 and 0 may have the same elevator height BUT level 0 drops
+  the coral into the trough and level 1 puts it on the reef!!!! level 0 also works for recieving coral (maybe...)
+  - pos is the int position around the reef from 0-5
+  - rl is an int either 0 or 1, 0 representing left and 1 representing right
+
+  - if you do not want to change a value, set it to -1 in the method (ie if i only wanted to execute the code (by setting exec to true))
+  - all my other values would be -1. example: ChooseVars(-1, 4, -1) would set the position to 4 and change no other
+  values in the subsystem. if you put new ChooseVars(0, 4, 0), it would set the level and rl variables to 0!!!
+  */
   public void ChooseVars(int level, int pos, int rl) {
     if (rl == 1) {
       this.rl = !this.rl;

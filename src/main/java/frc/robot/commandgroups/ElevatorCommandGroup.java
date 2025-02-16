@@ -5,20 +5,25 @@
 package frc.robot.commandgroups;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.ElevatorLowerSecondStageCommand;
-import frc.robot.commands.ElevatorRaiseFirstStageCommand;
+import frc.robot.commands.ElevatorCmd;
 import frc.robot.subsystems.ElevatorSubsystem;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class ElevatorMiddleCommandGroup extends SequentialCommandGroup {
-  /** Creates a new ElevatorLowestCommandGroup. */
-  public ElevatorMiddleCommandGroup(ElevatorSubsystem subsystem) {
+public class ElevatorCommandGroup extends SequentialCommandGroup {
+  /** Creates a new ElevatorCommandGroup. */
+  public ElevatorCommandGroup(ElevatorSubsystem subsystem, int level) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    addCommands(
-        new ElevatorRaiseFirstStageCommand(subsystem),
-        new ElevatorLowerSecondStageCommand(subsystem));
+    if (level == 0) {
+      addCommands(new ElevatorCmd(subsystem, 1, false), new ElevatorCmd(subsystem, 2, false));
+    }
+    if (level == 1) {
+      addCommands(new ElevatorCmd(subsystem, 0, true), new ElevatorCmd(subsystem, 0, false));
+    }
+    if (level == 2) {
+      addCommands(new ElevatorCmd(subsystem, 1, true), new ElevatorCmd(subsystem, 2, true));
+    }
   }
 }
