@@ -19,13 +19,22 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commandgroups.ElevatorCommandGroup;
+import frc.robot.commands.ChooseReefCmd;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.FlipperGripperCmd;
+import frc.robot.commands.FlipperScoreCmd;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.FlipperSubsystem;
+import frc.robot.subsystems.PhysicalReefInterfaceSubsystem;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -41,8 +50,11 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+
   // Subsystems
   private final Drive drive;
+  private final FlipperSubsystem m_flipperSubsystem = new FlipperSubsystem();
+  private final ElevatorSubsystem m_elevatorSubsystem = new ElevatorSubsystem();
 
   final double DEADZONE = 0.1;
 
@@ -53,6 +65,10 @@ public class RobotContainer {
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
+  // private final CommandXboxController controller = new CommandXboxController(0);
+  private final Joystick Joystick1 = new Joystick(0);
+  private final Joystick Joystick2 = new Joystick(1);
+  private final Joystick CoJoystick = new Joystick(2);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -145,7 +161,7 @@ public class RobotContainer {
     // Switch to X pattern when X button is pressed
     controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
-    // Reset gyro to 0° when B button is pressed
+    // Reset gyro to 0° when B button is pressed
     controller
         .b()
         .onTrue(
@@ -167,7 +183,54 @@ public class RobotContainer {
     controller
         .rightTrigger()
         .whileTrue(DriveCommands.goTo2DPos(drive, 1.0, 2.0, 0.0)); // Example values
+    //
+    //    Codriver Bindings
+    //
+    final PhysicalReefInterfaceSubsystem m_PhysicalReefSubsystem =
+        new PhysicalReefInterfaceSubsystem();
+    // execute
+    new JoystickButton(CoJoystick, 1)
+        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, -1, -1, true));
+    // level
+    new JoystickButton(CoJoystick, 2)
+        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, 0, -1, -1, false));
+    new JoystickButton(CoJoystick, 3)
+        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, 1, -1, -1, false));
+    new JoystickButton(CoJoystick, 4)
+        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, 2, -1, -1, false));
+    new JoystickButton(CoJoystick, 6)
+        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, 3, -1, -1, false));
+    // pos
+    new JoystickButton(CoJoystick, 7)
+        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 0, -1, false));
+    new JoystickButton(CoJoystick, 8)
+        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 1, -1, false));
+    new JoystickButton(CoJoystick, 9)
+        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 2, -1, false));
+    new JoystickButton(CoJoystick, 10)
+        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 3, -1, false));
+    new JoystickButton(CoJoystick, 11)
+        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 4, -1, false));
+    new JoystickButton(CoJoystick, 12)
+        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 5, -1, false));
+    // rightleft
+    new JoystickButton(CoJoystick, 5)
+        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, -1, 1, false));
+
+    //
+    //    Standard Joystick Bindings
+    //
+    new JoystickButton(Joystick1, 1).onTrue(new FlipperScoreCmd(m_flipperSubsystem));
+    new JoystickButton(Joystick1, 5).onTrue(new FlipperGripperCmd(m_flipperSubsystem));
+    new JoystickButton(Joystick1, 3).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 0));
+    new JoystickButton(Joystick1, 4).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 1));
+    new JoystickButton(Joystick1, 6).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 2));
   }
+
+  //
+  //    Drive Commands
+  //
+  // Default command, normal field-relative drive
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
