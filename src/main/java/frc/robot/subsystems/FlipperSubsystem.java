@@ -23,7 +23,7 @@ public class FlipperSubsystem extends SubsystemBase {
       new Solenoid(Constants.SolenoidModuleType, Constants.FlipperSolenoidChannel);
   private Solenoid coralCenterMechanism =
       new Solenoid(Constants.SolenoidModuleType, Constants.CentererSolenoidChannel);
-  private DigitalInput CoralDetector = new DigitalInput(0);
+  private DigitalInput coralDetector = new DigitalInput(0);
 
   /** Subsystem handling coral intake and dropping onto branches/level1. */
   public FlipperSubsystem() {}
@@ -38,7 +38,7 @@ public class FlipperSubsystem extends SubsystemBase {
       coralCenterMechanism.setPulseDuration(0.5);
       coralCenterMechanism.startPulse();
       while (coralCenterMechanism.get()) {}
-      gripper.set(CoralDetector.get());
+      gripper.set(coralDetector.get());
       believesHasCoral = true;
     } else if (believesHasCoral) {
       gripper.set(false);
@@ -55,7 +55,7 @@ public class FlipperSubsystem extends SubsystemBase {
   public void periodic() {
     SmartDashboard.putBoolean("Gripper Closed", gripper.get());
     SmartDashboard.putBoolean("Thinks has coral", believesHasCoral);
-    SmartDashboard.putBoolean("Coral Secured and Gripped", (gripper.get() && CoralDetector.get()));
+    SmartDashboard.putBoolean("Coral Secured and Gripped", (gripper.get() && coralDetector.get()));
   }
 
   @Override

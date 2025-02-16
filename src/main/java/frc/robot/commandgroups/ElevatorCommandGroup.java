@@ -8,14 +8,9 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.ElevatorCmd;
 import frc.robot.subsystems.ElevatorSubsystem;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class ElevatorCommandGroup extends SequentialCommandGroup {
-  /** Creates a new ElevatorCommandGroup. */
+  /** Command group for elevator position (0, 1, 2 for low, mid, high)*/
   public ElevatorCommandGroup(ElevatorSubsystem subsystem, int level) {
-    // Add your commands in the addCommands() call, e.g.
-    // addCommands(new FooCommand(), new BarCommand());
     if (level == 0) {
       addCommands(new ElevatorCmd(subsystem, 1, false), new ElevatorCmd(subsystem, 2, false));
     }

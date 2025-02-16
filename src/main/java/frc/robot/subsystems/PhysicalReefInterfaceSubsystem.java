@@ -15,7 +15,7 @@ public class PhysicalReefInterfaceSubsystem extends SubsystemBase {
   private int pos;
   private boolean rl = false; // Left is false, right is true
 
-  public void ChooseReef() {
+  public void chooseReef() {
     /**
      * ChooseReef() - Runs whenever the exec variable is true in a ChooseReefCmd(). - This method
      * makes the robot actually do what the saved variables are. If you had pressed elevator level
@@ -60,7 +60,7 @@ public class PhysicalReefInterfaceSubsystem extends SubsystemBase {
   - all my other values would be -1. example: ChooseVars(-1, 4, -1) would set the position to 4 and change no other
   values in the subsystem. if you put new ChooseVars(0, 4, 0), it would set the level and rl variables to 0!!!
   */
-  public void ChooseVars(int level, int pos, int rl) {
+  public void chooseVars(int level, int pos, int rl) {
     if (rl == 1) {
       this.rl = !this.rl;
     }

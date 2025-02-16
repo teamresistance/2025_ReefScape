@@ -7,11 +7,9 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ElevatorSubsystem;
 
-/* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class ElevatorCmd extends Command {
-  /** Creates a new ElevatorCmd. */
-  private boolean state;
 
+  private boolean state;
   private int level;
 
   public ElevatorCmd(ElevatorSubsystem subsystem, int level, boolean state) {

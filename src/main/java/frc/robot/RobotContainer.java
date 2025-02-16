@@ -65,16 +65,20 @@ public class RobotContainer {
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
-  // private final CommandXboxController controller = new CommandXboxController(0);
-  private final Joystick Joystick1 = new Joystick(0);
-  private final Joystick Joystick2 = new Joystick(1);
-  private final Joystick CoJoystick = new Joystick(2);
+
+  private final Joystick joystick1 = new Joystick(0);
+  private final Joystick joystick2 = new Joystick(1);
+  private final Joystick coJoystick = new Joystick(2);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    //
+    //    Drive Commands
+    //
+    // Default command, normal field-relative drive
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
@@ -189,48 +193,43 @@ public class RobotContainer {
     final PhysicalReefInterfaceSubsystem m_PhysicalReefSubsystem =
         new PhysicalReefInterfaceSubsystem();
     // execute
-    new JoystickButton(CoJoystick, 1)
+    new JoystickButton(coJoystick, 1)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, -1, -1, true));
     // level
-    new JoystickButton(CoJoystick, 2)
+    new JoystickButton(coJoystick, 2)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, 0, -1, -1, false));
-    new JoystickButton(CoJoystick, 3)
+    new JoystickButton(coJoystick, 3)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, 1, -1, -1, false));
-    new JoystickButton(CoJoystick, 4)
+    new JoystickButton(coJoystick, 4)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, 2, -1, -1, false));
-    new JoystickButton(CoJoystick, 6)
+    new JoystickButton(coJoystick, 6)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, 3, -1, -1, false));
     // pos
-    new JoystickButton(CoJoystick, 7)
+    new JoystickButton(coJoystick, 7)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 0, -1, false));
-    new JoystickButton(CoJoystick, 8)
+    new JoystickButton(coJoystick, 8)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 1, -1, false));
-    new JoystickButton(CoJoystick, 9)
+    new JoystickButton(coJoystick, 9)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 2, -1, false));
-    new JoystickButton(CoJoystick, 10)
+    new JoystickButton(coJoystick, 10)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 3, -1, false));
-    new JoystickButton(CoJoystick, 11)
+    new JoystickButton(coJoystick, 11)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 4, -1, false));
-    new JoystickButton(CoJoystick, 12)
+    new JoystickButton(coJoystick, 12)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 5, -1, false));
     // rightleft
-    new JoystickButton(CoJoystick, 5)
+    new JoystickButton(coJoystick, 5)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, -1, 1, false));
 
     //
     //    Standard Joystick Bindings
     //
-    new JoystickButton(Joystick1, 1).onTrue(new FlipperScoreCmd(m_flipperSubsystem));
-    new JoystickButton(Joystick1, 5).onTrue(new FlipperGripperCmd(m_flipperSubsystem));
-    new JoystickButton(Joystick1, 3).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 0));
-    new JoystickButton(Joystick1, 4).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 1));
-    new JoystickButton(Joystick1, 6).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 2));
+    new JoystickButton(joystick1, 1).onTrue(new FlipperScoreCmd(m_flipperSubsystem));
+    new JoystickButton(joystick1, 5).onTrue(new FlipperGripperCmd(m_flipperSubsystem));
+    new JoystickButton(joystick1, 3).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 0));
+    new JoystickButton(joystick1, 4).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 1));
+    new JoystickButton(joystick1, 6).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 2));
   }
-
-  //
-  //    Drive Commands
-  //
-  // Default command, normal field-relative drive
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

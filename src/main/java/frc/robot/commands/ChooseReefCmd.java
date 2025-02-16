@@ -7,9 +7,8 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.PhysicalReefInterfaceSubsystem;
 
-/* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class ChooseReefCmd extends Command {
-  /** Creates a new ChooseReefCmd. */
+
   private PhysicalReefInterfaceSubsystem subsystem;
 
   private int level = -1;
@@ -44,7 +43,6 @@ public class ChooseReefCmd extends Command {
     }
     this.exec = exec;
     addRequirements(subsystem);
-    // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
@@ -55,9 +53,9 @@ public class ChooseReefCmd extends Command {
   @Override
   public void execute() {
     if (exec) {
-      subsystem.ChooseReef();
+      subsystem.chooseReef();
     } else {
-      subsystem.ChooseVars(level, pos, rl);
+      subsystem.chooseVars(level, pos, rl);
     }
   }
 

@@ -10,9 +10,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class ElevatorSubsystem extends SubsystemBase {
-  static Solenoid ElevatorPusher1 =
+  static Solenoid elevatorPusher1 =
       new Solenoid(Constants.SolenoidModuleType, Constants.ElevatorSolenoid1Channel);
-  static Solenoid ElevatorPusher2 =
+  static Solenoid elevatorPusher2 =
       new Solenoid(Constants.SolenoidModuleType, Constants.ElevatorSolenoid2Channel);
 
   /**
@@ -22,28 +22,27 @@ public class ElevatorSubsystem extends SubsystemBase {
   public ElevatorSubsystem() {}
 
   public static void raiseFirstStage() {
-    ElevatorPusher1.setPulseDuration(1.0); // Assuming x is 1.0, replace with the correct value
-    ElevatorPusher1.startPulse();
+    elevatorPusher1.setPulseDuration(1.0); // Assuming x is 1.0, replace with the correct value
+    elevatorPusher1.startPulse();
   }
 
   public static void raiseSecondStage() {
-    ElevatorPusher2.setPulseDuration(1.0); // Assuming x is 1.0, replace with the correct value
-    ElevatorPusher2.startPulse();
+    elevatorPusher2.setPulseDuration(1.0); // Assuming x is 1.0, replace with the correct value
+    elevatorPusher2.startPulse();
   }
 
   public static void lowerFirstStage() {
-    ElevatorPusher1.set(false);
+    elevatorPusher1.set(false);
   }
 
   public static void lowerSecondStage() {
-    ElevatorPusher2.set(false);
-    lowerFirstStage();
+    elevatorPusher2.set(false);
   }
 
   @Override
   public void periodic() {
-    SmartDashboard.putBoolean("First Stage", ElevatorPusher1.get());
-    SmartDashboard.putBoolean("Second Stage", ElevatorPusher2.get());
+    SmartDashboard.putBoolean("First Stage", elevatorPusher1.get());
+    SmartDashboard.putBoolean("Second Stage", elevatorPusher2.get());
   }
 
   @Override
