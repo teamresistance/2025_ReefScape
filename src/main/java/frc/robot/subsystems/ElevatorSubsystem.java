@@ -15,7 +15,10 @@ public class ElevatorSubsystem extends SubsystemBase {
   static Solenoid ElevatorPusher2 =
       new Solenoid(Constants.SolenoidModuleType, Constants.ElevatorSolenoid2Channel);
 
-  /** Creates a new ExampleSubsystem. */
+  /**
+   * The elevator subsystem is still available from both the codriver controls and the driver controls.
+   * The codriver has the interface while the driver has buttons.
+   */
   public ElevatorSubsystem() {}
 
   public static void raiseFirstStage() {

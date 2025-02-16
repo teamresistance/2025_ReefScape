@@ -25,7 +25,7 @@ public class FlipperSubsystem extends SubsystemBase {
       new Solenoid(Constants.SolenoidModuleType, Constants.CentererSolenoidChannel);
   private DigitalInput CoralDetector = new DigitalInput(0);
 
-  /** Creates a new ExampleSubsystem. */
+  /** Subsystem handling coral intake and dropping onto branches/level1. */
   public FlipperSubsystem() {}
 
   /**
