@@ -13,10 +13,10 @@ public class LoggedTunableNumber {
   private static final String tableKey = "TunableNumbers";
 
   private final String key;
+  private final Map<Integer, Double> lastHasChangedValues = new HashMap<>();
   private boolean hasDefault = false;
   private double defaultValue;
   private LoggedNetworkNumber dashboardNumber;
-  private final Map<Integer, Double> lastHasChangedValues = new HashMap<>();
 
   /**
    * Create a new LoggedTunableNumber
