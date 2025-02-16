@@ -17,22 +17,24 @@ public class PhysicalReefInterfaceSubsystem extends SubsystemBase {
 
   public void ChooseReef() {
     /**
-    ChooseReef()
-    - Runs whenever the exec variable is true in a ChooseReefCmd().
-    - This method makes the robot actually do what the saved variables are. If you had pressed elevator level 4, position 2, toggled
-     to left all before running this method the robot would use those saved values to change the elevator height to 4 and move to left pos 2
-    - This also resets the values when running, so if you for whatever reason wanted to go to the same place you'd have to
-     press every button again
-    */
+     * ChooseReef() - Runs whenever the exec variable is true in a ChooseReefCmd(). - This method
+     * makes the robot actually do what the saved variables are. If you had pressed elevator level
+     * 4, position 2, toggled to left all before running this method the robot would use those saved
+     * values to change the elevator height to 4 and move to left pos 2 - This also resets the
+     * values when running, so if you for whatever reason wanted to go to the same place you'd have
+     * to press every button again
+     */
 
-    //Change elevator position to the selected pos
-    if (level == 0){
+    // Change elevator position to the selected pos
+    if (level == 0) {
       ElevatorSubsystem.lowerFirstStage();
       ElevatorSubsystem.lowerSecondStage();
-    } if (level == 1){
+    }
+    if (level == 1) {
       ElevatorSubsystem.raiseFirstStage();
       ElevatorSubsystem.lowerSecondStage();
-    } if (level == 2){
+    }
+    if (level == 2) {
       ElevatorSubsystem.raiseFirstStage();
       ElevatorSubsystem.raiseSecondStage();
     }

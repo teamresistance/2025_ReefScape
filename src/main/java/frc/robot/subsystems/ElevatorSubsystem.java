@@ -16,8 +16,8 @@ public class ElevatorSubsystem extends SubsystemBase {
       new Solenoid(Constants.SolenoidModuleType, Constants.ElevatorSolenoid2Channel);
 
   /**
-   * The elevator subsystem is still available from both the codriver controls and the driver controls.
-   * The codriver has the interface while the driver has buttons.
+   * The elevator subsystem is still available from both the codriver controls and the driver
+   * controls. The codriver has the interface while the driver has buttons.
    */
   public ElevatorSubsystem() {}
 
