@@ -108,34 +108,35 @@ public class RobotContainer {
   }
 
   private Drive configureDrive() {
-    Drive drive =
-        switch (Constants.currentMode) {
-          case REAL ->
-              // Real robot, instantiate hardware IO implementations
-              new Drive(
-                  new GyroIOPigeon2(),
-                  new ModuleIOTalonFX(TunerConstants.FrontLeft),
-                  new ModuleIOTalonFX(TunerConstants.FrontRight),
-                  new ModuleIOTalonFX(TunerConstants.BackLeft),
-                  new ModuleIOTalonFX(TunerConstants.BackRight));
-          case SIM ->
-              // Sim robot, instantiate physics sim IO implementations
-              new Drive(
-                  new GyroIO() {},
-                  new ModuleIOSim(TunerConstants.FrontLeft),
-                  new ModuleIOSim(TunerConstants.FrontRight),
-                  new ModuleIOSim(TunerConstants.BackLeft),
-                  new ModuleIOSim(TunerConstants.BackRight));
-          default ->
-              // Replayed robot, disable IO implementations
-              new Drive(
-                  new GyroIO() {},
-                  new ModuleIO() {},
-                  new ModuleIO() {},
-                  new ModuleIO() {},
-                  new ModuleIO() {});
-        };
-    return drive;
+    // Real robot, instantiate hardware IO implementations
+    // Sim robot, instantiate physics sim IO implementations
+    // Replayed robot, disable IO implementations
+    return switch (Constants.currentMode) {
+      case REAL ->
+          // Real robot, instantiate hardware IO implementations
+          new Drive(
+              new GyroIOPigeon2(),
+              new ModuleIOTalonFX(TunerConstants.FrontLeft),
+              new ModuleIOTalonFX(TunerConstants.FrontRight),
+              new ModuleIOTalonFX(TunerConstants.BackLeft),
+              new ModuleIOTalonFX(TunerConstants.BackRight));
+      case SIM ->
+          // Sim robot, instantiate physics sim IO implementations
+          new Drive(
+              new GyroIO() {},
+              new ModuleIOSim(TunerConstants.FrontLeft),
+              new ModuleIOSim(TunerConstants.FrontRight),
+              new ModuleIOSim(TunerConstants.BackLeft),
+              new ModuleIOSim(TunerConstants.BackRight));
+      default ->
+          // Replayed robot, disable IO implementations
+          new Drive(
+              new GyroIO() {},
+              new ModuleIO() {},
+              new ModuleIO() {},
+              new ModuleIO() {},
+              new ModuleIO() {});
+    };
   }
 
   /**
@@ -160,6 +161,8 @@ public class RobotContainer {
     driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     driver.leftBumper().whileTrue(DriveCommands.goToTransform(drive, targetTransform));
+
+    driver.rightBumper().whileTrue(DriveCommands.goToTransformWithPathFinder(targetTransform));
 
     // Reset gyro to 0 when B button is pressed
     driver
