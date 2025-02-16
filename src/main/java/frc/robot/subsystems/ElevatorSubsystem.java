@@ -22,13 +22,11 @@ public class ElevatorSubsystem extends SubsystemBase {
   public ElevatorSubsystem() {}
 
   public static void raiseFirstStage() {
-    elevatorPusher1.setPulseDuration(1.0); // Assuming x is 1.0, replace with the correct value
-    elevatorPusher1.startPulse();
+    elevatorPusher1.set(true);
   }
 
   public static void raiseSecondStage() {
-    elevatorPusher2.setPulseDuration(1.0); // Assuming x is 1.0, replace with the correct value
-    elevatorPusher2.startPulse();
+    elevatorPusher2.set(true);
   }
 
   public static void lowerFirstStage() {
