@@ -36,17 +36,21 @@ import java.util.function.DoubleSupplier;
  * time synchronization.
  */
 public class PhoenixOdometryThread extends Thread {
+  private static final boolean isCANFD =
+      new CANBus(TunerConstants.DrivetrainConstants.CANBusName).isNetworkFD();
+  private static PhoenixOdometryThread instance = null;
   private final Lock signalsLock =
       new ReentrantLock(); // Prevents conflicts when registering signals
-  private BaseStatusSignal[] phoenixSignals = new BaseStatusSignal[0];
   private final List<DoubleSupplier> genericSignals = new ArrayList<>();
   private final List<Queue<Double>> phoenixQueues = new ArrayList<>();
   private final List<Queue<Double>> genericQueues = new ArrayList<>();
   private final List<Queue<Double>> timestampQueues = new ArrayList<>();
+  private BaseStatusSignal[] phoenixSignals = new BaseStatusSignal[0];
 
-  private static boolean isCANFD =
-      new CANBus(TunerConstants.DrivetrainConstants.CANBusName).isNetworkFD();
-  private static PhoenixOdometryThread instance = null;
+  private PhoenixOdometryThread() {
+    setName("PhoenixOdometryThread");
+    setDaemon(true);
+  }
 
   public static PhoenixOdometryThread getInstance() {
     if (instance == null) {
@@ -55,14 +59,9 @@ public class PhoenixOdometryThread extends Thread {
     return instance;
   }
 
-  private PhoenixOdometryThread() {
-    setName("PhoenixOdometryThread");
-    setDaemon(true);
-  }
-
   @Override
   public void start() {
-    if (timestampQueues.size() > 0) {
+    if (!timestampQueues.isEmpty()) {
       super.start();
     }
   }
@@ -155,8 +154,8 @@ public class PhoenixOdometryThread extends Thread {
         for (int i = 0; i < genericSignals.size(); i++) {
           genericQueues.get(i).offer(genericSignals.get(i).getAsDouble());
         }
-        for (int i = 0; i < timestampQueues.size(); i++) {
-          timestampQueues.get(i).offer(timestamp);
+        for (Queue<Double> timestampQueue : timestampQueues) {
+          timestampQueue.offer(timestamp);
         }
       } finally {
         Drive.odometryLock.unlock();
