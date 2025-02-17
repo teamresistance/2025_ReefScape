@@ -13,6 +13,8 @@
 
 package frc.robot.commands;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -37,7 +39,7 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 public class DriveCommands {
-  private static final double DEADBAND = 0.05;
+  private static final double DEADBAND = 0.10;
   private static final double ANGLE_KP = 5.0;
   private static final double ANGLE_KD = 0.4;
   private static final double ANGLE_MAX_VELOCITY = 8.0;
@@ -295,6 +297,114 @@ public class DriveCommands {
                   System.out.println("\tkS: " + formatter.format(kS));
                   System.out.println("\tkV: " + formatter.format(kV));
                 }));
+  }
+
+  /**
+   * Command that drives the robot to a target Transform2d using a PID controller for both the X and
+   * Y positions.
+   */
+  public static Command goToTransform(Drive drive, Transform2d targetTransform) {
+    // PID controllers for X and Y positions
+    ProfiledPIDController pidX =
+        new ProfiledPIDController(
+            0.7, // KP for X (tune as needed)
+            0.0, // KI for X (no integral term)
+            0.0, // KD for X (no derivative term)
+            new TrapezoidProfile.Constraints(
+                drive.getMaxLinearSpeedMetersPerSec(),
+                3.0) // Constraints on X speed (tune as needed)
+            );
+
+    ProfiledPIDController pidY =
+        new ProfiledPIDController(
+            0.7, // KP for Y (tune as needed)
+            0.0, // KI for Y (no integral term)
+            0.0, // KD for Y (no derivative term)
+            new TrapezoidProfile.Constraints(
+                drive.getMaxLinearSpeedMetersPerSec(),
+                3.0) // Constraints on Y speed (tune as needed)
+            );
+
+    // Create PID controller
+    ProfiledPIDController angleController =
+        new ProfiledPIDController(
+            ANGLE_KP,
+            0.0,
+            ANGLE_KD,
+            new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
+    angleController.enableContinuousInput(-Math.PI, Math.PI);
+
+    // Target position (X, Y) and rotation from the target transform
+    Translation2d targetTranslation = targetTransform.getTranslation();
+    Rotation2d targetRotation = targetTransform.getRotation();
+
+    return Commands.run(
+            () -> {
+              // Get current robot position
+              Pose2d currentPose = drive.getPose();
+
+              // Compute errors for X and Y
+              double errorX = targetTranslation.getX() - currentPose.getX();
+              double errorY = targetTranslation.getY() - currentPose.getY();
+              Rotation2d errorrot = targetRotation.minus(currentPose.getRotation());
+
+              // Use the PID controllers to calculate the required speeds to approach the target
+              double speedX = pidX.calculate(currentPose.getX(), targetTranslation.getX());
+              double speedY = pidY.calculate(currentPose.getY(), targetTranslation.getY());
+
+              double omega =
+                  angleController.calculate(
+                      drive.getRotation().getRadians(), targetRotation.getRadians());
+
+              // If the error is small, stop the robot (use deadzone for smooth stopping)
+              if (Math.abs(errorX) < 0.05
+                  && Math.abs(errorY) < 0.05
+                  && Math.abs(errorrot.getRadians()) < 5 * 3.14 / 180) {
+                speedX = 0.0;
+                speedY = 0.0;
+                omega = 0.0;
+              }
+
+              // Apply the PID-calculated speeds to the robot's drive system
+              ChassisSpeeds speeds =
+                  new ChassisSpeeds(
+                      -speedX * drive.getMaxLinearSpeedMetersPerSec(),
+                      -speedY * drive.getMaxLinearSpeedMetersPerSec(),
+                      omega // No angular velocity, we're just moving in XY
+                      );
+
+              // Drive the robot toward the target in field-relative coordinates
+              boolean isFlipped =
+                  DriverStation.getAlliance().isPresent()
+                      && DriverStation.getAlliance().get() == Alliance.Red;
+              drive.runVelocity(
+                  ChassisSpeeds.fromFieldRelativeSpeeds(
+                      speeds,
+                      isFlipped
+                          ? drive.getRotation().plus(new Rotation2d(Math.PI))
+                          : drive.getRotation()));
+            },
+            drive)
+        .beforeStarting(
+            () -> {
+              // Reset PID controllers when the command starts
+              pidX.reset(drive.getPose().getX());
+              pidY.reset(drive.getPose().getY());
+              angleController.reset(drive.getRotation().getRadians());
+            })
+        .until(
+            () ->
+                false); // Timeout to prevent infinite looping if the target is unreachable (adjust
+    // as
+    // needed)
+  }
+
+  public static Command goToTransformWithPathFinder(Transform2d targetTransform) {
+    return AutoBuilder.pathfindToPose(
+        new Pose2d(targetTransform.getTranslation(), targetTransform.getRotation()),
+        new PathConstraints(3.0, 4.0, Units.degreesToRadians(540), Units.degreesToRadians(720)),
+        0.0 // Goal end velocity in meters/sec
+        );
   }
 
   /** Measures the robot's wheel radius by spinning in a circle. */

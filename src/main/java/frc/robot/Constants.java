@@ -21,10 +21,10 @@ import edu.wpi.first.wpilibj.RobotBase;
  * (log replay from a file).
  */
 public final class Constants {
-  public static final Mode simMode = Mode.SIM;
-  public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
+  public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : Mode.SIM;
+  public static final boolean tuningMode = false;
 
-  public static enum Mode {
+  public enum Mode {
     /** Running on a real robot. */
     REAL,
 
