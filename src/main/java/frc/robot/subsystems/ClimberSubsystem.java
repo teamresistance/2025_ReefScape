@@ -8,13 +8,13 @@ import frc.robot.Constants.HardwareConstants;
 public class ClimberSubsystem extends SubsystemBase {
 
   // Hardware
-  private final Solenoid climberSV = new Solenoid(
-      HardwareConstants.pneumaticsModuleType, HardwareConstants.kClimberSolenoid_portNumber);
+  private final Solenoid climberSV =
+      new Solenoid(
+          HardwareConstants.pneumaticsModuleType, HardwareConstants.kClimberSolenoid_portNumber);
 
   // Variables
 
-  public ClimberSubsystem() {
-  }
+  public ClimberSubsystem() {}
 
   public void activateClimber(boolean state) {
     climberSV.setPulseDuration(1);

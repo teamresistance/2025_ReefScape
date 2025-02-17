@@ -49,8 +49,7 @@ public class DriveCommands {
   private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
   private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
 
-  private DriveCommands() {
-  }
+  private DriveCommands() {}
 
   private static Translation2d getLinearVelocityFromJoysticks(double x, double y) {
     // Apply deadband
@@ -67,8 +66,7 @@ public class DriveCommands {
   }
 
   /**
-   * Field relative drive command using two joysticks (controlling linear and
-   * angular velocities).
+   * Field relative drive command using two joysticks (controlling linear and angular velocities).
    */
   public static Command joystickDrive(
       Drive drive,
@@ -78,8 +76,8 @@ public class DriveCommands {
     return Commands.run(
         () -> {
           // Get linear velocity
-          Translation2d linearVelocity = getLinearVelocityFromJoysticks(xSupplier.getAsDouble(),
-              ySupplier.getAsDouble());
+          Translation2d linearVelocity =
+              getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
 
           // Apply rotation deadband
           double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
@@ -88,12 +86,14 @@ public class DriveCommands {
           omega = Math.copySign(omega * omega, omega);
 
           // Convert to field relative speeds & send command
-          ChassisSpeeds speeds = new ChassisSpeeds(
-              linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-              linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-              omega * drive.getMaxAngularSpeedRadPerSec());
-          boolean isFlipped = DriverStation.getAlliance().isPresent()
-              && DriverStation.getAlliance().get() == Alliance.Red;
+          ChassisSpeeds speeds =
+              new ChassisSpeeds(
+                  linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                  linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                  omega * drive.getMaxAngularSpeedRadPerSec());
+          boolean isFlipped =
+              DriverStation.getAlliance().isPresent()
+                  && DriverStation.getAlliance().get() == Alliance.Red;
           drive.runVelocity(
               ChassisSpeeds.fromFieldRelativeSpeeds(
                   speeds,
@@ -105,10 +105,8 @@ public class DriveCommands {
   }
 
   /**
-   * Field relative drive command using joystick for linear control and PID for
-   * angular control.
-   * Possible use cases include snapping to an angle, aiming at a vision target,
-   * or controlling
+   * Field relative drive command using joystick for linear control and PID for angular control.
+   * Possible use cases include snapping to an angle, aiming at a vision target, or controlling
    * absolute rotation with a joystick.
    */
   public static Command joystickDriveAtAngle(
@@ -118,39 +116,43 @@ public class DriveCommands {
       Supplier<Rotation2d> rotationSupplier) {
 
     // Create PID controller
-    ProfiledPIDController angleController = new ProfiledPIDController(
-        ANGLE_KP,
-        0.0,
-        ANGLE_KD,
-        new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
+    ProfiledPIDController angleController =
+        new ProfiledPIDController(
+            ANGLE_KP,
+            0.0,
+            ANGLE_KD,
+            new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
     angleController.enableContinuousInput(-Math.PI, Math.PI);
 
     // Construct command
     return Commands.run(
-        () -> {
-          // Get linear velocity
-          Translation2d linearVelocity = getLinearVelocityFromJoysticks(xSupplier.getAsDouble(),
-              ySupplier.getAsDouble());
+            () -> {
+              // Get linear velocity
+              Translation2d linearVelocity =
+                  getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
 
-          // Calculate angular speed
-          double omega = angleController.calculate(
-              drive.getRotation().getRadians(), rotationSupplier.get().getRadians());
+              // Calculate angular speed
+              double omega =
+                  angleController.calculate(
+                      drive.getRotation().getRadians(), rotationSupplier.get().getRadians());
 
-          // Convert to field relative speeds & send command
-          ChassisSpeeds speeds = new ChassisSpeeds(
-              linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-              linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-              omega);
-          boolean isFlipped = DriverStation.getAlliance().isPresent()
-              && DriverStation.getAlliance().get() == Alliance.Red;
-          drive.runVelocity(
-              ChassisSpeeds.fromFieldRelativeSpeeds(
-                  speeds,
-                  isFlipped
-                      ? drive.getRotation().plus(new Rotation2d(Math.PI))
-                      : drive.getRotation()));
-        },
-        drive)
+              // Convert to field relative speeds & send command
+              ChassisSpeeds speeds =
+                  new ChassisSpeeds(
+                      linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                      linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                      omega);
+              boolean isFlipped =
+                  DriverStation.getAlliance().isPresent()
+                      && DriverStation.getAlliance().get() == Alliance.Red;
+              drive.runVelocity(
+                  ChassisSpeeds.fromFieldRelativeSpeeds(
+                      speeds,
+                      isFlipped
+                          ? drive.getRotation().plus(new Rotation2d(Math.PI))
+                          : drive.getRotation()));
+            },
+            drive)
 
         // Reset PID controller when command starts
         .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
@@ -159,8 +161,7 @@ public class DriveCommands {
   /**
    * Measures the velocity feedforward constants for the drive motors.
    *
-   * <p>
-   * This command should only be used in voltage control mode.
+   * <p>This command should only be used in voltage control mode.
    */
   public static Command feedforwardCharacterization(Drive drive) {
     List<Double> velocitySamples = new LinkedList<>();
@@ -177,10 +178,10 @@ public class DriveCommands {
 
         // Allow modules to orient
         Commands.run(
-            () -> {
-              drive.runCharacterization(0.0);
-            },
-            drive)
+                () -> {
+                  drive.runCharacterization(0.0);
+                },
+                drive)
             .withTimeout(FF_START_DELAY),
 
         // Start timer
@@ -188,13 +189,13 @@ public class DriveCommands {
 
         // Accelerate and gather data
         Commands.run(
-            () -> {
-              double voltage = timer.get() * FF_RAMP_RATE;
-              drive.runCharacterization(voltage);
-              velocitySamples.add(drive.getFFCharacterizationVelocity());
-              voltageSamples.add(voltage);
-            },
-            drive)
+                () -> {
+                  double voltage = timer.get() * FF_RAMP_RATE;
+                  drive.runCharacterization(voltage);
+                  velocitySamples.add(drive.getFFCharacterizationVelocity());
+                  voltageSamples.add(voltage);
+                },
+                drive)
 
             // When cancelled, calculate and print results
             .finallyDo(
@@ -221,36 +222,38 @@ public class DriveCommands {
   }
 
   /**
-   * Command that drives the robot to a target Transform2d using a PID controller
-   * for both the X and
+   * Command that drives the robot to a target Transform2d using a PID controller for both the X and
    * Y positions.
    */
   public static Command goToTransform(Drive drive, Transform2d targetTransform) {
     // PID controllers for X and Y positions
-    ProfiledPIDController pidX = new ProfiledPIDController(
-        0.7, // KP for X (tune as needed)
-        0.0, // KI for X (no integral term)
-        0.0, // KD for X (no derivative term)
-        new TrapezoidProfile.Constraints(
-            drive.getMaxLinearSpeedMetersPerSec(),
-            3.0) // Constraints on X speed (tune as needed)
-    );
+    ProfiledPIDController pidX =
+        new ProfiledPIDController(
+            0.7, // KP for X (tune as needed)
+            0.0, // KI for X (no integral term)
+            0.0, // KD for X (no derivative term)
+            new TrapezoidProfile.Constraints(
+                drive.getMaxLinearSpeedMetersPerSec(),
+                3.0) // Constraints on X speed (tune as needed)
+            );
 
-    ProfiledPIDController pidY = new ProfiledPIDController(
-        0.7, // KP for Y (tune as needed)
-        0.0, // KI for Y (no integral term)
-        0.0, // KD for Y (no derivative term)
-        new TrapezoidProfile.Constraints(
-            drive.getMaxLinearSpeedMetersPerSec(),
-            3.0) // Constraints on Y speed (tune as needed)
-    );
+    ProfiledPIDController pidY =
+        new ProfiledPIDController(
+            0.7, // KP for Y (tune as needed)
+            0.0, // KI for Y (no integral term)
+            0.0, // KD for Y (no derivative term)
+            new TrapezoidProfile.Constraints(
+                drive.getMaxLinearSpeedMetersPerSec(),
+                3.0) // Constraints on Y speed (tune as needed)
+            );
 
     // Create PID controller
-    ProfiledPIDController angleController = new ProfiledPIDController(
-        ANGLE_KP,
-        0.0,
-        ANGLE_KD,
-        new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
+    ProfiledPIDController angleController =
+        new ProfiledPIDController(
+            ANGLE_KP,
+            0.0,
+            ANGLE_KD,
+            new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
     angleController.enableContinuousInput(-Math.PI, Math.PI);
 
     // Target position (X, Y) and rotation from the target transform
@@ -258,50 +261,53 @@ public class DriveCommands {
     Rotation2d targetRotation = targetTransform.getRotation();
 
     return Commands.run(
-        () -> {
-          // Get current robot position
-          Pose2d currentPose = drive.getPose();
+            () -> {
+              // Get current robot position
+              Pose2d currentPose = drive.getPose();
 
-          // Compute errors for X and Y
-          double errorX = targetTranslation.getX() - currentPose.getX();
-          double errorY = targetTranslation.getY() - currentPose.getY();
-          Rotation2d errorrot = targetRotation.minus(currentPose.getRotation());
+              // Compute errors for X and Y
+              double errorX = targetTranslation.getX() - currentPose.getX();
+              double errorY = targetTranslation.getY() - currentPose.getY();
+              Rotation2d errorrot = targetRotation.minus(currentPose.getRotation());
 
-          // Use the PID controllers to calculate the required speeds to approach the
-          // target
-          double speedX = pidX.calculate(currentPose.getX(), targetTranslation.getX());
-          double speedY = pidY.calculate(currentPose.getY(), targetTranslation.getY());
+              // Use the PID controllers to calculate the required speeds to approach the
+              // target
+              double speedX = pidX.calculate(currentPose.getX(), targetTranslation.getX());
+              double speedY = pidY.calculate(currentPose.getY(), targetTranslation.getY());
 
-          double omega = angleController.calculate(
-              drive.getRotation().getRadians(), targetRotation.getRadians());
+              double omega =
+                  angleController.calculate(
+                      drive.getRotation().getRadians(), targetRotation.getRadians());
 
-          // If the error is small, stop the robot (use deadzone for smooth stopping)
-          if (Math.abs(errorX) < 0.05
-              && Math.abs(errorY) < 0.05
-              && Math.abs(errorrot.getRadians()) < 5 * 3.14 / 180) {
-            speedX = 0.0;
-            speedY = 0.0;
-            omega = 0.0;
-          }
+              // If the error is small, stop the robot (use deadzone for smooth stopping)
+              if (Math.abs(errorX) < 0.05
+                  && Math.abs(errorY) < 0.05
+                  && Math.abs(errorrot.getRadians()) < 5 * 3.14 / 180) {
+                speedX = 0.0;
+                speedY = 0.0;
+                omega = 0.0;
+              }
 
-          // Apply the PID-calculated speeds to the robot's drive system
-          ChassisSpeeds speeds = new ChassisSpeeds(
-              -speedX * drive.getMaxLinearSpeedMetersPerSec(),
-              -speedY * drive.getMaxLinearSpeedMetersPerSec(),
-              omega // No angular velocity, we're just moving in XY
-          );
+              // Apply the PID-calculated speeds to the robot's drive system
+              ChassisSpeeds speeds =
+                  new ChassisSpeeds(
+                      -speedX * drive.getMaxLinearSpeedMetersPerSec(),
+                      -speedY * drive.getMaxLinearSpeedMetersPerSec(),
+                      omega // No angular velocity, we're just moving in XY
+                      );
 
-          // Drive the robot toward the target in field-relative coordinates
-          boolean isFlipped = DriverStation.getAlliance().isPresent()
-              && DriverStation.getAlliance().get() == Alliance.Red;
-          drive.runVelocity(
-              ChassisSpeeds.fromFieldRelativeSpeeds(
-                  speeds,
-                  isFlipped
-                      ? drive.getRotation().plus(new Rotation2d(Math.PI))
-                      : drive.getRotation()));
-        },
-        drive)
+              // Drive the robot toward the target in field-relative coordinates
+              boolean isFlipped =
+                  DriverStation.getAlliance().isPresent()
+                      && DriverStation.getAlliance().get() == Alliance.Red;
+              drive.runVelocity(
+                  ChassisSpeeds.fromFieldRelativeSpeeds(
+                      speeds,
+                      isFlipped
+                          ? drive.getRotation().plus(new Rotation2d(Math.PI))
+                          : drive.getRotation()));
+            },
+            drive)
         .beforeStarting(
             () -> {
               // Reset PID controllers when the command starts
@@ -310,7 +316,8 @@ public class DriveCommands {
               angleController.reset(drive.getRotation().getRadians());
             })
         .until(
-            () -> false); // Timeout to prevent infinite looping if the target is unreachable (adjust
+            () ->
+                false); // Timeout to prevent infinite looping if the target is unreachable (adjust
     // as
     // needed)
   }
@@ -320,7 +327,7 @@ public class DriveCommands {
         new Pose2d(targetTransform.getTranslation(), targetTransform.getRotation()),
         new PathConstraints(3.0, 4.0, Units.degreesToRadians(540), Units.degreesToRadians(720)),
         0.0 // Goal end velocity in meters/sec
-    );
+        );
   }
 
   /** Measures the robot's wheel radius by spinning in a circle. */
@@ -360,11 +367,11 @@ public class DriveCommands {
 
             // Update gyro delta
             Commands.run(
-                () -> {
-                  var rotation = drive.getRotation();
-                  state.gyroDelta += Math.abs(rotation.minus(state.lastAngle).getRadians());
-                  state.lastAngle = rotation;
-                })
+                    () -> {
+                      var rotation = drive.getRotation();
+                      state.gyroDelta += Math.abs(rotation.minus(state.lastAngle).getRadians());
+                      state.lastAngle = rotation;
+                    })
 
                 // When cancelled, calculate and print results
                 .finallyDo(

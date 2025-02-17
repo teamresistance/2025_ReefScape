@@ -10,24 +10,24 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.HardwareConstants;
 
 public class ElevatorSubsystem extends SubsystemBase {
-  public Solenoid firstStageSolenoid = new Solenoid(
-      HardwareConstants.pneumaticsModuleType,
-      HardwareConstants.kSolenoid_firstStage_portNumber);
+  public Solenoid firstStageSolenoid =
+      new Solenoid(
+          HardwareConstants.pneumaticsModuleType,
+          HardwareConstants.kSolenoid_firstStage_portNumber);
 
-  public Solenoid secondStageSolenoid = new Solenoid(
-      HardwareConstants.pneumaticsModuleType,
-      HardwareConstants.kSolenoid_secondStage_portNumber);
+  public Solenoid secondStageSolenoid =
+      new Solenoid(
+          HardwareConstants.pneumaticsModuleType,
+          HardwareConstants.kSolenoid_secondStage_portNumber);
 
   public boolean firstStageSolenoidUp = false;
   public boolean secondStageSolenoidUp = false;
 
   /** Creates a new ExampleSubsystem. */
-  public ElevatorSubsystem() {
-  }
+  public ElevatorSubsystem() {}
 
   /**
-   * An example method querying a boolean state of the subsystem (for example, a
-   * digital sensor).
+   * An example method querying a boolean state of the subsystem (for example, a digital sensor).
    *
    * @return the opposite of the value of said boolean state.
    */

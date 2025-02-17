@@ -9,7 +9,7 @@ import frc.robot.subsystems.InterfaceSubsystem;
 
 /** An example command that uses an example subsystem. */
 public class InterfaceBranchIDCommand extends Command {
-  @SuppressWarnings({ "PMD.UnusedPrivateField", "PMD.SingularField" })
+  @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final InterfaceSubsystem m_subsystem;
 
   private final String id;
@@ -40,8 +40,7 @@ public class InterfaceBranchIDCommand extends Command {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override

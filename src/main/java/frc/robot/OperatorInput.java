@@ -72,8 +72,8 @@ public class OperatorInput {
     lvl2Button = new JoystickButton(coDriverJS, OperatorConstants.klvl2Button_3Joysticks_ID);
     lvl3Button = new JoystickButton(coDriverJS, OperatorConstants.klvl3Button_3Joysticks_ID);
     lvl4Button = new JoystickButton(coDriverJS, OperatorConstants.klvl4Button_3Joysticks_ID);
-    selectBranchAndAddButton = new JoystickButton(coDriverJS,
-        OperatorConstants.kSelectBranchAndAddButton_3Joysticks_ID);
+    selectBranchAndAddButton =
+        new JoystickButton(coDriverJS, OperatorConstants.kSelectBranchAndAddButton_3Joysticks_ID);
     climbButton = new JoystickButton(coDriverJS, OperatorConstants.kclimbButton_3Joysticks_ID);
   }
 
@@ -91,7 +91,8 @@ public class OperatorInput {
     button4 = new JoystickButton(reefSelector, 8);
     button3 = new JoystickButton(reefSelector, 9);
     button2_1 = new JoystickButton(reefSelector, 10);
-    climbButton = new JoystickButton(coDriverJS, OperatorConstants.kclimbButton_2JoysticksAndReefSelector_ID);
+    climbButton =
+        new JoystickButton(coDriverJS, OperatorConstants.kclimbButton_2JoysticksAndReefSelector_ID);
   }
 
   /** Configue all buttons defined for a Niteno Pad */
@@ -100,7 +101,8 @@ public class OperatorInput {
     lvl2Button = new JoystickButton(neoJS, OperatorConstants.klvl2Button_Neo_ID);
     lvl3Button = new JoystickButton(neoJS, OperatorConstants.klvl3Button_Neo_ID);
     lvl4Button = new JoystickButton(neoJS, OperatorConstants.klvl4Button_Neo_ID);
-    selectBranchAndAddButton = new JoystickButton(neoJS, OperatorConstants.kSelectBranchAndAddButton_Neo_ID);
+    selectBranchAndAddButton =
+        new JoystickButton(neoJS, OperatorConstants.kSelectBranchAndAddButton_Neo_ID);
     climbButton = new JoystickButton(coDriverJS, OperatorConstants.kclimbButton_Neo_ID);
   }
 
@@ -110,6 +112,7 @@ public class OperatorInput {
     lvl2Button = new JoystickButton(kybd1JS, OperatorConstants.klvl2Button_Kybd1_ID);
     lvl3Button = new JoystickButton(kybd1JS, OperatorConstants.klvl3Button_Kybd1_ID);
     lvl4Button = new JoystickButton(kybd1JS, OperatorConstants.klvl4Button_Kybd1_ID);
-    selectBranchAndAddButton = new JoystickButton(kybd1JS, OperatorConstants.kSelectBranchAndAddButton_Kybd1_ID);
+    selectBranchAndAddButton =
+        new JoystickButton(kybd1JS, OperatorConstants.kSelectBranchAndAddButton_Kybd1_ID);
   }
 }

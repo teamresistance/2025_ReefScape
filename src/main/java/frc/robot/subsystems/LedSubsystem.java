@@ -39,8 +39,9 @@ public class LedSubsystem extends SubsystemBase {
       int colorsBetween = shiftedIndex / cycleLength;
       int nextColor = Math.min(colorsBetween + 1, colors.length - 1); // Prevent out-of-bounds
 
-      double ratio = (shiftedIndex % cycleLength)
-          / (double) cycleLength; // Use double for smooth interpolation
+      double ratio =
+          (shiftedIndex % cycleLength)
+              / (double) cycleLength; // Use double for smooth interpolation
 
       int red = (int) (colors[colorsBetween][0] * (1 - ratio) + colors[nextColor][0] * ratio);
       int grn = (int) (colors[colorsBetween][1] * (1 - ratio) + colors[nextColor][1] * ratio);
@@ -89,6 +90,5 @@ public class LedSubsystem extends SubsystemBase {
   }
 
   @Override
-  public void simulationPeriodic() {
-  }
+  public void simulationPeriodic() {}
 }

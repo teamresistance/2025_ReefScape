@@ -21,8 +21,7 @@ public class FlipperSubsystem extends SubsystemBase {
   private boolean isInScoringPosition = false;
 
   /** Creates a new FlipperSubsystem. */
-  public FlipperSubsystem() {
-  }
+  public FlipperSubsystem() {}
 
   public void grip() {
     gripper.setPulseDuration(1.0);

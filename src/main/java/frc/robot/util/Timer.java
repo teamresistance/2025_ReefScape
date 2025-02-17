@@ -23,8 +23,7 @@ public class Timer {
   /**
    * Create an on delay timer. Can be triggered with an integer or boolean
    *
-   * <p>
-   * If trigger is different than last call, timer is set to current time + delay
+   * <p>If trigger is different than last call, timer is set to current time + delay
    *
    * @param delay default time in seconds (double).
    */
@@ -38,8 +37,7 @@ public class Timer {
   /**
    * Create an on delay timer. Can be triggered with an integer or boolean
    *
-   * <p>
-   * If trigger is different than last call, timer is set to current time + delay
+   * <p>If trigger is different than last call, timer is set to current time + delay
    *
    * @param delay default time in milli seconds (int).
    */
@@ -53,9 +51,7 @@ public class Timer {
   /**
    * Create an on delay timer. Can be triggered with an integer or boolean
    *
-   * <p>
-   * If trigger is different than last call, timer is set to current time + 1000
-   * mSec.
+   * <p>If trigger is different than last call, timer is set to current time + 1000 mSec.
    */
   public Timer() {
     this.time = 1000;
@@ -63,10 +59,9 @@ public class Timer {
   }
 
   /**
-   * If chg of var, cov, set delay time once, then continue to call for expired
-   * time.
+   * If chg of var, cov, set delay time once, then continue to call for expired time.
    *
-   * @param delay   in seconds
+   * @param delay in seconds
    * @param covTrgr set timer if trigger is different than the last check
    * @return Timer has expired
    */
@@ -81,8 +76,7 @@ public class Timer {
   }
 
   /**
-   * If chg of var, cov, set delay time once, then continue to call for expired
-   * time.
+   * If chg of var, cov, set delay time once, then continue to call for expired time.
    *
    * @param delay in seconds
    * @param _trgr set timer if trigger is different than the last check

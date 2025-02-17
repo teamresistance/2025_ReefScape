@@ -9,7 +9,7 @@ import frc.robot.subsystems.FlipperSubsystem;
 
 /** Command to move the flipper back to the receiving position. */
 public class FlipperRetractCommand extends Command {
-  @SuppressWarnings({ "PMD.UnusedPrivateField", "PMD.SingularField" })
+  @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final FlipperSubsystem m_subsystem;
 
   /**

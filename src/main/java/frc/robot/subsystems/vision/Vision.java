@@ -31,30 +31,32 @@ public class Vision extends SubsystemBase {
   private final double thetaStdDevCoefficientAuto = 0.1;
   private final double stdDevScalarShooting = 0.2;
   private final double thetaStdDevCoefficientShooting = 0.075;
-  private final PolynomialRegression xyStdDevModel = new PolynomialRegression(
-      new double[] {
-          0.752358, 1.016358, 1.296358, 1.574358, 1.913358, 2.184358, 2.493358, 2.758358,
-          3.223358, 4.093358, 4.726358
-      },
-      new double[] { 0.005, 0.0135, 0.016, 0.038, 0.0515, 0.0925, 0.12, 0.14, 0.17, 0.27, 0.38 },
-      2);
-  private final PolynomialRegression thetaStdDevModel = new PolynomialRegression(
-      new double[] {
-          0.752358, 1.016358, 1.296358, 1.574358, 1.913358, 2.184358, 2.493358, 2.758358,
-          3.223358, 4.093358, 4.726358
-      },
-      new double[] { 0.008, 0.027, 0.015, 0.044, 0.04, 0.078, 0.049, 0.027, 0.059, 0.029, 0.068 },
-      1);
+  private final PolynomialRegression xyStdDevModel =
+      new PolynomialRegression(
+          new double[] {
+            0.752358, 1.016358, 1.296358, 1.574358, 1.913358, 2.184358, 2.493358, 2.758358,
+            3.223358, 4.093358, 4.726358
+          },
+          new double[] {0.005, 0.0135, 0.016, 0.038, 0.0515, 0.0925, 0.12, 0.14, 0.17, 0.27, 0.38},
+          2);
+  private final PolynomialRegression thetaStdDevModel =
+      new PolynomialRegression(
+          new double[] {
+            0.752358, 1.016358, 1.296358, 1.574358, 1.913358, 2.184358, 2.493358, 2.758358,
+            3.223358, 4.093358, 4.726358
+          },
+          new double[] {0.008, 0.027, 0.015, 0.044, 0.04, 0.078, 0.049, 0.027, 0.059, 0.029, 0.068},
+          1);
   AprilTagFieldLayout aprilTagFieldLayout;
-  private Consumer<List<TimestampedVisionUpdate>> visionConsumer = (x) -> {
-  };
+  private Consumer<List<TimestampedVisionUpdate>> visionConsumer = (x) -> {};
   private List<TimestampedVisionUpdate> visionUpdates;
   private Supplier<Pose2d> poseSupplier = () -> new Pose2d();
 
   public Vision(PhotonCamera... cameras) throws IOException {
     this.cameras = cameras;
     try {
-      aprilTagFieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2025ReefscapeWelded.m_resourceFile);
+      aprilTagFieldLayout =
+          AprilTagFieldLayout.loadFromResource(AprilTagFields.k2025ReefscapeWelded.m_resourceFile);
     } catch (IOException ignored) {
     }
   }
@@ -80,9 +82,9 @@ public class Vision extends SubsystemBase {
       List<Pose3d> tagPose3ds = new ArrayList<>();
 
       List<PhotonPipelineResult> unprocessedResults = cameras[instanceIndex].getAllUnreadResults();
-      if (unprocessedResults.isEmpty())
-        return;
-      PhotonPipelineResult unprocessedResult = unprocessedResults.get(unprocessedResults.size() - 1);
+      if (unprocessedResults.isEmpty()) return;
+      PhotonPipelineResult unprocessedResult =
+          unprocessedResults.get(unprocessedResults.size() - 1);
 
       // if (unprocessedResults.size() > 2) {
       // unprocessedResults =
@@ -119,12 +121,14 @@ public class Vision extends SubsystemBase {
 
       if (shouldUseMultiTag) {
         // If multitag, use directly
-        cameraPose = GeomUtil.transform3dToPose3d(
-            unprocessedResult.getMultiTagResult().get().estimatedPose.best);
+        cameraPose =
+            GeomUtil.transform3dToPose3d(
+                unprocessedResult.getMultiTagResult().get().estimatedPose.best);
 
-        robotPose = cameraPose
-            .transformBy(GeomUtil.pose3dToTransform3d(cameraPoses[instanceIndex]).inverse())
-            .toPose2d();
+        robotPose =
+            cameraPose
+                .transformBy(GeomUtil.pose3dToTransform3d(cameraPoses[instanceIndex]).inverse())
+                .toPose2d();
 
         // Populate array of tag poses with tags used
         for (int id : unprocessedResult.getMultiTagResult().get().fiducialIDsUsed) {
@@ -144,12 +148,14 @@ public class Vision extends SubsystemBase {
 
         Pose3d cameraPose0 = tagPos.transformBy(target.getBestCameraToTarget().inverse());
         Pose3d cameraPose1 = tagPos.transformBy(target.getAlternateCameraToTarget().inverse());
-        Pose2d robotPose0 = cameraPose0
-            .transformBy(GeomUtil.pose3dToTransform3d(cameraPoses[instanceIndex]).inverse())
-            .toPose2d();
-        Pose2d robotPose1 = cameraPose1
-            .transformBy(GeomUtil.pose3dToTransform3d(cameraPoses[instanceIndex]).inverse())
-            .toPose2d();
+        Pose2d robotPose0 =
+            cameraPose0
+                .transformBy(GeomUtil.pose3dToTransform3d(cameraPoses[instanceIndex]).inverse())
+                .toPose2d();
+        Pose2d robotPose1 =
+            cameraPose1
+                .transformBy(GeomUtil.pose3dToTransform3d(cameraPoses[instanceIndex]).inverse())
+                .toPose2d();
 
         double projectionError = target.getPoseAmbiguity();
 
@@ -157,8 +163,8 @@ public class Vision extends SubsystemBase {
         if (projectionError < 0.15) {
           cameraPose = cameraPose0;
           robotPose = robotPose0;
-        } else if (Math.abs(robotPose0.getRotation().minus(currentPose.getRotation()).getRadians()) < Math
-            .abs(robotPose1.getRotation().minus(currentPose.getRotation()).getRadians())) {
+        } else if (Math.abs(robotPose0.getRotation().minus(currentPose.getRotation()).getRadians())
+            < Math.abs(robotPose1.getRotation().minus(currentPose.getRotation()).getRadians())) {
           cameraPose = cameraPose0;
           robotPose = robotPose0;
         } else {

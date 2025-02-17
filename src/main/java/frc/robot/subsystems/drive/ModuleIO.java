@@ -18,24 +18,19 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface ModuleIO {
   /** Updates the set of loggable inputs. */
-  default void updateInputs(ModuleIOInputs inputs) {
-  }
+  default void updateInputs(ModuleIOInputs inputs) {}
 
   /** Run the drive motor at the specified open loop value. */
-  default void setDriveOpenLoop(double output) {
-  }
+  default void setDriveOpenLoop(double output) {}
 
   /** Run the turn motor at the specified open loop value. */
-  default void setTurnOpenLoop(double output) {
-  }
+  default void setTurnOpenLoop(double output) {}
 
   /** Run the drive motor at the specified velocity. */
-  default void setDriveVelocity(double velocityRadPerSec) {
-  }
+  default void setDriveVelocity(double velocityRadPerSec) {}
 
   /** Run the turn motor to the specified rotation. */
-  default void setTurnPosition(Rotation2d rotation) {
-  }
+  default void setTurnPosition(Rotation2d rotation) {}
 
   @AutoLog
   class ModuleIOInputs {
