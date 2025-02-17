@@ -4,8 +4,9 @@
 
 package frc.robot;
 
-//Hardware imports
+// Hardware imports
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.RobotBase;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -20,6 +21,20 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : Mode.SIM;
+  public static final boolean tuningMode = false;
+
+  public enum Mode {
+    /** Running on a real robot. */
+    REAL,
+
+    /** Running a physics simulator. */
+    SIM,
+
+    /** Replaying from a log file. */
+    REPLAY
+  }
+
   public static class OperatorConstants {
     public static enum JoystickType {
       k3Joysticks,
@@ -46,7 +61,6 @@ public final class Constants {
     public static final int klvl3Button_Kybd1_ID = 0;
     public static final int klvl4Button_Kybd1_ID = 0;
     public static final int kSelectBranchAndAddButton_Kybd1_ID = 0;
-
   }
 
   public static class RobotConstants {
@@ -135,5 +149,4 @@ public final class Constants {
     public static final double[] reefKLmidpoint = { 11.97, 16.50 };
     public static final double reefKLangle = 2.0 / 3.0 * Math.PI;
   }
-
 }

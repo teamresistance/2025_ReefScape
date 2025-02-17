@@ -4,8 +4,8 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.FlipperSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.FlipperSubsystem;
 
 /** Command to move the flipper into scoring position and release the coral. */
 public class FlipperExtendAndScoreCommand extends Command {

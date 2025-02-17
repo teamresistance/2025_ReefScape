@@ -4,14 +4,10 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj.smartdashboard.*;
-
-import frc.robot.Constants.HardwareConstants;
-
-import com.fasterxml.jackson.core.base.GeneratorBase;
-
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.smartdashboard.*;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.HardwareConstants;
 
 public class ElevatorSubsystem extends SubsystemBase {
   public Solenoid firstStageSolenoid = new Solenoid(
@@ -36,16 +32,14 @@ public class ElevatorSubsystem extends SubsystemBase {
    * @return the opposite of the value of said boolean state.
    */
   public void raiseFirstStage() {
-    firstStageSolenoid.setPulseDuration(
-        HardwareConstants.kFirstStagePulseDurationSeconds);
+    firstStageSolenoid.setPulseDuration(HardwareConstants.kFirstStagePulseDurationSeconds);
     firstStageSolenoid.set(true);
 
     firstStageSolenoidUp = true;
   }
 
   public void raiseSecondStage() {
-    secondStageSolenoid.setPulseDuration(
-        HardwareConstants.kSecondStagePulseDurationSeconds);
+    secondStageSolenoid.setPulseDuration(HardwareConstants.kSecondStagePulseDurationSeconds);
     firstStageSolenoid.set(true);
 
     firstStageSolenoidUp = true;

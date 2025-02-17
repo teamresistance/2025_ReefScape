@@ -4,11 +4,8 @@
 
 package frc.robot.subsystems;
 
-import frc.robot.RobotContainer;
-
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.smartdashboard.*;
-import java.util.ArrayList;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.Optional;
 
 public class InterfaceSubsystem extends SubsystemBase {
@@ -49,16 +46,16 @@ public class InterfaceSubsystem extends SubsystemBase {
   }
 
   public void execute() {
-    reefBranchCombinations = new Object[] {
-        currentBranchID,
-        currentBranchLR,
-        currentBranchLevel };
+    reefBranchCombinations = new Object[] { currentBranchID, currentBranchLR, currentBranchLevel };
 
-    System.out.println("Branch Combination Stored:\n"
-        + currentBranchID + "\n"
-        + currentBranchLR + "\n"
-        + currentBranchLevel + "\n");
-
+    System.out.println(
+        "Branch Combination Stored:\n"
+            + currentBranchID
+            + "\n"
+            + currentBranchLR
+            + "\n"
+            + currentBranchLevel
+            + "\n");
   }
 
   public boolean branchCombinationExists() {

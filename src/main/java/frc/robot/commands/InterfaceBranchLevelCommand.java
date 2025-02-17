@@ -4,13 +4,14 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.InterfaceSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.InterfaceSubsystem;
 
 /** An example command that uses an example subsystem. */
 public class InterfaceBranchLevelCommand extends Command {
   @SuppressWarnings({ "PMD.UnusedPrivateField", "PMD.SingularField" })
   private final InterfaceSubsystem m_subsystem;
+
   private final int lvl;
 
   /**

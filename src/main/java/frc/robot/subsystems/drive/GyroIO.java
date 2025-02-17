@@ -17,7 +17,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface GyroIO {
-  default void updateInputs(GyroIOInputs inputs) {}
+  default void updateInputs(GyroIOInputs inputs) {
+  }
 
   @AutoLog
   class GyroIOInputs {

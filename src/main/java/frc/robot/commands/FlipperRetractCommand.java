@@ -4,8 +4,8 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.FlipperSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.FlipperSubsystem;
 
 /** Command to move the flipper back to the receiving position. */
 public class FlipperRetractCommand extends Command {
