@@ -189,3 +189,4 @@ src/main/java/frc/robot/BuildConstants.java
 2025_ReefScape.code-workspace
 /.vscode
 .vscode/launch.json
+.vscode/settings.json
