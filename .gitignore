@@ -187,3 +187,5 @@ compile_commands.json
 src/main/java/frc/robot/BuildConstants.java
 /gradle.properties
 2025_ReefScape.code-workspace
+/.vscode
+.vscode/launch.json

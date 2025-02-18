@@ -18,6 +18,16 @@
       "name": "WPILib roboRIO Debug",
       "request": "launch",
       "desktop": false
+    },
+    {
+      "type": "java",
+      "name": "Gradle Deploy",
+      "request": "launch",
+      "projectDir": "${workspaceFolder}",
+      "tasks": "deploy",
+      "args": [],
+      "vmArgs": "",
+      "environment": []
     }
   ]
 }
