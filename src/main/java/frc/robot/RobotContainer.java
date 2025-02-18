@@ -18,6 +18,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -56,7 +57,7 @@ public class RobotContainer {
   public Vision aprilTagVision;
   // Create the target Transform2d (Translation and Rotation)
   Translation2d targetTranslation = new Translation2d(14.26, 4.03); // X = 14, Y = 4
-  Rotation2d targetRotation = new Rotation2d(180.0 - 45); // No rotation
+  Rotation2d targetRotation = new Rotation2d(Units.degreesToRadians(180.0 - 45)); // No rotation
   Transform2d targetTransform = new Transform2d(targetTranslation, targetRotation);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */

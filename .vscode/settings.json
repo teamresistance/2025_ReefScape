@@ -68,5 +68,14 @@
   },
   "[java]": {
     "editor.defaultFormatter": "redhat.java"
-  }
+  },
+  "java.import.gradle.home": "",
+  "java.import.gradle.java.home": "",
+  "java.configuration.runtimes": [
+    {
+      "name": "JavaSE-17",
+      "path": "C:\\Users\\Public\\wpilib\\2025\\jdk",
+      "default": true
+    }
+  ]
 }

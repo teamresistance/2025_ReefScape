@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.util.GeomUtil;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
@@ -323,8 +324,8 @@ public class DriveCommands {
 
   public static Command goToTransformWithPathFinder(Transform2d targetTransform) {
     return AutoBuilder.pathfindToPose(
-        new Pose2d(targetTransform.getTranslation(), targetTransform.getRotation()),
-        new PathConstraints(3.0, 4.0, Units.degreesToRadians(540), Units.degreesToRadians(720)),
+        GeomUtil.transformToPose(targetTransform),
+        new PathConstraints(1.5, 2.0, Units.degreesToRadians(540), Units.degreesToRadians(720)),
         0.0 // Goal end velocity in meters/sec
         );
   }
