@@ -2,11 +2,8 @@ package frc.robot.subsystems.drive;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import static edu.wpi.first.units.Units.Rotation;
-
 import java.util.Optional;
-
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -32,10 +29,20 @@ public class DriveSubsytem extends SubsystemBase {
     PhotonCamera BackCam = new PhotonCamera("back");
     Optional<EstimatedRobotPose> pose = Optional.empty();
     AprilTagFieldLayout aprilTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
+    Transform3d robotToFRCam = new Transform3d(new Translation3d(7, 0.0, 0.5), new Rotation3d(0,0,0));
+    Transform3d robotToFLCam = new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0,0,0));
+    Transform3d robotToBRCam = new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0,0,0));
+    Transform3d robotToBLCam = new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0,0,0));
+    Transform3d robotToFrontCam = new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0,0,0));
+    Transform3d robotToBackCam = new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0,0,0));
+//Srihan basicall you see all these things up here
+//these are all the cameras that we have
+//and the transforms that we have to get from the robot to the camera
+//The data in them is just placeholder data and i want u to replace it with the actual data
+//it is in CamLocations.txt
     public DriveSubsytem(){}
 
-    public Pose2d CameraToPose(PhotonCamera camera){
-        Transform3d robotToCam = new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0,0,0));
+    public Pose2d CameraToPose(PhotonCamera camera, Transform3d robotToCam){
         PhotonPoseEstimator photonPoseEstimator = new PhotonPoseEstimator(aprilTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, robotToCam);
         PhotonPipelineResult PPLR = camera.getLatestResult();
         Optional<EstimatedRobotPose> estimatedPose = photonPoseEstimator.update(PPLR);
@@ -59,5 +66,11 @@ public class DriveSubsytem extends SubsystemBase {
     }
 
     @Override
-    public void periodic() {}
+    public void periodic() {
+        Pose2d avg2dpose = AveragePose(CameraToPose(FRcam, robotToFRCam), CameraToPose(FLcam, robotToFLCam), CameraToPose(BRcam, robotToBRCam),
+         CameraToPose(BLcam, robotToBLCam), CameraToPose(FrontCam, robotToFrontCam), CameraToPose(BackCam, robotToBackCam));
+        SmartDashboard.putNumber("X", avg2dpose.getX());
+        SmartDashboard.putNumber("Y", avg2dpose.getY());
+        SmartDashboard.putNumber("Rot", avg2dpose.getRotation().getDegrees());
+        }
 }
