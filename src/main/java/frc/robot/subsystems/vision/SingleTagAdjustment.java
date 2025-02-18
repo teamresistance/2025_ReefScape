@@ -20,7 +20,7 @@ public class SingleTagAdjustment {
     1.0, // tagId = 13
     1.0, // tagId = 14
     1.0, // tagId = 15
-    1.0 // tagId = 16
+    1.0  // tagId = 16
   };
 
   /**
