@@ -11,7 +11,7 @@ public class ChooseReefCmd extends Command {
 
   private PhysicalReefInterfaceSubsystem subsystem;
 
-  private int level = -1;
+  private int level = -1; 
   private int pos = -1;
   private int rl = -1;
   private boolean exec;
