@@ -20,10 +20,12 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commandgroups.ElevatorCommandGroup;
@@ -35,13 +37,11 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.FlipperSubsystem;
 import frc.robot.subsystems.PhysicalReefInterfaceSubsystem;
-import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.GyroIO;
-import frc.robot.subsystems.drive.GyroIOPigeon2;
-import frc.robot.subsystems.drive.ModuleIO;
-import frc.robot.subsystems.drive.ModuleIOSim;
-import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.drive.*;
+import frc.robot.subsystems.vision.Vision;
+import java.io.IOException;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import org.photonvision.PhotonCamera;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -50,72 +50,40 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+  public final PhotonCamera frontLeftCamera = new PhotonCamera("front-left");
+  public final PhotonCamera frontRightCamera = new PhotonCamera("front-right");
+  public final PhotonCamera backLeftCamera = new PhotonCamera("back_left");
+  public final PhotonCamera backRightCamera = new PhotonCamera("back_right");
+  public final PhotonCamera frontCenterCamera = new PhotonCamera("front_center");
 
   // Subsystems
   private final Drive drive;
   private final FlipperSubsystem m_flipperSubsystem = new FlipperSubsystem();
   private final ElevatorSubsystem m_elevatorSubsystem = new ElevatorSubsystem();
-
-  final double DEADZONE = 0.1;
-
-  // Create the target Transform2d (Translation and Rotation)
-  Translation2d targetTranslation = new Translation2d(15, 4); // X = 14, Y = 4
-  Rotation2d targetRotation = new Rotation2d(0.0); // No rotation
-  Transform2d targetTransform = new Transform2d(targetTranslation, targetRotation);
-
   // Controller
-  private final CommandXboxController controller = new CommandXboxController(0);
-
-  private final Joystick joystick1 = new Joystick(0);
+  private final CommandXboxController driver = new CommandXboxController(0);
   private final Joystick joystick2 = new Joystick(1);
   private final Joystick coJoystick = new Joystick(2);
-
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
+  public Vision aprilTagVision;
+  // Create the target Transform2d (Translation and Rotation)
+  Translation2d targetTranslation = new Translation2d(14.26, 4.03); // X = 14, Y = 4
+  Rotation2d targetRotation = new Rotation2d(180.0 - 45); // No rotation
+  Transform2d targetTransform = new Transform2d(targetTranslation, targetRotation);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    //
-    //    Drive Commands
-    //
-    // Default command, normal field-relative drive
-    switch (Constants.currentMode) {
-      case REAL:
-        // Real robot, instantiate hardware IO implementations
-        drive =
-            new Drive(
-                new GyroIOPigeon2(),
-                new ModuleIOTalonFX(TunerConstants.FrontLeft),
-                new ModuleIOTalonFX(TunerConstants.FrontRight),
-                new ModuleIOTalonFX(TunerConstants.BackLeft),
-                new ModuleIOTalonFX(TunerConstants.BackRight));
-        break;
+    drive = configureDrive();
+    autoChooser = configureAutos();
+    aprilTagVision = configureAprilTagVision();
+    configureButtonBindings();
+  }
 
-      case SIM:
-        // Sim robot, instantiate physics sim IO implementations
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIOSim(TunerConstants.FrontLeft),
-                new ModuleIOSim(TunerConstants.FrontRight),
-                new ModuleIOSim(TunerConstants.BackLeft),
-                new ModuleIOSim(TunerConstants.BackRight));
-        break;
-
-      default:
-        // Replayed robot, disable IO implementations
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {});
-        break;
-    }
-
+  private LoggedDashboardChooser<Command> configureAutos() {
     // Set up auto routines
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    LoggedDashboardChooser<Command> autoChooser =
+        new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId routines
     autoChooser.addOption(
@@ -133,40 +101,84 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-    // Configure the button bindings
-    configureButtonBindings();
+    return autoChooser;
+  }
+
+  private Vision configureAprilTagVision() {
+    try {
+      aprilTagVision =
+          new Vision(
+              frontLeftCamera,
+              frontRightCamera,
+              backLeftCamera,
+              backRightCamera,
+              frontCenterCamera);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    aprilTagVision.setDataInterfaces(drive::getPose, drive::addAutoVisionMeasurement);
+    return aprilTagVision;
+  }
+
+  private Drive configureDrive() {
+    // Real robot, instantiate hardware IO implementations
+    // Sim robot, instantiate physics sim IO implementations
+    // Replayed robot, disable IO implementations
+    return switch (Constants.currentMode) {
+      case REAL ->
+          // Real robot, instantiate hardware IO implementations
+          new Drive(
+              new GyroIOPigeon2(),
+              new ModuleIOTalonFX(TunerConstants.FrontLeft),
+              new ModuleIOTalonFX(TunerConstants.FrontRight),
+              new ModuleIOTalonFX(TunerConstants.BackLeft),
+              new ModuleIOTalonFX(TunerConstants.BackRight));
+      case SIM ->
+          // Sim robot, instantiate physics sim IO implementations
+          new Drive(
+              new GyroIO() {},
+              new ModuleIOSim(TunerConstants.FrontLeft),
+              new ModuleIOSim(TunerConstants.FrontRight),
+              new ModuleIOSim(TunerConstants.BackLeft),
+              new ModuleIOSim(TunerConstants.BackRight));
+      default ->
+          // Replayed robot, disable IO implementations
+          new Drive(
+              new GyroIO() {},
+              new ModuleIO() {},
+              new ModuleIO() {},
+              new ModuleIO() {},
+              new ModuleIO() {});
+    };
   }
 
   /**
    * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
-   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+   * instantiating a {@link GenericHID} or one of its subclasses ({@link Joystick} or {@link
+   * XboxController}), and then passing it to a {@link JoystickButton}.
    */
   private void configureButtonBindings() {
     // Default command, normal field-relative drive
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
-            drive,
-            () -> -applyDeadband(controller.getLeftY()),
-            () -> -applyDeadband(controller.getLeftX()),
-            () -> -applyDeadband(controller.getRightX())));
+            drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> -driver.getRightX()));
 
     // Lock to 0° when A button is held
-    controller
+    driver
         .a()
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
-                drive,
-                () -> -applyDeadband(controller.getLeftY()),
-                () -> -applyDeadband(controller.getLeftX()),
-                () -> new Rotation2d()));
+                drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> new Rotation2d()));
 
     // Switch to X pattern when X button is pressed
-    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
-    // Reset gyro to 0° when B button is pressed
-    controller
+    driver.leftBumper().whileTrue(DriveCommands.goToTransform(drive, targetTransform));
+
+    driver.rightBumper().whileTrue(DriveCommands.goToTransformWithPathFinder(targetTransform));
+
+    // Reset gyro to 0 when B button is pressed
+    driver
         .b()
         .onTrue(
             Commands.runOnce(
@@ -175,18 +187,6 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                     drive)
                 .ignoringDisable(true));
-
-    controller.leftBumper().whileTrue(DriveCommands.goToTransform(drive, targetTransform));
-
-    // **Left Trigger - Go to AprilTag Position A**
-    controller
-        .leftTrigger()
-        .whileTrue(DriveCommands.goTo2DPos(drive, 0.0, 1.0, 0.0)); // Example values
-
-    // **Right Trigger - Go to AprilTag Position B**
-    controller
-        .rightTrigger()
-        .whileTrue(DriveCommands.goTo2DPos(drive, 1.0, 2.0, 0.0)); // Example values
     //
     //    Codriver Bindings
     //
@@ -223,12 +223,24 @@ public class RobotContainer {
 
     //
     //    Standard Joystick Bindings
-    //
-    new JoystickButton(joystick1, 1).onTrue(new FlipperScoreCmd(m_flipperSubsystem));
-    new JoystickButton(joystick1, 5).onTrue(new FlipperGripperCmd(m_flipperSubsystem));
-    new JoystickButton(joystick1, 3).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 0));
-    new JoystickButton(joystick1, 4).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 1));
-    new JoystickButton(joystick1, 6).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 2));
+    // not sure if these should be joystick2
+    new JoystickButton(joystick2, 1).onTrue(new FlipperScoreCmd(m_flipperSubsystem));
+    new JoystickButton(joystick2, 5).onTrue(new FlipperGripperCmd(m_flipperSubsystem));
+    new JoystickButton(joystick2, 3).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 0));
+    new JoystickButton(joystick2, 4).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 1));
+    new JoystickButton(joystick2, 6).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 2));
+
+    controller.leftBumper().whileTrue(DriveCommands.goToTransform(drive, targetTransform));
+
+    // **Left Trigger - Go to AprilTag Position A**
+    controller
+        .leftTrigger()
+        .whileTrue(DriveCommands.goTo2DPos(drive, 0.0, 1.0, 0.0)); // Example values
+
+    // **Right Trigger - Go to AprilTag Position B**
+    controller
+        .rightTrigger()
+        .whileTrue(DriveCommands.goTo2DPos(drive, 1.0, 2.0, 0.0)); // Example values
   }
 
   /**
@@ -238,10 +250,5 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return autoChooser.get();
-  }
-
-  // Utility function to apply deadband
-  private double applyDeadband(double value) {
-    return (Math.abs(value) > DEADZONE) ? value : 0.0;
   }
 }

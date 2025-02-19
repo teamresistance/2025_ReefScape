@@ -31,10 +31,10 @@ public final class Constants {
   public static final int GripperSolenoidChannel = 3;
   public static final int FlipperSolenoidChannel = 4;
 
-  public static final Mode simMode = Mode.SIM;
-  public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
+  public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : Mode.SIM;
+  public static final boolean tuningMode = false;
 
-  public static enum Mode {
+  public enum Mode {
     /** Running on a real robot. */
     REAL,
 

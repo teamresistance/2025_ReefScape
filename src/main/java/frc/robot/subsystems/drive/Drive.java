@@ -13,7 +13,8 @@
 
 package frc.robot.subsystems.drive;
 
-import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.CANBus;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -23,20 +24,14 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.PathPlannerLogging;
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -45,10 +40,6 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -60,20 +51,14 @@ import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.LocalADStarAK;
-import java.util.Objects;
+import frc.robot.util.TimestampedVisionUpdate;
+import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
-import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.targeting.PhotonPipelineResult;
 
 public class Drive extends SubsystemBase {
-  // TunerConstants doesn't include these constants, so they are declared locally
-  static final double ODOMETRY_FREQUENCY =
-      new CANBus(TunerConstants.DrivetrainConstants.CANBusName).isNetworkFD() ? 250.0 : 100.0;
   public static final double DRIVE_BASE_RADIUS =
       Math.max(
           Math.max(
@@ -82,10 +67,13 @@ public class Drive extends SubsystemBase {
           Math.max(
               Math.hypot(TunerConstants.BackLeft.LocationX, TunerConstants.BackLeft.LocationY),
               Math.hypot(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY)));
-
+  // TunerConstants doesn't include these constants, so they are declared locally
+  static final double ODOMETRY_FREQUENCY =
+      new CANBus(TunerConstants.DrivetrainConstants.CANBusName).isNetworkFD() ? 250.0 : 100.0;
+  static final Lock odometryLock = new ReentrantLock();
   // PathPlanner config constants
-  private static final double ROBOT_MASS_KG = 74.088;
-  private static final double ROBOT_MOI = 6.883;
+  private static final double ROBOT_MASS_KG = 22.088;
+  private static final double ROBOT_MOI = 4.883;
   private static final double WHEEL_COF = 1.2;
   private static final RobotConfig PP_CONFIG =
       new RobotConfig(
@@ -100,8 +88,6 @@ public class Drive extends SubsystemBase {
               TunerConstants.FrontLeft.SlipCurrent,
               1),
           getModuleTranslations());
-
-  static final Lock odometryLock = new ReentrantLock();
   private final GyroIO gyroIO;
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
@@ -109,44 +95,18 @@ public class Drive extends SubsystemBase {
   private final Alert gyroDisconnectedAlert =
       new Alert("Disconnected gyro, using kinematics as fallback.", AlertType.kError);
 
-  private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
-  private Rotation2d rawGyroRotation = new Rotation2d();
-  private SwerveModulePosition[] lastModulePositions = // For delta tracking
+  private final SwerveDriveKinematics kinematics =
+      new SwerveDriveKinematics(getModuleTranslations());
+  private final SwerveModulePosition[] lastModulePositions = // For delta tracking
       new SwerveModulePosition[] {
         new SwerveModulePosition(),
         new SwerveModulePosition(),
         new SwerveModulePosition(),
         new SwerveModulePosition()
       };
-  private SwerveDrivePoseEstimator poseEstimator =
+  private Rotation2d rawGyroRotation = new Rotation2d();
+  private final SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
-
-  // Vision-related fields
-  private static PhotonCamera frontRightCam = new PhotonCamera("front-right");
-  private static PhotonCamera frontLeftCam = new PhotonCamera("front-left");
-  private static PhotonPoseEstimator photonPoseEstimatorFrontRight;
-  private static PhotonPoseEstimator photonPoseEstimatorFrontLeft;
-  private static Transform3d robotToCamFrontRight =
-      new Transform3d(
-          new Translation3d(0.270, -0.334, 0.267), // Right camera translation (X, Y, Z)
-          new Rotation3d(
-              0.0,
-              Units.degreesToRadians(-12.63),
-              Units.degreesToRadians(-45))); // Right camera rotation (Roll, Pitch, Yaw)
-
-  private static Transform3d robotToCamFrontLeft =
-      new Transform3d(
-          new Translation3d(0.270, 0.334, 0.267), // Left camera translation (X, Y, Z)
-          new Rotation3d(
-              0.0,
-              Units.degreesToRadians(-12.63),
-              Units.degreesToRadians(45))); // Left camera rotation (Roll, Pitch, Yaw)
-
-  private static AprilTagFieldLayout aprilTagFieldLayout;
-
-  private static double tagX = 0.0;
-  private static double tagY = 0.0;
-  private static double tagSize = 0.0;
 
   public Drive(
       GyroIO gyroIO,
@@ -198,36 +158,21 @@ public class Drive extends SubsystemBase {
                 (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
             new SysIdRoutine.Mechanism(
                 (voltage) -> runCharacterization(voltage.in(Volts)), null, this));
-    // Vision initialization
-
-    aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
-
-    photonPoseEstimatorFrontRight =
-        new PhotonPoseEstimator(
-            aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, robotToCamFrontRight);
-    photonPoseEstimatorFrontLeft =
-        new PhotonPoseEstimator(
-            aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, robotToCamFrontLeft);
   }
 
-  Pose2d visionPose1;
-  Pose2d visionPose2;
+  /** Returns an array of module translations. */
+  public static Translation2d[] getModuleTranslations() {
+    return new Translation2d[] {
+      new Translation2d(TunerConstants.FrontLeft.LocationX, TunerConstants.FrontLeft.LocationY),
+      new Translation2d(TunerConstants.FrontRight.LocationX, TunerConstants.FrontRight.LocationY),
+      new Translation2d(TunerConstants.BackLeft.LocationX, TunerConstants.BackLeft.LocationY),
+      new Translation2d(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY)
+    };
+  }
 
   @Override
   public void periodic() {
-    updateAprilTagData();
-
     odometryLock.lock(); // Prevents odometry updates while reading data
-
-    visionPose1 = updatePoseWithVision(frontRightCam, photonPoseEstimatorFrontRight);
-    visionPose2 = updatePoseWithVision(frontLeftCam, photonPoseEstimatorFrontLeft);
-
-    if (!Objects.equals(visionPose1, new Pose2d(0, 0, Rotation2d.fromRadians(0))))
-      Logger.recordOutput("VisionsPose1", visionPose1);
-
-    if (!Objects.equals(visionPose2, new Pose2d(0, 0, Rotation2d.fromRadians(0))))
-      Logger.recordOutput("VisionsPose2", visionPose2);
-
     gyroIO.updateInputs(gyroInputs);
     Logger.processInputs("Drive/Gyro", gyroInputs);
     for (var module : modules) {
@@ -282,44 +227,6 @@ public class Drive extends SubsystemBase {
 
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
-  }
-
-  Pose3d estimatedPose3d;
-
-  private Pose2d updatePoseWithVision(PhotonCamera camera, PhotonPoseEstimator estimator) {
-    Pose2d estimatedPose = new Pose2d();
-    PhotonPipelineResult result = camera.getLatestResult();
-    if (result.hasTargets()) {
-      // System.out.println("Result has target and estimator.gotPose");
-      var update = estimator.update(result);
-      if (!update.isEmpty()) {
-        estimatedPose3d = update.get().estimatedPose;
-        estimatedPose = estimatedPose3d.toPose2d();
-        poseEstimator.addVisionMeasurement(estimatedPose, result.getTimestampSeconds());
-        Logger.recordOutput("3DPose", estimatedPose3d);
-      }
-    }
-    return estimatedPose;
-  }
-
-  public void resetVisionEstimates() {
-    photonPoseEstimatorFrontRight.setReferencePose(poseEstimator.getEstimatedPosition());
-    photonPoseEstimatorFrontLeft.setReferencePose(poseEstimator.getEstimatedPosition());
-  }
-
-  public void updateAprilTagData() {
-    NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
-    NetworkTableEntry tx = limelightTable.getEntry("tx"); // X offset of the detected tag
-    NetworkTableEntry ty = limelightTable.getEntry("ty"); // Y offset of the detected tag
-    NetworkTableEntry ta = limelightTable.getEntry("ta"); // Area (size) of the detected tag
-
-    tagX = tx.getDouble(0.0);
-    tagY = ty.getDouble(0.0);
-    tagSize = ta.getDouble(0.0);
-  }
-
-  public double[] getAprilTagData() {
-    return new double[] {tagX, tagY, tagSize};
   }
 
   /**
@@ -432,25 +339,14 @@ public class Drive extends SubsystemBase {
     return poseEstimator.getEstimatedPosition();
   }
 
+  /** Resets the current odometry pose. */
+  public void setPose(Pose2d pose) {
+    poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
+  }
+
   /** Returns the current odometry rotation. */
   public Rotation2d getRotation() {
     return getPose().getRotation();
-  }
-
-  /** Resets the current odometry pose. */
-  public void setPose(Pose2d pose) {
-    poseEstimator.resetPosition(
-        rawGyroRotation.plus(new Rotation2d(Math.PI)), getModulePositions(), pose);
-  }
-
-  /** Adds a new timestamped vision measurement. */
-  public void addVisionMeasurement(
-      Pose2d visionRobotPoseMeters,
-      double timestampSeconds,
-      Matrix<N3, N1> visionMeasurementStdDevs) {
-
-    poseEstimator.addVisionMeasurement(
-        visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
   }
 
   /** Returns the maximum linear speed in meters per sec. */
@@ -463,13 +359,18 @@ public class Drive extends SubsystemBase {
     return getMaxLinearSpeedMetersPerSec() / DRIVE_BASE_RADIUS;
   }
 
-  /** Returns an array of module translations. */
-  public static Translation2d[] getModuleTranslations() {
-    return new Translation2d[] {
-      new Translation2d(TunerConstants.FrontLeft.LocationX, TunerConstants.FrontLeft.LocationY),
-      new Translation2d(TunerConstants.FrontRight.LocationX, TunerConstants.FrontRight.LocationY),
-      new Translation2d(TunerConstants.BackLeft.LocationX, TunerConstants.BackLeft.LocationY),
-      new Translation2d(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY)
-    };
+  /** Adds a new timestamped vision measurement. */
+  public void addVisionMeasurement(
+      Pose2d visionRobotPoseMeters,
+      double timestampSeconds,
+      Matrix<N3, N1> visionMeasurementStdDevs) {
+    poseEstimator.addVisionMeasurement(
+        visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+  }
+
+  public void addAutoVisionMeasurement(List<TimestampedVisionUpdate> timestampedVisionUpdates) {
+    for (TimestampedVisionUpdate autoUpdate : timestampedVisionUpdates) {
+      this.addVisionMeasurement(autoUpdate.pose(), autoUpdate.timestamp(), autoUpdate.stdDevs());
+    }
   }
 }
