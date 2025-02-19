@@ -43,6 +43,7 @@ public class FlipperSubsystem extends SubsystemBase {
     } else if (believesHasCoral) {
       gripper.set(false);
       coralCenterMechanism.set(false);
+      believesHasCoral = false;
     }
   }
 
