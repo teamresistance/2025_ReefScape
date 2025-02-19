@@ -59,7 +59,7 @@ public class RobotContainer {
   private final FlipperSubsystem m_flipperSubsystem = new FlipperSubsystem();
   private final ElevatorSubsystem m_elevatorSubsystem = new ElevatorSubsystem();
   // Controller
-  private final CommandXboxController controller = new CommandXboxController(0);
+  private final CommandXboxController driver = new CommandXboxController(0);
   private final Joystick joystick2 = new Joystick(1);
   private final Joystick coJoystick = new Joystick(2);
   // Dashboard inputs
@@ -159,24 +159,24 @@ public class RobotContainer {
     // Default command, normal field-relative drive
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
-            drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX()));
+            drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> -driver.getRightX()));
 
     // Lock to 0° when A button is held
-    controller
+    driver
         .a()
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
-                drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> new Rotation2d()));
+                drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> new Rotation2d()));
 
     // Switch to X pattern when X button is pressed
-    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
-    controller.leftBumper().whileTrue(DriveCommands.goToTransform(drive, targetTransform));
+    driver.leftBumper().whileTrue(DriveCommands.goToTransform(drive, targetTransform));
 
-    controller.rightBumper().whileTrue(DriveCommands.goToTransformWithPathFinder(targetTransform));
+    driver.rightBumper().whileTrue(DriveCommands.goToTransformWithPathFinder(targetTransform));
 
     // Reset gyro to 0 when B button is pressed
-    controller
+    driver
         .b()
         .onTrue(
             Commands.runOnce(
@@ -228,17 +228,13 @@ public class RobotContainer {
     new JoystickButton(joystick2, 4).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 1));
     new JoystickButton(joystick2, 6).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 2));
 
-    controller.leftBumper().whileTrue(DriveCommands.goToTransform(drive, targetTransform));
+    driver.leftBumper().whileTrue(DriveCommands.goToTransform(drive, targetTransform));
 
     // **Left Trigger - Go to AprilTag Position A**
-    controller
-        .leftTrigger()
-        .whileTrue(DriveCommands.goTo2DPos(drive, 0.0, 1.0, 0.0)); // Example values
+    driver.leftBumper().whileTrue(DriveCommands.goToTransform(drive, targetTransform));
 
     // **Right Trigger - Go to AprilTag Position B**
-    controller
-        .rightTrigger()
-        .whileTrue(DriveCommands.goTo2DPos(drive, 1.0, 2.0, 0.0)); // Example values
+    driver.rightBumper().whileTrue(DriveCommands.goToTransformWithPathFinder(targetTransform));
   }
 
   /**
