@@ -9,7 +9,7 @@ import frc.robot.subsystems.FlipperSubsystem;
 
 public class FlipperScoreCmd extends Command {
 
-  private FlipperSubsystem subsystem; 
+  private FlipperSubsystem subsystem;
 
   public FlipperScoreCmd(FlipperSubsystem subsystem) {
     this.subsystem = subsystem;
