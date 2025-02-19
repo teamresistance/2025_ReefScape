@@ -20,12 +20,10 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commandgroups.ElevatorCommandGroup;
@@ -61,7 +59,7 @@ public class RobotContainer {
   private final FlipperSubsystem m_flipperSubsystem = new FlipperSubsystem();
   private final ElevatorSubsystem m_elevatorSubsystem = new ElevatorSubsystem();
   // Controller
-  private final CommandXboxController driver = new CommandXboxController(0);
+  private final CommandXboxController controller = new CommandXboxController(0);
   private final Joystick joystick2 = new Joystick(1);
   private final Joystick coJoystick = new Joystick(2);
   // Dashboard inputs
@@ -161,24 +159,24 @@ public class RobotContainer {
     // Default command, normal field-relative drive
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
-            drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> -driver.getRightX()));
+            drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX()));
 
     // Lock to 0° when A button is held
-    driver
+    controller
         .a()
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
-                drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> new Rotation2d()));
+                drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> new Rotation2d()));
 
     // Switch to X pattern when X button is pressed
-    driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
-    driver.leftBumper().whileTrue(DriveCommands.goToTransform(drive, targetTransform));
+    controller.leftBumper().whileTrue(DriveCommands.goToTransform(drive, targetTransform));
 
-    driver.rightBumper().whileTrue(DriveCommands.goToTransformWithPathFinder(targetTransform));
+    controller.rightBumper().whileTrue(DriveCommands.goToTransformWithPathFinder(targetTransform));
 
     // Reset gyro to 0 when B button is pressed
-    driver
+    controller
         .b()
         .onTrue(
             Commands.runOnce(
