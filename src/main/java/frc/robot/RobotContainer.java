@@ -26,8 +26,15 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commandgroups.ElevatorCommandGroup;
+import frc.robot.commands.ChooseReefCmd;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.FlipperGripperCmd;
+import frc.robot.commands.FlipperScoreCmd;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.FlipperSubsystem;
+import frc.robot.subsystems.PhysicalReefInterfaceSubsystem;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.vision.Vision;
 import java.io.IOException;
@@ -46,11 +53,15 @@ public class RobotContainer {
   public final PhotonCamera backLeftCamera = new PhotonCamera("back_left");
   public final PhotonCamera backRightCamera = new PhotonCamera("back_right");
   public final PhotonCamera frontCenterCamera = new PhotonCamera("front_center");
+
   // Subsystems
   private final Drive drive;
+  private final FlipperSubsystem m_flipperSubsystem = new FlipperSubsystem();
+  private final ElevatorSubsystem m_elevatorSubsystem = new ElevatorSubsystem();
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
-  private final CommandXboxController codriver = new CommandXboxController(1);
+  private final Joystick joystick2 = new Joystick(1);
+  private final Joystick coJoystick = new Joystick(2);
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
   public Vision aprilTagVision;
@@ -174,6 +185,56 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                     drive)
                 .ignoringDisable(true));
+    //
+    //    Codriver Bindings
+    //
+    final PhysicalReefInterfaceSubsystem m_PhysicalReefSubsystem =
+        new PhysicalReefInterfaceSubsystem();
+    // execute
+    new JoystickButton(coJoystick, 1)
+        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, -1, -1, true));
+    // level
+    new JoystickButton(coJoystick, 2)
+        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, 0, -1, -1, false));
+    new JoystickButton(coJoystick, 3)
+        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, 1, -1, -1, false));
+    new JoystickButton(coJoystick, 4)
+        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, 2, -1, -1, false));
+    new JoystickButton(coJoystick, 6)
+        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, 3, -1, -1, false));
+    // pos
+    new JoystickButton(coJoystick, 7)
+        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 0, -1, false));
+    new JoystickButton(coJoystick, 8)
+        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 1, -1, false));
+    new JoystickButton(coJoystick, 9)
+        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 2, -1, false));
+    new JoystickButton(coJoystick, 10)
+        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 3, -1, false));
+    new JoystickButton(coJoystick, 11)
+        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 4, -1, false));
+    new JoystickButton(coJoystick, 12)
+        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 5, -1, false));
+    // rightleft
+    new JoystickButton(coJoystick, 5)
+        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, -1, 1, false));
+
+    //
+    //    Standard Joystick Bindings
+    // not sure if these should be joystick2
+    new JoystickButton(joystick2, 1).onTrue(new FlipperScoreCmd(m_flipperSubsystem));
+    new JoystickButton(joystick2, 5).onTrue(new FlipperGripperCmd(m_flipperSubsystem));
+    new JoystickButton(joystick2, 3).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 0));
+    new JoystickButton(joystick2, 4).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 1));
+    new JoystickButton(joystick2, 6).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 2));
+
+    driver.leftBumper().whileTrue(DriveCommands.goToTransform(drive, targetTransform));
+
+    // **Left Trigger - Go to AprilTag Position A**
+    driver.leftBumper().whileTrue(DriveCommands.goToTransform(drive, targetTransform));
+
+    // **Right Trigger - Go to AprilTag Position B**
+    driver.rightBumper().whileTrue(DriveCommands.goToTransformWithPathFinder(targetTransform));
   }
 
   /**

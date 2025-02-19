@@ -13,6 +13,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
@@ -21,6 +22,15 @@ import edu.wpi.first.wpilibj.RobotBase;
  * (log replay from a file).
  */
 public final class Constants {
+
+  // Hardware Constants
+  public static final PneumaticsModuleType SolenoidModuleType = PneumaticsModuleType.CTREPCM;
+  public static final int CentererSolenoidChannel = 0;
+  public static final int ElevatorSolenoid1Channel = 1;
+  public static final int ElevatorSolenoid2Channel = 2;
+  public static final int GripperSolenoidChannel = 3;
+  public static final int FlipperSolenoidChannel = 4;
+
   public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : Mode.SIM;
   public static final boolean tuningMode = false;
 
