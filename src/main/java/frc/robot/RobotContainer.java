@@ -11,6 +11,8 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
+// TODO: Add a climber button
+
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -23,17 +25,22 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.LedMode;
 import frc.robot.commandgroups.ElevatorCommandGroup;
 import frc.robot.commands.ChooseReefCmd;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FlipperGripperCmd;
 import frc.robot.commands.FlipperScoreCmd;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.FlipperSubsystem;
+import frc.robot.subsystems.LedSubsystem;
 import frc.robot.subsystems.PhysicalReefInterfaceSubsystem;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.vision.Vision;
@@ -58,6 +65,10 @@ public class RobotContainer {
   private final Drive drive;
   private final FlipperSubsystem m_flipperSubsystem = new FlipperSubsystem();
   private final ElevatorSubsystem m_elevatorSubsystem = new ElevatorSubsystem();
+  private final LedSubsystem m_ledSubsystem = new LedSubsystem();
+  private final PhysicalReefInterfaceSubsystem m_PhysicalReefSubsystem =
+      new PhysicalReefInterfaceSubsystem();
+  private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
   private final Joystick joystick2 = new Joystick(1);
@@ -188,8 +199,6 @@ public class RobotContainer {
     //
     //    Codriver Bindings
     //
-    final PhysicalReefInterfaceSubsystem m_PhysicalReefSubsystem =
-        new PhysicalReefInterfaceSubsystem();
     // execute
     new JoystickButton(coJoystick, 1)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, -1, -1, true));
@@ -222,12 +231,14 @@ public class RobotContainer {
     //
     //    Standard Joystick Bindings
     // not sure if these should be joystick2
+    //
     new JoystickButton(joystick2, 1).onTrue(new FlipperScoreCmd(m_flipperSubsystem));
     new JoystickButton(joystick2, 5).onTrue(new FlipperGripperCmd(m_flipperSubsystem));
     new JoystickButton(joystick2, 3).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 0));
     new JoystickButton(joystick2, 4).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 1));
     new JoystickButton(joystick2, 6).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 2));
 
+    // More drive stuff
     driver.leftBumper().whileTrue(DriveCommands.goToTransform(drive, targetTransform));
 
     // **Left Trigger - Go to AprilTag Position A**
@@ -235,6 +246,31 @@ public class RobotContainer {
 
     // **Right Trigger - Go to AprilTag Position B**
     driver.rightBumper().whileTrue(DriveCommands.goToTransformWithPathFinder(targetTransform));
+
+    // LED Triggers
+
+    // Coral
+    Trigger ledComplexTrigger = new Trigger(() -> m_flipperSubsystem.getHasCoral());
+    ledComplexTrigger.onTrue(
+        new InstantCommand(
+            () -> {
+              m_ledSubsystem.setMode(LedMode.kSTROBE);
+              m_ledSubsystem.setStrobeSetting(0);
+            }));
+    ledComplexTrigger.onFalse(
+        new InstantCommand(
+            () -> {
+              m_ledSubsystem.setMode(LedMode.kSOLID);
+            }));
+
+    // Climbing
+    Trigger ledClimbingTrigger = new Trigger(() -> m_climberSubsystem.getClimberUsed());
+    ledClimbingTrigger.onTrue(
+        new InstantCommand(
+            () -> {
+              m_ledSubsystem.setMode(LedMode.kSTROBE);
+              m_ledSubsystem.setStrobeSetting(1);
+            }));
   }
 
   /**
