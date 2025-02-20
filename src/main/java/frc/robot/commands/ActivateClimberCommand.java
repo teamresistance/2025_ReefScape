@@ -14,8 +14,7 @@ public class ActivateClimberCommand extends Command {
 
   // runs when command gets initiatiated
   @Override
-  public void initialize() {
-  }
+  public void initialize() {}
 
   // runs repeatedly until command is ended
   @Override

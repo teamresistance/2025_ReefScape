@@ -4,12 +4,11 @@
 
 package frc.robot.subsystems;
 
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import org.littletonrobotics.junction.Logger;
 
 public class ElevatorSubsystem extends SubsystemBase {
   static Solenoid elevatorPusher1 =
