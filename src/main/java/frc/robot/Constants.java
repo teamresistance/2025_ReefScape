@@ -14,7 +14,6 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
@@ -41,16 +40,17 @@ public final class Constants {
   public static final int kLedLength = 60;
   public static final int kLedAnimationDelayMilliseconds = 100; // Can only be multiple of 20ms.
   // has coral
-  public static final int[] kLedStrobeColor1 = { 0, 0, 255 };
-  public static final int[] kLedStrobeColor2 = { 0, 255, 255 };
-  public static final int[] kLedStrobeColor3 = { 0, 255, 255 };
+  public static final int[] kLedStrobeColor1 = {0, 0, 255};
+  public static final int[] kLedStrobeColor2 = {0, 255, 255};
+  public static final int[] kLedStrobeColor3 = {0, 255, 255};
   // solid
-  public static final int[] kLedSolidColor = { 132, 76, 130 };
+  public static final int[] kLedSolidColor = {132, 76, 130};
   // is climbing
-  public static final int[] kLedStrobeColor4 = { 50, 100, 50 };
-  public static final int[] kLedStrobeColor5 = { 100, 200, 100 };
-  public static final int[] kLedStrobeColor6 = { 50, 200, 50 };
+  public static final int[] kLedStrobeColor4 = {50, 100, 50};
+  public static final int[] kLedStrobeColor5 = {100, 200, 100};
+  public static final int[] kLedStrobeColor6 = {50, 200, 50};
   public static final int kLed_portNumber = 0;
+
   public enum LedMode {
     kSOLID,
     kSTROBE,

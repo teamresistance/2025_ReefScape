@@ -6,6 +6,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 // Hardware imports
 import frc.robot.Constants;
 import frc.robot.Constants.LedMode;
+
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 
@@ -100,6 +103,9 @@ public class LedSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        Logger.recordOutput("LED/Current Mode", mode);
+        Logger.recordOutput("LED/Current Strobe Setting", strobeSetting);
+
         delayTracker++;
 
         if (delayTracker * 20 >= animationDelay) {

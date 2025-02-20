@@ -66,7 +66,8 @@ public class RobotContainer {
   private final FlipperSubsystem m_flipperSubsystem = new FlipperSubsystem();
   private final ElevatorSubsystem m_elevatorSubsystem = new ElevatorSubsystem();
   private final LedSubsystem m_ledSubsystem = new LedSubsystem();
-  private final PhysicalReefInterfaceSubsystem m_PhysicalReefSubsystem = new PhysicalReefInterfaceSubsystem();
+  private final PhysicalReefInterfaceSubsystem m_PhysicalReefSubsystem =
+      new PhysicalReefInterfaceSubsystem();
   private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
@@ -237,8 +238,6 @@ public class RobotContainer {
     new JoystickButton(joystick2, 4).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 1));
     new JoystickButton(joystick2, 6).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 2));
 
-
-
     // More drive stuff
     driver.leftBumper().whileTrue(DriveCommands.goToTransform(drive, targetTransform));
 
@@ -252,22 +251,26 @@ public class RobotContainer {
 
     // Coral
     Trigger ledComplexTrigger = new Trigger(() -> m_flipperSubsystem.getHasCoral());
-    ledComplexTrigger.onTrue(new InstantCommand(() -> { 
-        m_ledSubsystem.setMode(LedMode.kSTROBE); 
-        m_ledSubsystem.setStrobeSetting(0);
-    }));
-    ledComplexTrigger.onFalse(new InstantCommand(() -> { 
-        m_ledSubsystem.setMode(LedMode.kSOLID); 
-    }));
+    ledComplexTrigger.onTrue(
+        new InstantCommand(
+            () -> {
+              m_ledSubsystem.setMode(LedMode.kSTROBE);
+              m_ledSubsystem.setStrobeSetting(0);
+            }));
+    ledComplexTrigger.onFalse(
+        new InstantCommand(
+            () -> {
+              m_ledSubsystem.setMode(LedMode.kSOLID);
+            }));
 
     // Climbing
     Trigger ledClimbingTrigger = new Trigger(() -> m_climberSubsystem.get());
-    ledClimbingTrigger.onTrue(new InstantCommand(() -> { 
-        m_ledSubsystem.setMode(LedMode.kSTROBE); 
-        m_ledSubsystem.setStrobeSetting(1);
-    }));
-
-
+    ledClimbingTrigger.onTrue(
+        new InstantCommand(
+            () -> {
+              m_ledSubsystem.setMode(LedMode.kSTROBE);
+              m_ledSubsystem.setStrobeSetting(1);
+            }));
   }
 
   /**

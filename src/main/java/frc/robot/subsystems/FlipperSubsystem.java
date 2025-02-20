@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.*;
@@ -47,10 +49,11 @@ public class FlipperSubsystem extends SubsystemBase {
     }
   }
 
-  public boolean getHasCoral(){
+  public boolean getHasCoral() {
     return believesHasCoral;
   }
-  public boolean getIsntGripped(){
+
+  public boolean getIsntGripped() {
     return !gripper.get();
   }
 
@@ -61,6 +64,9 @@ public class FlipperSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    Logger.recordOutput("Flipper/Gripper Is Closed", gripper.get());
+    Logger.recordOutput("Flipper/Robot Thinks Has Coral", believesHasCoral);
+    Logger.recordOutput("Flipper/Coral Secured", (gripper.get() && coralDetector.get()));
     SmartDashboard.putBoolean("Gripper Closed", gripper.get());
     SmartDashboard.putBoolean("Thinks has coral", believesHasCoral);
     SmartDashboard.putBoolean("Coral Secured and Gripped", (gripper.get() && coralDetector.get()));
