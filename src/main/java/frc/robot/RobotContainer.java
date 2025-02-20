@@ -254,18 +254,17 @@ public class RobotContainer {
     Trigger ledComplexTrigger = new Trigger(() -> m_flipperSubsystem.getHasCoral());
     ledComplexTrigger.onTrue(new InstantCommand(() -> { 
         m_ledSubsystem.setMode(LedMode.kSTROBE); 
-        m_ledSubsystem.setLEDColor(Constants.kLedStrobeColor2);
+        m_ledSubsystem.setStrobeSetting(0);
     }));
     ledComplexTrigger.onFalse(new InstantCommand(() -> { 
         m_ledSubsystem.setMode(LedMode.kSOLID); 
-        m_ledSubsystem.setLEDColor(Constants.kLedSolidColor);
     }));
 
     // Climbing
     Trigger ledClimbingTrigger = new Trigger(() -> m_climberSubsystem.get());
     ledClimbingTrigger.onTrue(new InstantCommand(() -> { 
         m_ledSubsystem.setMode(LedMode.kSTROBE); 
-        m_ledSubsystem.setLEDColor(Constants.kLedStrobeColor3);
+        m_ledSubsystem.setStrobeSetting(1);
     }));
 
 

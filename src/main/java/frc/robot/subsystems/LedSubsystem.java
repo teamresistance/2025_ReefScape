@@ -17,6 +17,7 @@ public class LedSubsystem extends SubsystemBase {
     /** The length of the LED strip */
     int length = Constants.kLedLength;
     int animationFrame = 0;
+    int strobeSetting = 0;
     /**
     * The amount of time to  advance to the next strobe animation frame.
     * Can only be 20ms or greater multiples of 20ms.
@@ -72,6 +73,13 @@ public class LedSubsystem extends SubsystemBase {
     }
     
     /**
+     * Changes what colors it's strobing between
+     */
+    public void setStrobeSetting(int setting){
+        strobeSetting = setting;
+    }
+
+    /**
     * Turns off the led strip.
     */
     public void turnOff() {
@@ -104,10 +112,19 @@ public class LedSubsystem extends SubsystemBase {
                 setLEDColor(Constants.kLedSolidColor);
                 break;
             case kSTROBE:
-                strobeBetween(animationFrame,
-                        Constants.kLedStrobeColor1,
-                        Constants.kLedStrobeColor2,
-                        Constants.kLedStrobeColor3);
+                switch (strobeSetting) {
+                    case 0:
+                        strobeBetween(animationFrame,
+                                Constants.kLedStrobeColor1,
+                                Constants.kLedStrobeColor2,
+                                Constants.kLedStrobeColor3);
+                        break;
+                    case 1:
+                        strobeBetween(animationFrame,
+                            Constants.kLedStrobeColor4,
+                            Constants.kLedStrobeColor5,
+                            Constants.kLedStrobeColor6);
+                }
                 break;
             case kOFF:
                 turnOff();
