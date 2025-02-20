@@ -72,6 +72,8 @@ public class RobotContainer {
   private final CommandXboxController driver = new CommandXboxController(0);
   private final Joystick joystick2 = new Joystick(1);
   private final Joystick coJoystick = new Joystick(2);
+  private final Joystick joystick2 = new Joystick(1);
+  private final Joystick coJoystick = new Joystick(2);
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
   public Vision aprilTagVision;
