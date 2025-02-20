@@ -31,6 +31,7 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.vision.Vision;
+import frc.robot.util.LoggedTunableNumber;
 import java.io.IOException;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.photonvision.PhotonCamera;
@@ -42,6 +43,8 @@ import org.photonvision.PhotonCamera;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+  private static final LoggedTunableNumber pathFindingThreshold =
+      new LoggedTunableNumber("Drive/SWITCH_DISTANCE_THRESHOLD", 0.7);
   public final PhotonCamera frontLeftCamera = new PhotonCamera("front-left");
   public final PhotonCamera frontRightCamera = new PhotonCamera("front-right");
   public final PhotonCamera backLeftCamera = new PhotonCamera("back_left");
@@ -56,8 +59,8 @@ public class RobotContainer {
   private final LoggedDashboardChooser<Command> autoChooser;
   public Vision aprilTagVision;
   // Create the target Transform2d (Translation and Rotation)
-  Translation2d targetTranslation = new Translation2d(14.26, 4.03); // X = 14, Y = 4
-  Rotation2d targetRotation = new Rotation2d(Units.degreesToRadians(180.0 - 45)); // No rotation
+  Translation2d targetTranslation = new Translation2d(14.35, 4.31); // X = 14, Y = 4
+  Rotation2d targetRotation = new Rotation2d(Units.degreesToRadians(-178.0)); // No rotation
   Transform2d targetTransform = new Transform2d(targetTranslation, targetRotation);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -161,10 +164,36 @@ public class RobotContainer {
     // Switch to X pattern when X button is pressed
     driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
-    driver.leftBumper().whileTrue(DriveCommands.goToTransform(drive, targetTransform));
+    driver
+        .leftBumper()
+        .whileTrue(
+            DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
+                .beforeStarting(
+                    () ->
+                        DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
+                            .cancel()));
 
-    driver.rightBumper().whileTrue(DriveCommands.goToTransformWithPathFinder(targetTransform));
+    //    driver
+    //        .rightBumper()
+    //        .whileTrue(new DynamicGoToTransform(drive, targetTransform, pathFindingThreshold));
 
+    driver
+        .rightBumper()
+        .whileTrue(
+            Commands.either(
+                    DriveCommands.goToTransformWithPathFinder(drive, targetTransform),
+                    DriveCommands.goToTransformWithPathFinder(drive, targetTransform),
+                    () ->
+                        drive
+                                .getPose()
+                                .getTranslation()
+                                .getDistance(targetTransform.getTranslation())
+                            < pathFindingThreshold.get())
+                .beforeStarting(
+                    () -> {
+                      DriveCommands.goToTransform(drive, targetTransform).cancel();
+                      DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
+                    }));
     // Reset gyro to 0 when B button is pressed
     driver
         .b()
