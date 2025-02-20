@@ -264,7 +264,7 @@ public class RobotContainer {
             }));
 
     // Climbing
-    Trigger ledClimbingTrigger = new Trigger(() -> m_climberSubsystem.get());
+    Trigger ledClimbingTrigger = new Trigger(() -> m_climberSubsystem.getClimberUsed());
     ledClimbingTrigger.onTrue(
         new InstantCommand(
             () -> {

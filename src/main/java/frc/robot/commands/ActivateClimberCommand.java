@@ -19,7 +19,7 @@ public class ActivateClimberCommand extends Command {
   // runs repeatedly until command is ended
   @Override
   public void execute() {
-    m_subsystem.activateClimber(true);
+    m_subsystem.activateClimber();
   }
 
   @Override

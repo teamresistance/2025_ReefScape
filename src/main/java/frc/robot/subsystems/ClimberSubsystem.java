@@ -18,16 +18,13 @@ public class ClimberSubsystem extends SubsystemBase {
   /**
    * Sets the climberSV solenoid to the positon expressed by {@code state}. Also changes {@code
    * isActivated} to that state.
-   *
-   * @param state The intended state you want to set the climber solenoid.
    * @return void
    */
-  public void activateClimber(boolean state) {
+  public void activateClimber() {
     climberSV.set(true);
-    System.out.println("Climber is Activated: " + climberSV.get());
   }
 
-  public boolean get() {
+  public boolean getClimberUsed() {
     return climberSV.get();
   }
 
@@ -48,6 +45,5 @@ public class ClimberSubsystem extends SubsystemBase {
    */
   public void simulationPeriodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putBoolean("Climber is Activated:", climberSV.get());
   }
 }
