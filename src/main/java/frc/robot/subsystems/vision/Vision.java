@@ -74,7 +74,7 @@ public class Vision extends SubsystemBase {
     visionUpdates = new ArrayList<>();
 
     double singleTagAdjustment = 1.0;
-    if (Constants.TUNING_MODE) SingleTagAdjustment.updateLoggedTagAdjustments();
+    if (Constants.TuningMode) SingleTagAdjustment.updateLoggedTagAdjustments();
 
     // Loop through all the cameras
     for (int instanceIndex = 0; instanceIndex < cameras.length; instanceIndex++) {

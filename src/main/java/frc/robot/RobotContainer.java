@@ -115,7 +115,7 @@ public class RobotContainer {
     // Real robot, instantiate hardware IO implementations
     // Sim robot, instantiate physics sim IO implementations
     // Replayed robot, disable IO implementations
-    return switch (Constants.CURRENT_MODE) {
+    return switch (Constants.CurrentMode) {
       case REAL ->
           // Real robot, instantiate hardware IO implementations
           new Drive(
