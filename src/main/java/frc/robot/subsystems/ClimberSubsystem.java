@@ -18,6 +18,7 @@ public class ClimberSubsystem extends SubsystemBase {
   /**
    * Sets the climberSV solenoid to the positon expressed by {@code state}. Also changes {@code
    * isActivated} to that state.
+   *
    * @return void
    */
   public void activateClimber() {
