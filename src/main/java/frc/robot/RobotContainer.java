@@ -18,6 +18,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -37,6 +38,7 @@ import frc.robot.subsystems.FlipperSubsystem;
 import frc.robot.subsystems.PhysicalReefInterfaceSubsystem;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.vision.Vision;
+import frc.robot.util.LoggedTunableNumber;
 import java.io.IOException;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.photonvision.PhotonCamera;
@@ -48,26 +50,30 @@ import org.photonvision.PhotonCamera;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+  private static final LoggedTunableNumber pathFindingThreshold =
+      new LoggedTunableNumber("Drive/SWITCH_DISTANCE_THRESHOLD", 0.7);
   public final PhotonCamera frontLeftCamera = new PhotonCamera("front-left");
   public final PhotonCamera frontRightCamera = new PhotonCamera("front-right");
   public final PhotonCamera backLeftCamera = new PhotonCamera("back_left");
   public final PhotonCamera backRightCamera = new PhotonCamera("back_right");
   public final PhotonCamera frontCenterCamera = new PhotonCamera("front_center");
-
   // Subsystems
   private final Drive drive;
   private final FlipperSubsystem m_flipperSubsystem = new FlipperSubsystem();
   private final ElevatorSubsystem m_elevatorSubsystem = new ElevatorSubsystem();
+
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
+
   private final Joystick joystick2 = new Joystick(1);
   private final Joystick coJoystick = new Joystick(2);
+
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
   public Vision aprilTagVision;
   // Create the target Transform2d (Translation and Rotation)
-  Translation2d targetTranslation = new Translation2d(14.26, 4.03); // X = 14, Y = 4
-  Rotation2d targetRotation = new Rotation2d(180.0 - 45); // No rotation
+  Translation2d targetTranslation = new Translation2d(14.35, 4.31); // X = 14, Y = 4
+  Rotation2d targetRotation = new Rotation2d(Units.degreesToRadians(-178.0)); // No rotation
   Transform2d targetTransform = new Transform2d(targetTranslation, targetRotation);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -122,7 +128,7 @@ public class RobotContainer {
     // Real robot, instantiate hardware IO implementations
     // Sim robot, instantiate physics sim IO implementations
     // Replayed robot, disable IO implementations
-    return switch (Constants.currentMode) {
+    return switch (Constants.CurrentMode) {
       case REAL ->
           // Real robot, instantiate hardware IO implementations
           new Drive(
@@ -171,9 +177,24 @@ public class RobotContainer {
     // Switch to X pattern when X button is pressed
     driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
-    driver.leftBumper().whileTrue(DriveCommands.goToTransform(drive, targetTransform));
+    driver
+        .leftBumper()
+        .whileTrue(
+            DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
+                .beforeStarting(
+                    () ->
+                        DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
+                            .cancel()));
 
-    driver.rightBumper().whileTrue(DriveCommands.goToTransformWithPathFinder(targetTransform));
+    driver
+        .rightBumper()
+        .whileTrue(
+            DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
+                .beforeStarting(
+                    () -> {
+                      DriveCommands.goToTransform(drive, targetTransform).cancel();
+                      DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
+                    }));
 
     // Reset gyro to 0 when B button is pressed
     driver
@@ -185,9 +206,9 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                     drive)
                 .ignoringDisable(true));
-    //
+
     //    Codriver Bindings
-    //
+
     final PhysicalReefInterfaceSubsystem m_PhysicalReefSubsystem =
         new PhysicalReefInterfaceSubsystem();
     // execute
@@ -227,14 +248,6 @@ public class RobotContainer {
     new JoystickButton(joystick2, 3).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 0));
     new JoystickButton(joystick2, 4).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 1));
     new JoystickButton(joystick2, 6).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 2));
-
-    driver.leftBumper().whileTrue(DriveCommands.goToTransform(drive, targetTransform));
-
-    // **Left Trigger - Go to AprilTag Position A**
-    driver.leftBumper().whileTrue(DriveCommands.goToTransform(drive, targetTransform));
-
-    // **Right Trigger - Go to AprilTag Position B**
-    driver.rightBumper().whileTrue(DriveCommands.goToTransformWithPathFinder(targetTransform));
   }
 
   /**

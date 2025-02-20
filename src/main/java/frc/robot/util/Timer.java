@@ -111,7 +111,7 @@ public class Timer {
   /**
    * Reset & start the timer. Uses & sets a new delay.
    *
-   * @param sec delay in seconds
+   * @param mSec delay in seconds
    */
   public void startTimer(long mSec) {
     time = mSec;
