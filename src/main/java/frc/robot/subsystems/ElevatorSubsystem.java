@@ -11,9 +11,9 @@ import frc.robot.Constants;
 
 public class ElevatorSubsystem extends SubsystemBase {
   static Solenoid elevatorPusher1 =
-      new Solenoid(Constants.SolenoidModuleType, Constants.ElevatorSolenoid1Channel);
+      new Solenoid(Constants.SolenoidModuleType, Constants.kElevatorSolenoid1Channel);
   static Solenoid elevatorPusher2 =
-      new Solenoid(Constants.SolenoidModuleType, Constants.ElevatorSolenoid2Channel);
+      new Solenoid(Constants.SolenoidModuleType, Constants.kElevatorSolenoid2Channel);
 
   /**
    * The elevator subsystem is still available from both the codriver controls and the driver

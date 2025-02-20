@@ -23,16 +23,32 @@ import edu.wpi.first.wpilibj.RobotBase;
  */
 public final class Constants {
 
-  // Hardware Constants
+  // Solenoids
   public static final PneumaticsModuleType SolenoidModuleType = PneumaticsModuleType.CTREPCM;
-  public static final int CentererSolenoidChannel = 0;
-  public static final int ElevatorSolenoid1Channel = 1;
-  public static final int ElevatorSolenoid2Channel = 2;
-  public static final int GripperSolenoidChannel = 3;
-  public static final int FlipperSolenoidChannel = 4;
+  public static final int kCentererSolenoidChannel = 0;
+  public static final int kElevatorSolenoid1Channel = 1;
+  public static final int kElevatorSolenoid2Channel = 2;
+  public static final int kGripperSolenoidChannel = 3;
+  public static final int kFlipperSolenoidChannel = 4;
+  public static final int kClimberSolenoidChannel = 4;
 
+  // Drive
   public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : Mode.SIM;
   public static final boolean tuningMode = false;
+
+  // LED Strip
+  public static final int kLedLength = 60;
+  public static final int kLedAnimationDelayMilliseconds = 100; // Can only be multiple of 20ms.
+  public static final int[] kLedStrobeColor1 = { 255, 255, 0 };
+  public static final int[] kLedStrobeColor2 = { 0, 255, 0 };
+  public static final int[] kLedStrobeColor3 = { 0, 255, 255 };
+  public static final int[] kLedSolidColor = { 132, 76, 130 };
+  public static final int kLed_portNumber = 0;
+  public enum LedMode {
+    kSOLID,
+    kSTROBE,
+    kOFF
+  }
 
   public enum Mode {
     /** Running on a real robot. */

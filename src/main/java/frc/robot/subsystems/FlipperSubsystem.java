@@ -17,12 +17,12 @@ public class FlipperSubsystem extends SubsystemBase {
       new Solenoid(
           Constants.SolenoidModuleType,
           Constants
-              .GripperSolenoidChannel); // The pneumatics hub channels that we are using are 0, 2,
+              .kGripperSolenoidChannel); // The pneumatics hub channels that we are using are 0, 2,
   // and 5
   private Solenoid flipper =
-      new Solenoid(Constants.SolenoidModuleType, Constants.FlipperSolenoidChannel);
+      new Solenoid(Constants.SolenoidModuleType, Constants.kFlipperSolenoidChannel);
   private Solenoid coralCenterMechanism =
-      new Solenoid(Constants.SolenoidModuleType, Constants.CentererSolenoidChannel);
+      new Solenoid(Constants.SolenoidModuleType, Constants.kCentererSolenoidChannel);
   private DigitalInput coralDetector = new DigitalInput(0);
 
   /** Subsystem handling coral intake and dropping onto branches/level1. */
@@ -45,6 +45,13 @@ public class FlipperSubsystem extends SubsystemBase {
       coralCenterMechanism.set(false);
       believesHasCoral = false;
     }
+  }
+
+  public boolean getHasCoral(){
+    return believesHasCoral;
+  }
+  public boolean getIsntGripped(){
+    return !gripper.get();
   }
 
   public void flipperScore() {
