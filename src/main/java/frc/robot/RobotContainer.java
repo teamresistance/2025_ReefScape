@@ -29,6 +29,8 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.FlipperSubsystem;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.LoggedTunableNumber;
@@ -52,9 +54,16 @@ public class RobotContainer {
   public final PhotonCamera frontCenterCamera = new PhotonCamera("front_center");
   // Subsystems
   private final Drive drive;
+  private final FlipperSubsystem m_flipperSubsystem = new FlipperSubsystem();
+  private final ElevatorSubsystem m_elevatorSubsystem = new ElevatorSubsystem();
+
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
-  private final CommandXboxController codriver = new CommandXboxController(1);
+
+  private final Joystick joystick2 = new Joystick(1);
+  private final Joystick coJoystick = new Joystick(2);
+
+
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
   public Vision aprilTagVision;
@@ -172,10 +181,6 @@ public class RobotContainer {
                     () ->
                         DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
                             .cancel()));
-
-    //    driver
-    //        .rightBumper()
-    //        .whileTrue(new DynamicGoToTransform(drive, targetTransform, pathFindingThreshold));
 
     driver
         .rightBumper()
