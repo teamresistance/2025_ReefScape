@@ -180,20 +180,13 @@ public class RobotContainer {
     driver
         .rightBumper()
         .whileTrue(
-            Commands.either(
-                    DriveCommands.goToTransformWithPathFinder(drive, targetTransform),
-                    DriveCommands.goToTransformWithPathFinder(drive, targetTransform),
-                    () ->
-                        drive
-                                .getPose()
-                                .getTranslation()
-                                .getDistance(targetTransform.getTranslation())
-                            < pathFindingThreshold.get())
+            DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
                 .beforeStarting(
                     () -> {
                       DriveCommands.goToTransform(drive, targetTransform).cancel();
                       DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
                     }));
+
     // Reset gyro to 0 when B button is pressed
     driver
         .b()

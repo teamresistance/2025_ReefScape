@@ -330,7 +330,7 @@ public class DriveCommands {
             GeomUtil.transformToPose(targetTransform),
             new PathConstraints(
                 TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.8,
-                5.0,
+                4.0,
                 Units.degreesToRadians(540),
                 Units.degreesToRadians(820)),
             0.0 // Goal end velocity in meters/sec
