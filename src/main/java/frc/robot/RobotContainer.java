@@ -265,9 +265,7 @@ public class RobotContainer {
               m_ledSubsystem.setMode(LedMode.kSTROBE);
               m_ledSubsystem.setStrobeSetting(0);
             }));
-    ledComplexTrigger.onFalse(
-        new InstantCommand(
-            () -> m_ledSubsystem.setMode(LedMode.kSOLID)));
+    ledComplexTrigger.onFalse(new InstantCommand(() -> m_ledSubsystem.setMode(LedMode.kSOLID)));
 
     // Climbing
     Trigger ledClimbingTrigger = new Trigger(m_climberSubsystem::getClimberUsed);
