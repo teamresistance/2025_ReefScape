@@ -8,12 +8,13 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import org.littletonrobotics.junction.Logger;
 
 public class ElevatorSubsystem extends SubsystemBase {
   static Solenoid elevatorPusher1 =
-      new Solenoid(Constants.SolenoidModuleType, Constants.ElevatorSolenoid1Channel);
+      new Solenoid(Constants.SolenoidModuleType, Constants.kElevatorSolenoid1Channel);
   static Solenoid elevatorPusher2 =
-      new Solenoid(Constants.SolenoidModuleType, Constants.ElevatorSolenoid2Channel);
+      new Solenoid(Constants.SolenoidModuleType, Constants.kElevatorSolenoid2Channel);
 
   /**
    * The elevator subsystem is still available from both the codriver controls and the driver
@@ -41,6 +42,8 @@ public class ElevatorSubsystem extends SubsystemBase {
   public void periodic() {
     SmartDashboard.putBoolean("First Stage", elevatorPusher1.get());
     SmartDashboard.putBoolean("Second Stage", elevatorPusher2.get());
+    Logger.recordOutput("Elevator/First Stage Up", elevatorPusher1.get());
+    Logger.recordOutput("Elevator/Second Stage Up", elevatorPusher2.get());
   }
 
   @Override
