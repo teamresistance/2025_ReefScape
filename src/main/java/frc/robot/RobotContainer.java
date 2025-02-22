@@ -46,7 +46,6 @@ import frc.robot.subsystems.LedSubsystem;
 import frc.robot.subsystems.PhysicalReefInterfaceSubsystem;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.vision.Vision;
-import frc.robot.util.LoggedTunableNumber;
 import java.io.IOException;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.photonvision.PhotonCamera;
@@ -70,7 +69,6 @@ public class RobotContainer {
   private final Drive drive;
   private final FlipperSubsystem m_flipperSubsystem = new FlipperSubsystem();
   private final ElevatorSubsystem m_elevatorSubsystem = new ElevatorSubsystem();
-
 
   private final LedSubsystem m_ledSubsystem = new LedSubsystem();
   private final PhysicalReefInterfaceSubsystem m_PhysicalReefSubsystem =
@@ -134,8 +132,8 @@ public class RobotContainer {
               backRightCamera,
               frontCenterCamera);
     } catch (IOException e) {
-	    assert cameraFailureAlert != null;
-	    cameraFailureAlert.set(true);
+      assert cameraFailureAlert != null;
+      cameraFailureAlert.set(true);
     }
     aprilTagVision.setDataInterfaces(drive::getPose, drive::addAutoVisionMeasurement);
     return aprilTagVision;
@@ -194,11 +192,12 @@ public class RobotContainer {
     // Switch to X pattern when X button is pressed
     driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
-    //need both commands
+    // need both commands
     driver
         .rightBumper()
         .whileTrue(
-            DriveCommands.goToTransformWithPathFinder(drive, targetTransform).andThen(DriveCommands.goToTransform(drive, targetTransform))
+            DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
+                .andThen(DriveCommands.goToTransform(drive, targetTransform))
                 .beforeStarting(
                     () -> {
                       DriveCommands.goToTransform(drive, targetTransform).cancel();
@@ -268,9 +267,7 @@ public class RobotContainer {
             }));
     ledComplexTrigger.onFalse(
         new InstantCommand(
-            () -> {
-              m_ledSubsystem.setMode(LedMode.kSOLID);
-            }));
+            () -> m_ledSubsystem.setMode(LedMode.kSOLID)));
 
     // Climbing
     Trigger ledClimbingTrigger = new Trigger(m_climberSubsystem::getClimberUsed);
