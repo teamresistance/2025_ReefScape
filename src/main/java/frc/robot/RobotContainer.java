@@ -263,7 +263,9 @@ public class RobotContainer {
     driver.leftBumper().whileTrue(DriveCommands.goToTransform(drive, targetTransform));
 
     // **Right Trigger - new algo
-    driver.rightBumper().whileTrue(DriveCommands.goToTransformWithPathFinder(drive,targetTransform));
+    driver
+        .rightBumper()
+        .whileTrue(DriveCommands.goToTransformWithPathFinder(drive, targetTransform));
 
     // LED Triggers
 
