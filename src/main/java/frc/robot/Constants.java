@@ -22,6 +22,8 @@ import edu.wpi.first.wpilibj.RobotBase;
  * (log replay from a file).
  */
 public final class Constants {
+  public static final Mode CurrentMode = RobotBase.isReal() ? Mode.REAL : Mode.SIM;
+  public static final boolean TuningMode = false;
 
   // Solenoids
   public static final PneumaticsModuleType SolenoidModuleType = PneumaticsModuleType.CTREPCM;

@@ -40,6 +40,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -72,8 +73,13 @@ public class Drive extends SubsystemBase {
       new CANBus(TunerConstants.DrivetrainConstants.CANBusName).isNetworkFD() ? 250.0 : 100.0;
   static final Lock odometryLock = new ReentrantLock();
   // PathPlanner config constants
-  private static final double ROBOT_MASS_KG = 22.088;
-  private static final double ROBOT_MOI = 4.883;
+  private static final double ROBOT_MASS_KG = Units.lbsToKilograms(45.0);
+  private static final double ROBOT_MOI =
+      1.0
+          / 12.0
+          * ROBOT_MASS_KG
+          * (Math.pow(TunerConstants.FrontLeft.LocationX * 2, 2)
+              + Math.pow(TunerConstants.FrontLeft.LocationY * 2, 2));
   private static final double WHEEL_COF = 1.2;
   private static final RobotConfig PP_CONFIG =
       new RobotConfig(
@@ -140,8 +146,7 @@ public class Drive extends SubsystemBase {
     Pathfinding.setPathfinder(new LocalADStarAK());
     PathPlannerLogging.setLogActivePathCallback(
         (activePath) -> {
-          Logger.recordOutput(
-              "Odometry/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
+          Logger.recordOutput("Odometry/Trajectory", activePath.toArray(new Pose2d[0]));
         });
     PathPlannerLogging.setLogTargetPoseCallback(
         (targetPose) -> {
@@ -226,7 +231,7 @@ public class Drive extends SubsystemBase {
     }
 
     // Update gyro alert
-    gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
+    gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.CurrentMode != Mode.SIM);
   }
 
   /**

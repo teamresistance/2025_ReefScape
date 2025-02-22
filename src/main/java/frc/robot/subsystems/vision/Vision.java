@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.util.GeomUtil;
 import frc.robot.util.PolynomialRegression;
 import frc.robot.util.TimestampedVisionUpdate;
@@ -73,6 +74,7 @@ public class Vision extends SubsystemBase {
     visionUpdates = new ArrayList<>();
 
     double singleTagAdjustment = 1.0;
+    if (Constants.TuningMode) SingleTagAdjustment.updateLoggedTagAdjustments();
 
     // Loop through all the cameras
     for (int instanceIndex = 0; instanceIndex < cameras.length; instanceIndex++) {
@@ -172,6 +174,7 @@ public class Vision extends SubsystemBase {
         }
 
         tagPose3ds.add(tagPos);
+
         singleTagAdjustment = SingleTagAdjustment.getAdjustmentForTag(target.getFiducialId());
         Logger.recordOutput("Photon/Camera Pose (Single Tag) " + instanceIndex, cameraPose);
       }
