@@ -21,6 +21,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -57,17 +58,19 @@ import org.photonvision.PhotonCamera;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  private static final LoggedTunableNumber pathFindingThreshold =
-      new LoggedTunableNumber("Drive/SWITCH_DISTANCE_THRESHOLD", 0.7);
   public final PhotonCamera frontLeftCamera = new PhotonCamera("front-left");
   public final PhotonCamera frontRightCamera = new PhotonCamera("front-right");
   public final PhotonCamera backLeftCamera = new PhotonCamera("back_left");
   public final PhotonCamera backRightCamera = new PhotonCamera("back_right");
   public final PhotonCamera frontCenterCamera = new PhotonCamera("front_center");
+
+  private final Alert cameraFailureAlert;
+
   // Subsystems
   private final Drive drive;
   private final FlipperSubsystem m_flipperSubsystem = new FlipperSubsystem();
   private final ElevatorSubsystem m_elevatorSubsystem = new ElevatorSubsystem();
+
 
   private final LedSubsystem m_ledSubsystem = new LedSubsystem();
   private final PhysicalReefInterfaceSubsystem m_PhysicalReefSubsystem =
@@ -77,8 +80,8 @@ public class RobotContainer {
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
 
-  private final Joystick joystick2 = new Joystick(1);
-  private final Joystick coJoystick = new Joystick(2);
+  private final Joystick cojoystick = new Joystick(1);
+  private final Joystick reefController = new Joystick(2);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -94,6 +97,7 @@ public class RobotContainer {
     autoChooser = configureAutos();
     aprilTagVision = configureAprilTagVision();
     configureButtonBindings();
+    cameraFailureAlert = new Alert("Camera failure.", Alert.AlertType.kError);
   }
 
   private LoggedDashboardChooser<Command> configureAutos() {
@@ -130,7 +134,8 @@ public class RobotContainer {
               backRightCamera,
               frontCenterCamera);
     } catch (IOException e) {
-      e.printStackTrace();
+	    assert cameraFailureAlert != null;
+	    cameraFailureAlert.set(true);
     }
     aprilTagVision.setDataInterfaces(drive::getPose, drive::addAutoVisionMeasurement);
     return aprilTagVision;
@@ -184,24 +189,16 @@ public class RobotContainer {
         .a()
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
-                drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> new Rotation2d()));
+                drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), Rotation2d::new));
 
     // Switch to X pattern when X button is pressed
     driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
-    driver
-        .leftBumper()
-        .whileTrue(
-            DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-                .beforeStarting(
-                    () ->
-                        DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-                            .cancel()));
-
+    //need both commands
     driver
         .rightBumper()
         .whileTrue(
-            DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
+            DriveCommands.goToTransformWithPathFinder(drive, targetTransform).andThen(DriveCommands.goToTransform(drive, targetTransform))
                 .beforeStarting(
                     () -> {
                       DriveCommands.goToTransform(drive, targetTransform).cancel();
@@ -221,56 +218,48 @@ public class RobotContainer {
 
     //    Codriver Bindings
     // execute
-    new JoystickButton(coJoystick, 1)
+    new JoystickButton(reefController, 1)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, -1, -1, true));
     // level
-    new JoystickButton(coJoystick, 2)
+    new JoystickButton(reefController, 2)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, 0, -1, -1, false));
-    new JoystickButton(coJoystick, 3)
+    new JoystickButton(reefController, 3)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, 1, -1, -1, false));
-    new JoystickButton(coJoystick, 4)
+    new JoystickButton(reefController, 4)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, 2, -1, -1, false));
-    new JoystickButton(coJoystick, 6)
+    new JoystickButton(reefController, 6)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, 3, -1, -1, false));
     // pos
-    new JoystickButton(coJoystick, 7)
+    new JoystickButton(reefController, 7)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 0, -1, false));
-    new JoystickButton(coJoystick, 8)
+    new JoystickButton(reefController, 8)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 1, -1, false));
-    new JoystickButton(coJoystick, 9)
+    new JoystickButton(reefController, 9)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 2, -1, false));
-    new JoystickButton(coJoystick, 10)
+    new JoystickButton(reefController, 10)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 3, -1, false));
-    new JoystickButton(coJoystick, 11)
+    new JoystickButton(reefController, 11)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 4, -1, false));
-    new JoystickButton(coJoystick, 12)
+    new JoystickButton(reefController, 12)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 5, -1, false));
     // rightleft
-    new JoystickButton(coJoystick, 5)
+    new JoystickButton(reefController, 5)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, -1, 1, false));
 
     //
     //    Standard Joystick Bindings
-    // not sure if these should be joystick2
+    // not sure if these should be cojoystick
     //
-    new JoystickButton(joystick2, 1).onTrue(new FlipperScoreCmd(m_flipperSubsystem));
-    new JoystickButton(joystick2, 5).onTrue(new FlipperGripperCmd(m_flipperSubsystem));
-    new JoystickButton(joystick2, 3).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 0));
-    new JoystickButton(joystick2, 4).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 1));
-    new JoystickButton(joystick2, 6).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 2));
-
-    // **Left Trigger - old algo
-    driver.leftBumper().whileTrue(DriveCommands.goToTransform(drive, targetTransform));
-
-    // **Right Trigger - new algo
-    driver
-        .rightBumper()
-        .whileTrue(DriveCommands.goToTransformWithPathFinder(drive, targetTransform));
+    new JoystickButton(cojoystick, 1).onTrue(new FlipperScoreCmd(m_flipperSubsystem));
+    new JoystickButton(cojoystick, 5).onTrue(new FlipperGripperCmd(m_flipperSubsystem));
+    new JoystickButton(cojoystick, 3).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 0));
+    new JoystickButton(cojoystick, 4).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 1));
+    new JoystickButton(cojoystick, 6).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 2));
 
     // LED Triggers
 
     // Coral
-    Trigger ledComplexTrigger = new Trigger(() -> m_flipperSubsystem.getHasCoral());
+    Trigger ledComplexTrigger = new Trigger(m_flipperSubsystem::getHasCoral);
     ledComplexTrigger.onTrue(
         new InstantCommand(
             () -> {
@@ -284,7 +273,7 @@ public class RobotContainer {
             }));
 
     // Climbing
-    Trigger ledClimbingTrigger = new Trigger(() -> m_climberSubsystem.getClimberUsed());
+    Trigger ledClimbingTrigger = new Trigger(m_climberSubsystem::getClimberUsed);
     ledClimbingTrigger.onTrue(
         new InstantCommand(
             () -> {
