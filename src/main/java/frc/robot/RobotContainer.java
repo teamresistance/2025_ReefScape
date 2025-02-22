@@ -259,15 +259,11 @@ public class RobotContainer {
     new JoystickButton(joystick2, 4).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 1));
     new JoystickButton(joystick2, 6).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 2));
 
-
-    // More drive stuff
+    // **Left Trigger - old algo
     driver.leftBumper().whileTrue(DriveCommands.goToTransform(drive, targetTransform));
 
-    // **Left Trigger - Go to AprilTag Position A**
-    driver.leftBumper().whileTrue(DriveCommands.goToTransform(drive, targetTransform));
-
-    // **Right Trigger - Go to AprilTag Position B**
-    driver.rightBumper().whileTrue(DriveCommands.goToTransformWithPathFinder(targetTransform));
+    // **Right Trigger - new algo
+    driver.rightBumper().whileTrue(DriveCommands.goToTransformWithPathFinder(drive,targetTransform));
 
     // LED Triggers
 
@@ -293,7 +289,6 @@ public class RobotContainer {
               m_ledSubsystem.setMode(LedMode.kSTROBE);
               m_ledSubsystem.setStrobeSetting(1);
             }));
-
   }
 
   /**
