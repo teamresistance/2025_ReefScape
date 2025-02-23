@@ -128,7 +128,7 @@ public class RobotContainer {
     // Real robot, instantiate hardware IO implementations
     // Sim robot, instantiate physics sim IO implementations
     // Replayed robot, disable IO implementations
-    return switch (Constants.CurrentMode) {
+    return switch (Constants.CURRENT_MODE) {
       case REAL ->
           // Real robot, instantiate hardware IO implementations
           new Drive(
@@ -247,17 +247,17 @@ public class RobotContainer {
     ledComplexTrigger.onTrue(
         new InstantCommand(
             () -> {
-              m_ledSubsystem.setMode(LedMode.kSTROBE);
+              m_ledSubsystem.setMode(LedMode.STROBE);
               m_ledSubsystem.setStrobeSetting(0);
             }));
-    ledComplexTrigger.onFalse(new InstantCommand(() -> m_ledSubsystem.setMode(LedMode.kSOLID)));
+    ledComplexTrigger.onFalse(new InstantCommand(() -> m_ledSubsystem.setMode(LedMode.SOLID)));
 
     // Climbing
     Trigger ledClimbingTrigger = new Trigger(m_climberSubsystem::getClimberUsed);
     ledClimbingTrigger.onTrue(
         new InstantCommand(
             () -> {
-              m_ledSubsystem.setMode(LedMode.kSTROBE);
+              m_ledSubsystem.setMode(LedMode.STROBE);
               m_ledSubsystem.setStrobeSetting(1);
             }));
   }

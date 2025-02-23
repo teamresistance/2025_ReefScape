@@ -10,10 +10,10 @@ import org.littletonrobotics.junction.Logger;
 public class LedSubsystem extends SubsystemBase {
 
   /** An LED strip with length as specified by {@code Constants.kLedLength} */
-  AddressableLED ledstrip = new AddressableLED(Constants.kLed_portNumber);
+  AddressableLED ledstrip = new AddressableLED(Constants.LED_PORT_NUMBER);
 
   /** The length of the LED strip */
-  int length = Constants.kLedLength;
+  int length = Constants.LED_LENGTH;
 
   int animationFrame = 0;
   int strobeSetting = 0;
@@ -22,12 +22,12 @@ public class LedSubsystem extends SubsystemBase {
    * The amount of time to advance to the next strobe animation frame. Can only be 20ms or greater
    * multiples of 20ms. A higher value means a slower animation.
    */
-  int animationDelay = Constants.kLedAnimationDelayMilliseconds;
+  int animationDelay = Constants.LED_ANIMATION_DELAY_MS;
 
   int delayTracker = 0;
 
   /** An enum value specifying how the LED lights up. */
-  public LedMode mode = Constants.LedMode.kOFF;
+  public LedMode mode = Constants.LedMode.OFF;
 
   public LedSubsystem() {
     ledstrip.setLength(length);
@@ -113,27 +113,27 @@ public class LedSubsystem extends SubsystemBase {
     }
 
     switch (mode) {
-      case kSOLID:
-        setLEDColor(Constants.kLedSolidColor);
+      case SOLID:
+        setLEDColor(Constants.LED_COLOR_SOLID);
         break;
-      case kSTROBE:
+      case STROBE:
         switch (strobeSetting) {
           case 0:
             strobeBetween(
                 animationFrame,
-                Constants.kLedStrobeColor1,
-                Constants.kLedStrobeColor2,
-                Constants.kLedStrobeColor3);
+                Constants.LED_STROBE_COLOR1,
+                Constants.LED_STROBE_COLOR2,
+                Constants.LED_STROBE_COLOR3);
             break;
           case 1:
             strobeBetween(
                 animationFrame,
-                Constants.kLedStrobeColor4,
-                Constants.kLedStrobeColor5,
-                Constants.kLedStrobeColor6);
+                Constants.LED_STROBE_COLOR4,
+                Constants.LED_STROBE_COLOR5,
+                Constants.LED_STROBE_COLOR6);
         }
         break;
-      case kOFF:
+      case OFF:
         turnOff();
         break;
     }

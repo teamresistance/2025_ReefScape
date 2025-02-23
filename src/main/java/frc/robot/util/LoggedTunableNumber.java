@@ -47,7 +47,7 @@ public class LoggedTunableNumber {
     if (!hasDefault) {
       hasDefault = true;
       this.defaultValue = defaultValue;
-      if (Constants.TuningMode) {
+      if (Constants.TUNING_MODE) {
         dashboardNumber = new LoggedNetworkNumber("/SmartDashboard/" + key, defaultValue);
       }
     }
@@ -62,7 +62,7 @@ public class LoggedTunableNumber {
     if (!hasDefault) {
       return 0.0;
     } else {
-      return Constants.TuningMode ? dashboardNumber.get() : defaultValue;
+      return Constants.TUNING_MODE ? dashboardNumber.get() : defaultValue;
     }
   }
 
