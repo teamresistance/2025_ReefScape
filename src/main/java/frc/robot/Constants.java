@@ -32,11 +32,13 @@ public final class Constants {
   public static final int kElevatorSolenoid2Channel = 2;
   public static final int kGripperSolenoidChannel = 3;
   public static final int kFlipperSolenoidChannel = 4;
-  public static final int kClimberSolenoidChannel = 4;
+  public static final int kClimberSolenoidChannel = 5;
 
-  // Elevator/Flipper
-  public static final int kElevatorRaiseStageSeconds = 0;
-  public static final int kTimeToScoreSeconds = 0;
+  // Reef
+  public static final double kTimeToShiftSeconds = 0;
+  public static final double kTimeToGetToReefSeconds = 0;
+  public static final double kTimeToRaiseStageSeconds = 0;
+  public static final double kTimeToScoreSeconds = 0;
 
   // Drive
   public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : Mode.SIM;

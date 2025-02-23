@@ -42,8 +42,8 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.FlipperSubsystem;
-import frc.robot.subsystems.LedSubsystem;
 import frc.robot.subsystems.InferfaceSubsystem;
+import frc.robot.subsystems.LedSubsystem;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.vision.Vision;
 import java.io.IOException;
@@ -70,8 +70,7 @@ public class RobotContainer {
   private final FlipperSubsystem m_flipperSubsystem = new FlipperSubsystem();
   private final ElevatorSubsystem m_elevatorSubsystem = new ElevatorSubsystem();
   private final LedSubsystem m_ledSubsystem = new LedSubsystem();
-  private final InferfaceSubsystem m_PhysicalReefSubsystem =
-      new InferfaceSubsystem();
+  private final InferfaceSubsystem m_PhysicalReefSubsystem = new InferfaceSubsystem();
   private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
@@ -213,37 +212,145 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
+    //
     //    Codriver Bindings
     //
     // execute
     new JoystickButton(reefController, 1)
-        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, -1, -1, true));
+        .onTrue(
+            new ChooseReefCmd(
+                m_PhysicalReefSubsystem,
+                drive,
+                m_elevatorSubsystem,
+                m_flipperSubsystem,
+                -1,
+                -1,
+                -1,
+                true));
     // level
     new JoystickButton(reefController, 2)
-        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, 0, -1, -1, false));
+        .onTrue(
+            new ChooseReefCmd(
+                m_PhysicalReefSubsystem,
+                drive,
+                m_elevatorSubsystem,
+                m_flipperSubsystem,
+                0,
+                -1,
+                -1,
+                false));
     new JoystickButton(reefController, 3)
-        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, 1, -1, -1, false));
+        .onTrue(
+            new ChooseReefCmd(
+                m_PhysicalReefSubsystem,
+                drive,
+                m_elevatorSubsystem,
+                m_flipperSubsystem,
+                1,
+                -1,
+                -1,
+                false));
     new JoystickButton(reefController, 4)
-        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, 2, -1, -1, false));
+        .onTrue(
+            new ChooseReefCmd(
+                m_PhysicalReefSubsystem,
+                drive,
+                m_elevatorSubsystem,
+                m_flipperSubsystem,
+                2,
+                -1,
+                -1,
+                false));
     new JoystickButton(reefController, 6)
-        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, 3, -1, -1, false));
+        .onTrue(
+            new ChooseReefCmd(
+                m_PhysicalReefSubsystem,
+                drive,
+                m_elevatorSubsystem,
+                m_flipperSubsystem,
+                3,
+                -1,
+                -1,
+                false));
     // pos
     new JoystickButton(reefController, 7)
-        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 0, -1, false));
+        .onTrue(
+            new ChooseReefCmd(
+                m_PhysicalReefSubsystem,
+                drive,
+                m_elevatorSubsystem,
+                m_flipperSubsystem,
+                -1,
+                0,
+                -1,
+                false));
     new JoystickButton(reefController, 8)
-        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 1, -1, false));
+        .onTrue(
+            new ChooseReefCmd(
+                m_PhysicalReefSubsystem,
+                drive,
+                m_elevatorSubsystem,
+                m_flipperSubsystem,
+                -1,
+                1,
+                -1,
+                false));
     new JoystickButton(reefController, 9)
-        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 2, -1, false));
+        .onTrue(
+            new ChooseReefCmd(
+                m_PhysicalReefSubsystem,
+                drive,
+                m_elevatorSubsystem,
+                m_flipperSubsystem,
+                -1,
+                2,
+                -1,
+                false));
     new JoystickButton(reefController, 10)
-        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 3, -1, false));
+        .onTrue(
+            new ChooseReefCmd(
+                m_PhysicalReefSubsystem,
+                drive,
+                m_elevatorSubsystem,
+                m_flipperSubsystem,
+                -1,
+                3,
+                -1,
+                false));
     new JoystickButton(reefController, 11)
-        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 4, -1, false));
+        .onTrue(
+            new ChooseReefCmd(
+                m_PhysicalReefSubsystem,
+                drive,
+                m_elevatorSubsystem,
+                m_flipperSubsystem,
+                -1,
+                4,
+                -1,
+                false));
     new JoystickButton(reefController, 12)
-        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 5, -1, false));
+        .onTrue(
+            new ChooseReefCmd(
+                m_PhysicalReefSubsystem,
+                drive,
+                m_elevatorSubsystem,
+                m_flipperSubsystem,
+                -1,
+                5,
+                -1,
+                false));
     // rightleft
     new JoystickButton(reefController, 5)
-        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, -1, 1, false));
-
+        .onTrue(
+            new ChooseReefCmd(
+                m_PhysicalReefSubsystem,
+                drive,
+                m_elevatorSubsystem,
+                m_flipperSubsystem,
+                -1,
+                -1,
+                1,
+                false));
     //
     //    Standard Joystick Bindings
     // not sure if these should be cojoystick

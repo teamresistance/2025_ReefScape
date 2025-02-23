@@ -13,10 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.commands.DriveCommands;
-import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.GyroIOPigeon2;
-import frc.robot.subsystems.drive.ModuleIOTalonFX;
 
 public class InferfaceSubsystem extends SubsystemBase {
   /** Subsystem that handles the codriver interface inputs. */
@@ -25,92 +22,29 @@ public class InferfaceSubsystem extends SubsystemBase {
   private int level;
   private int pos;
   private boolean rl = false; // Left is false, right is true
-  private Drive drive = new Drive(
-    new GyroIOPigeon2(),
-    new ModuleIOTalonFX(TunerConstants.FrontLeft),
-    new ModuleIOTalonFX(TunerConstants.FrontRight),
-    new ModuleIOTalonFX(TunerConstants.BackLeft),
-    new ModuleIOTalonFX(TunerConstants.BackRight)); // For to-position movement
-
-  public void chooseReef() {
-    /**
-     * ChooseReef() - Runs whenever the exec variable is true in a ChooseReefCmd(). - This method
-     * makes the robot actually do what the saved variables are. If you had pressed elevator level
-     * 4, position 2, toggled to left all before running this method the robot would use those saved
-     * values to change the elevator height to 4 and move to left pos 2 - This also resets the
-     * values when running, so if you for whatever reason wanted to go to the same place you'd have
-     * to press every button again
-     */
-
-    // Change elevator position to the selected pos
-    if (level == 0) {
-      // Do NOT move left/right for this. It can just drop.
-      FlipperSubsystem.flipperScore();
-    }
-    if (level == 1) {
-      // Move left or right based on input
-      FlipperSubsystem.flipperScore();
-    }
-    if (level == 2) {
-      // Move left or right based on input
-      ElevatorSubsystem.raiseFirstStage();
-      ElevatorSubsystem.lowerSecondStage();
-      Timer.delay(Constants.kElevatorRaiseStageSeconds);
-      FlipperSubsystem.flipperScore();
-    }
-    if (level == 3) {
-      // Move left or right based on input
-      ElevatorSubsystem.raiseFirstStage();
-      ElevatorSubsystem.raiseSecondStage();
-      Timer.delay(Constants.kElevatorRaiseStageSeconds*2);
-      FlipperSubsystem.flipperScore();
-    }
-
-    SmartDashboard.putString(
-        "Last Selection", "Level = " + level + ", Position = " + pos + ", L/R = " + rl);
-    level = 0;
-    pos = 0;
-    rl = false;
-
-    // Drive to position 
-    switch (pos) {
-      case 0:
-        Transform2d targetTransform = new Transform2d(new Translation2d(14.35, 4.31), new Rotation2d(Units.degreesToRadians(-178.0)));
-        DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-                .andThen(DriveCommands.goToTransform(drive, targetTransform))
-                .beforeStarting(
-                    () -> {
-                      DriveCommands.goToTransform(drive, targetTransform).cancel();
-                      DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
-                    });
-      // case 1:
-      // case 2:
-      // case 3:
-      // case 4:
-      // case 5:
-      /* Add the rest of these later. My new idea for this is that the robot goes to the apriltag,
-      * when it gets to the apriltag it then shifts either left or right from its position.
-      * Easier than checking L/R state for each position and having twelve transforms.
-      */
-
-      Timer.delay(Constants.kTimeToScoreSeconds);
-      ElevatorSubsystem.lowerFirstStage();
-      ElevatorSubsystem.lowerSecondStage();
-    }
-
-  }
 
   /**
-  ChooseVars(level, pos, rl) runs when an interface button is pressed but it does NOT execute the code
-  - level is an int from 0-3 representing the targeted reef level. level 1 and 0 may have the same elevator height BUT level 0 drops
-  the coral into the trough and level 1 puts it on the reef!!!! level 0 also works for recieving coral (maybe...)
-  - pos is the int position around the reef from 0-5
-  - rl is an int either 0 or 1, 0 representing left and 1 representing right
-
-  - if you do not want to change a value, set it to -1 in the method (ie if i only wanted to execute the code (by setting exec to true))
-  - all my other values would be -1. example: ChooseVars(-1, 4, -1) would set the position to 4 and change no other
-  values in the subsystem. if you put new ChooseVars(0, 4, 0), it would set the level and rl variables to 0!!!
-  */
+   * ChooseVars(level, pos, rl) runs when an interface button is pressed but it does NOT execute the
+   * code
+   *
+   * <p>- level is an int from 0-3 representing the targeted reef level. level 1 and 0 may have the
+   * same elevator height BUT level 0 drops the coral into the trough and level 1 puts it on the
+   * reef!!!! level 0 also works for recieving coral (maybe...)
+   *
+   * <p>- pos is the int position around the reef from 0-5 - rl is an int either 0 or 1, 0
+   * representing left and 1 representing right
+   *
+   * <p>- If you do not want to change a value, set it to -1 in the method (ie if i only wanted to
+   * execute the code (by setting exec to true))
+   *
+   * <p>- All my other values would be -1. example: ChooseVars(-1, 4, -1) would set the position to
+   * 4 and change no other values in the subsystem. if you put new ChooseVars(0, 4, 0), it would set
+   * the level and rl variables to 0!!!
+   *
+   * @param level
+   * @param pos
+   * @param rl (0 = left, 1 = right)
+   */
   public void chooseVars(int level, int pos, int rl) {
     if (rl == 1) {
       this.rl = !this.rl;
@@ -121,6 +55,83 @@ public class InferfaceSubsystem extends SubsystemBase {
     if (pos > -1) {
       this.pos = pos;
     }
+  }
+
+  /**
+   * This is a FULL sequence of moving to position, going to left/right on that position, raising
+   * the elevator, scoring, then lowering the elevator.
+   *
+   * @param drive (the drive subsystem)
+   * @param elevator (the elevator subsystem)
+   * @param flipper (the flipper subsystem)
+   * @param level
+   * @param pos
+   * @param rl (0 = left, 1 = right)
+   */
+  @SuppressWarnings(
+      "static-access") // VSC tries warning me that it should be accessed statically, it's 100% fine
+  // currently.
+  public void chooseReef(
+      Drive drive,
+      ElevatorSubsystem elevator,
+      FlipperSubsystem flipper,
+      int level,
+      int pos,
+      int rl) {
+    // Drive robot to the position chosen
+    switch (pos) {
+      case 0:
+        Transform2d targetTransform =
+            new Transform2d(
+                new Translation2d(14.35, 4.31), new Rotation2d(Units.degreesToRadians(-178.0)));
+        DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
+            .andThen(DriveCommands.goToTransform(drive, targetTransform))
+            .beforeStarting(
+                () -> {
+                  DriveCommands.goToTransform(drive, targetTransform).cancel();
+                  DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
+                });
+        break;
+        // Repeat this for the rest of the positions with the proper locations
+    }
+    Timer.delay(Constants.kTimeToGetToReefSeconds);
+    // Raise elevator to level inputted
+    switch (level) {
+      case 0:
+        elevator.lowerFirstStage();
+        elevator.lowerSecondStage();
+        break;
+      case 1:
+        elevator.lowerFirstStage();
+        elevator.lowerSecondStage();
+        break;
+      case 2:
+        elevator.raiseFirstStage();
+        elevator.lowerSecondStage();
+        Timer.delay(Constants.kTimeToRaiseStageSeconds);
+        break;
+      case 3:
+        elevator.raiseFirstStage();
+        elevator.raiseSecondStage();
+        Timer.delay(Constants.kTimeToRaiseStageSeconds * 2);
+        break;
+    }
+    // Shift to right/left based on rl variable
+    switch (rl) {
+      case 0:
+        // Move the robot to the left a tiny bit
+        break;
+      case 1:
+        // Move the robot to the right a tiny bit
+        break;
+    }
+    Timer.delay(Constants.kTimeToShiftSeconds);
+    // Score
+    flipper.flipperScore();
+    Timer.delay(Constants.kTimeToScoreSeconds);
+    // Lower elevator when done
+    elevator.lowerFirstStage();
+    elevator.lowerSecondStage();
   }
 
   @Override

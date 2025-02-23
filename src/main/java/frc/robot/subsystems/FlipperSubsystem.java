@@ -30,10 +30,11 @@ public class FlipperSubsystem extends SubsystemBase {
   public FlipperSubsystem() {}
 
   /**
-   * If the flipper thinks it has/had coral (aka it dropped to the reef or tried gripping), it opens the gripper. 
-   * If the flipper doesn't think it has coral (right after recieving basically), it centers then grips the coral.
-  */
-  public static void flipperHoldingState() {
+   * If the flipper thinks it has/had coral (aka it dropped to the reef or tried gripping), it opens
+   * the gripper. If the flipper doesn't think it has coral (right after recieving basically), it
+   * centers then grips the coral.
+   */
+  public void flipperHoldingState() {
     if (!believesHasCoral) {
       coralCenterMechanism.setPulseDuration(0.5);
       coralCenterMechanism.startPulse();
@@ -55,10 +56,8 @@ public class FlipperSubsystem extends SubsystemBase {
     return !gripper.get();
   }
 
-  /**
-   * Flips the coral out.
-   */
-  public static void flipperScore() {
+  /** Flips the coral out. */
+  public void flipperScore() {
     flipper.setPulseDuration(1);
     flipper.startPulse();
   }

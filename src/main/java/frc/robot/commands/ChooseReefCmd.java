@@ -5,11 +5,17 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.FlipperSubsystem;
 import frc.robot.subsystems.InferfaceSubsystem;
+import frc.robot.subsystems.drive.Drive;
 
 public class ChooseReefCmd extends Command {
 
-  private InferfaceSubsystem subsystem;
+  private InferfaceSubsystem interfaceSubsystem;
+  private Drive driveSubsystem;
+  private ElevatorSubsystem elevatorSubsystem;
+  private FlipperSubsystem flipperSubsystem;
 
   private int level = -1;
   private int pos = -1;
@@ -30,8 +36,18 @@ public class ChooseReefCmd extends Command {
   values in the subsystem. if you put new ChooseReefCmd(subsystem, 0, 4, 0, false), it would set the level and rl variables to 0!!!
   */
   public ChooseReefCmd(
-      InferfaceSubsystem subsystem, int level, int pos, int rl, boolean exec) {
-    this.subsystem = subsystem;
+      InferfaceSubsystem interfaceSubsystem,
+      Drive driveSubsystem,
+      ElevatorSubsystem elevatorSubsystem,
+      FlipperSubsystem flipperSubsystem,
+      int level,
+      int pos,
+      int rl,
+      boolean exec) {
+    this.interfaceSubsystem = interfaceSubsystem;
+    this.driveSubsystem = driveSubsystem;
+    this.elevatorSubsystem = elevatorSubsystem;
+    this.flipperSubsystem = flipperSubsystem;
     if (level > -1) {
       this.level = level;
     }
@@ -42,7 +58,7 @@ public class ChooseReefCmd extends Command {
       this.rl = rl;
     }
     this.exec = exec;
-    addRequirements(subsystem);
+    addRequirements(interfaceSubsystem, driveSubsystem, elevatorSubsystem, flipperSubsystem);
   }
 
   // Called when the command is initially scheduled.
@@ -53,9 +69,10 @@ public class ChooseReefCmd extends Command {
   @Override
   public void execute() {
     if (exec) {
-      subsystem.chooseReef();
+      interfaceSubsystem.chooseReef(
+          driveSubsystem, elevatorSubsystem, flipperSubsystem, level, pos, rl);
     } else {
-      subsystem.chooseVars(level, pos, rl);
+      interfaceSubsystem.chooseVars(level, pos, rl);
     }
   }
 
