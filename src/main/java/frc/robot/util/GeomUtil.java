@@ -17,8 +17,8 @@ public class GeomUtil {
   /**
    * Creates a pure translating transform
    *
-   * @param x The x componenet of the translation
-   * @param y The y componenet of the translation
+   * @param x The x component of the translation
+   * @param y The y component of the translation
    * @return The resulting transform
    */
   public static Transform2d translationToTransform(double x, double y) {
@@ -111,7 +111,7 @@ public class GeomUtil {
   /**
    * Converts a Translation3d to a Translation2d by extracting two dimensions (X and Y). chain
    *
-   * @param transform The original translation
+   * @param translation The original translation
    * @return The resulting translation
    */
   public static Translation2d translation3dTo2dXY(Translation3d translation) {
@@ -121,7 +121,7 @@ public class GeomUtil {
   /**
    * Converts a Translation3d to a Translation2d by extracting two dimensions (X and Z). chain
    *
-   * @param transform The original translation
+   * @param translation The original translation
    * @return The resulting translation
    */
   public static Translation2d translation3dTo2dXZ(Translation3d translation) {

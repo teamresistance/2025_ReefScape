@@ -13,6 +13,8 @@
 
 package frc.robot.commands;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.MathUtil;
@@ -30,7 +32,9 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.util.GeomUtil;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
@@ -39,8 +43,8 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 public class DriveCommands {
-  private static final double DEADBAND = 0.10;
-  private static final double ANGLE_KP = 5.0;
+  private static final double DEADBAND = 0.1;
+  private static final double ANGLE_KP = 4.0;
   private static final double ANGLE_KD = 0.4;
   private static final double ANGLE_MAX_VELOCITY = 8.0;
   private static final double ANGLE_MAX_ACCELERATION = 20.0;
@@ -279,8 +283,8 @@ public class DriveCommands {
                       drive.getRotation().getRadians(), targetRotation.getRadians());
 
               // If the error is small, stop the robot (use deadzone for smooth stopping)
-              if (Math.abs(errorX) < 0.05
-                  && Math.abs(errorY) < 0.05
+              if (Math.abs(errorX) < 0.02
+                  && Math.abs(errorY) < 0.02
                   && Math.abs(errorrot.getRadians()) < 5 * 3.14 / 180) {
                 speedX = 0.0;
                 speedY = 0.0;
@@ -321,12 +325,17 @@ public class DriveCommands {
     // needed)
   }
 
-  public static Command goToTransformWithPathFinder(Transform2d targetTransform) {
+  public static Command goToTransformWithPathFinder(Drive drive, Transform2d targetTransform) {
     return AutoBuilder.pathfindToPose(
-        new Pose2d(targetTransform.getTranslation(), targetTransform.getRotation()),
-        new PathConstraints(3.0, 4.0, Units.degreesToRadians(540), Units.degreesToRadians(720)),
-        0.0 // Goal end velocity in meters/sec
-        );
+            GeomUtil.transformToPose(targetTransform),
+            new PathConstraints(
+                TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.8,
+                4.0,
+                Units.degreesToRadians(540),
+                Units.degreesToRadians(820)),
+            0.0 // Goal end velocity in meters/sec
+            )
+        .andThen(goToTransform(drive, targetTransform));
   }
 
   /** Measures the robot's wheel radius by spinning in a circle. */

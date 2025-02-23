@@ -20,16 +20,21 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.LedMode;
 import frc.robot.Constants.LedMode;
 import frc.robot.commandgroups.ElevatorCommandGroup;
 import frc.robot.commands.ChooseReefCmd;
@@ -38,8 +43,10 @@ import frc.robot.commands.FlipperGripperCmd;
 import frc.robot.commands.FlipperScoreCmd;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ClimberSubsystem;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.FlipperSubsystem;
+import frc.robot.subsystems.LedSubsystem;
 import frc.robot.subsystems.LedSubsystem;
 import frc.robot.subsystems.PhysicalReefInterfaceSubsystem;
 import frc.robot.subsystems.drive.*;
@@ -61,6 +68,8 @@ public class RobotContainer {
   public final PhotonCamera backRightCamera = new PhotonCamera("back_right");
   public final PhotonCamera frontCenterCamera = new PhotonCamera("front_center");
 
+  private final Alert cameraFailureAlert;
+
   // Subsystems
   private final Drive drive;
   private final FlipperSubsystem m_flipperSubsystem = new FlipperSubsystem();
@@ -71,14 +80,16 @@ public class RobotContainer {
   private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
-  private final Joystick joystick2 = new Joystick(1);
-  private final Joystick coJoystick = new Joystick(2);
+
+  private final Joystick cojoystick = new Joystick(1);
+  private final Joystick reefController = new Joystick(2);
+
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
   public Vision aprilTagVision;
   // Create the target Transform2d (Translation and Rotation)
-  Translation2d targetTranslation = new Translation2d(14.26, 4.03); // X = 14, Y = 4
-  Rotation2d targetRotation = new Rotation2d(180.0 - 45); // No rotation
+  Translation2d targetTranslation = new Translation2d(14.35, 4.31); // X = 14, Y = 4
+  Rotation2d targetRotation = new Rotation2d(Units.degreesToRadians(-178.0)); // No rotation
   Transform2d targetTransform = new Transform2d(targetTranslation, targetRotation);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -87,6 +98,7 @@ public class RobotContainer {
     autoChooser = configureAutos();
     aprilTagVision = configureAprilTagVision();
     configureButtonBindings();
+    cameraFailureAlert = new Alert("Camera failure.", Alert.AlertType.kError);
   }
 
   private LoggedDashboardChooser<Command> configureAutos() {
@@ -123,7 +135,8 @@ public class RobotContainer {
               backRightCamera,
               frontCenterCamera);
     } catch (IOException e) {
-      e.printStackTrace();
+      assert cameraFailureAlert != null;
+      cameraFailureAlert.set(true);
     }
     aprilTagVision.setDataInterfaces(drive::getPose, drive::addAutoVisionMeasurement);
     return aprilTagVision;
@@ -133,7 +146,7 @@ public class RobotContainer {
     // Real robot, instantiate hardware IO implementations
     // Sim robot, instantiate physics sim IO implementations
     // Replayed robot, disable IO implementations
-    return switch (Constants.currentMode) {
+    return switch (Constants.CurrentMode) {
       case REAL ->
           // Real robot, instantiate hardware IO implementations
           new Drive(
@@ -177,14 +190,22 @@ public class RobotContainer {
         .a()
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
-                drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> new Rotation2d()));
+                drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), Rotation2d::new));
 
     // Switch to X pattern when X button is pressed
     driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
-    driver.leftBumper().whileTrue(DriveCommands.goToTransform(drive, targetTransform));
-
-    driver.rightBumper().whileTrue(DriveCommands.goToTransformWithPathFinder(targetTransform));
+    // need both commands
+    driver
+        .rightBumper()
+        .whileTrue(
+            DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
+                .andThen(DriveCommands.goToTransform(drive, targetTransform))
+                .beforeStarting(
+                    () -> {
+                      DriveCommands.goToTransform(drive, targetTransform).cancel();
+                      DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
+                    }));
 
     // Reset gyro to 0 when B button is pressed
     driver
@@ -196,75 +217,62 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                     drive)
                 .ignoringDisable(true));
-    //
+
     //    Codriver Bindings
     //
     // execute
-    new JoystickButton(coJoystick, 1)
+    new JoystickButton(reefController, 1)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, -1, -1, true));
     // level
-    new JoystickButton(coJoystick, 2)
+    new JoystickButton(reefController, 2)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, 0, -1, -1, false));
-    new JoystickButton(coJoystick, 3)
+    new JoystickButton(reefController, 3)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, 1, -1, -1, false));
-    new JoystickButton(coJoystick, 4)
+    new JoystickButton(reefController, 4)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, 2, -1, -1, false));
-    new JoystickButton(coJoystick, 6)
+    new JoystickButton(reefController, 6)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, 3, -1, -1, false));
     // pos
-    new JoystickButton(coJoystick, 7)
+    new JoystickButton(reefController, 7)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 0, -1, false));
-    new JoystickButton(coJoystick, 8)
+    new JoystickButton(reefController, 8)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 1, -1, false));
-    new JoystickButton(coJoystick, 9)
+    new JoystickButton(reefController, 9)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 2, -1, false));
-    new JoystickButton(coJoystick, 10)
+    new JoystickButton(reefController, 10)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 3, -1, false));
-    new JoystickButton(coJoystick, 11)
+    new JoystickButton(reefController, 11)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 4, -1, false));
-    new JoystickButton(coJoystick, 12)
+    new JoystickButton(reefController, 12)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 5, -1, false));
     // rightleft
-    new JoystickButton(coJoystick, 5)
+    new JoystickButton(reefController, 5)
         .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, -1, 1, false));
 
     //
     //    Standard Joystick Bindings
-    // not sure if these should be joystick2
+    // not sure if these should be cojoystick
     //
-    new JoystickButton(joystick2, 1).onTrue(new FlipperScoreCmd(m_flipperSubsystem));
-    new JoystickButton(joystick2, 5).onTrue(new FlipperGripperCmd(m_flipperSubsystem));
-    new JoystickButton(joystick2, 3).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 0));
-    new JoystickButton(joystick2, 4).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 1));
-    new JoystickButton(joystick2, 6).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 2));
-
-    // More drive stuff
-    driver.leftBumper().whileTrue(DriveCommands.goToTransform(drive, targetTransform));
-
-    // **Left Trigger - Go to AprilTag Position A**
-    driver.leftBumper().whileTrue(DriveCommands.goToTransform(drive, targetTransform));
-
-    // **Right Trigger - Go to AprilTag Position B**
-    driver.rightBumper().whileTrue(DriveCommands.goToTransformWithPathFinder(targetTransform));
-
+    new JoystickButton(cojoystick, 1).onTrue(new FlipperScoreCmd(m_flipperSubsystem));
+    new JoystickButton(cojoystick, 5).onTrue(new FlipperGripperCmd(m_flipperSubsystem));
+    new JoystickButton(cojoystick, 3).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 0));
+    new JoystickButton(cojoystick, 4).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 1));
+    new JoystickButton(cojoystick, 6).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 2));
+    //
     // LED Triggers
-
+    //
     // Coral
-    Trigger ledComplexTrigger = new Trigger(() -> m_flipperSubsystem.getHasCoral());
+    Trigger ledComplexTrigger = new Trigger(m_flipperSubsystem::getHasCoral);
     ledComplexTrigger.onTrue(
         new InstantCommand(
             () -> {
               m_ledSubsystem.setMode(LedMode.kSTROBE);
               m_ledSubsystem.setStrobeSetting(0);
             }));
-    ledComplexTrigger.onFalse(
-        new InstantCommand(
-            () -> {
-              m_ledSubsystem.setMode(LedMode.kSOLID);
-            }));
+    ledComplexTrigger.onFalse(new InstantCommand(() -> m_ledSubsystem.setMode(LedMode.kSOLID)));
 
     // Climbing
-    Trigger ledClimbingTrigger = new Trigger(() -> m_climberSubsystem.getClimberUsed());
+    Trigger ledClimbingTrigger = new Trigger(m_climberSubsystem::getClimberUsed);
     ledClimbingTrigger.onTrue(
         new InstantCommand(
             () -> {
