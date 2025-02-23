@@ -5,11 +5,11 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.PhysicalReefInterfaceSubsystem;
+import frc.robot.subsystems.InferfaceSubsystem;
 
 public class ChooseReefCmd extends Command {
 
-  private PhysicalReefInterfaceSubsystem subsystem;
+  private InferfaceSubsystem subsystem;
 
   private int level = -1;
   private int pos = -1;
@@ -30,7 +30,7 @@ public class ChooseReefCmd extends Command {
   values in the subsystem. if you put new ChooseReefCmd(subsystem, 0, 4, 0, false), it would set the level and rl variables to 0!!!
   */
   public ChooseReefCmd(
-      PhysicalReefInterfaceSubsystem subsystem, int level, int pos, int rl, boolean exec) {
+      InferfaceSubsystem subsystem, int level, int pos, int rl, boolean exec) {
     this.subsystem = subsystem;
     if (level > -1) {
       this.level = level;

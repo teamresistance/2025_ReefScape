@@ -34,6 +34,10 @@ public final class Constants {
   public static final int kFlipperSolenoidChannel = 4;
   public static final int kClimberSolenoidChannel = 4;
 
+  // Elevator/Flipper
+  public static final int kElevatorRaiseStageSeconds = 0;
+  public static final int kTimeToScoreSeconds = 0;
+
   // Drive
   public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : Mode.SIM;
   public static final boolean tuningMode = false;

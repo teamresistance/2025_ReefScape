@@ -4,16 +4,33 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.commands.DriveCommands;
+import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.GyroIOPigeon2;
+import frc.robot.subsystems.drive.ModuleIOTalonFX;
 
-public class PhysicalReefInterfaceSubsystem extends SubsystemBase {
+public class InferfaceSubsystem extends SubsystemBase {
   /** Subsystem that handles the codriver interface inputs. */
-  public PhysicalReefInterfaceSubsystem() {}
+  public InferfaceSubsystem() {}
 
   private int level;
   private int pos;
   private boolean rl = false; // Left is false, right is true
+  private Drive drive = new Drive(
+    new GyroIOPigeon2(),
+    new ModuleIOTalonFX(TunerConstants.FrontLeft),
+    new ModuleIOTalonFX(TunerConstants.FrontRight),
+    new ModuleIOTalonFX(TunerConstants.BackLeft),
+    new ModuleIOTalonFX(TunerConstants.BackRight)); // For to-position movement
 
   public void chooseReef() {
     /**
@@ -27,16 +44,26 @@ public class PhysicalReefInterfaceSubsystem extends SubsystemBase {
 
     // Change elevator position to the selected pos
     if (level == 0) {
-      ElevatorSubsystem.lowerFirstStage();
-      ElevatorSubsystem.lowerSecondStage();
+      // Do NOT move left/right for this. It can just drop.
+      FlipperSubsystem.flipperScore();
     }
     if (level == 1) {
-      ElevatorSubsystem.raiseFirstStage();
-      ElevatorSubsystem.lowerSecondStage();
+      // Move left or right based on input
+      FlipperSubsystem.flipperScore();
     }
     if (level == 2) {
+      // Move left or right based on input
+      ElevatorSubsystem.raiseFirstStage();
+      ElevatorSubsystem.lowerSecondStage();
+      Timer.delay(Constants.kElevatorRaiseStageSeconds);
+      FlipperSubsystem.flipperScore();
+    }
+    if (level == 3) {
+      // Move left or right based on input
       ElevatorSubsystem.raiseFirstStage();
       ElevatorSubsystem.raiseSecondStage();
+      Timer.delay(Constants.kElevatorRaiseStageSeconds*2);
+      FlipperSubsystem.flipperScore();
     }
 
     SmartDashboard.putString(
@@ -44,12 +71,36 @@ public class PhysicalReefInterfaceSubsystem extends SubsystemBase {
     level = 0;
     pos = 0;
     rl = false;
+
+    // Drive to position 
+    switch (pos) {
+      case 0:
+        Transform2d targetTransform = new Transform2d(new Translation2d(14.35, 4.31), new Rotation2d(Units.degreesToRadians(-178.0)));
+        DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
+                .andThen(DriveCommands.goToTransform(drive, targetTransform))
+                .beforeStarting(
+                    () -> {
+                      DriveCommands.goToTransform(drive, targetTransform).cancel();
+                      DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
+                    });
+      // case 1:
+      // case 2:
+      // case 3:
+      // case 4:
+      // case 5:
+      /* Add the rest of these later. My new idea for this is that the robot goes to the apriltag,
+      * when it gets to the apriltag it then shifts either left or right from its position.
+      * Easier than checking L/R state for each position and having twelve transforms.
+      */
+
+      Timer.delay(Constants.kTimeToScoreSeconds);
+      ElevatorSubsystem.lowerFirstStage();
+      ElevatorSubsystem.lowerSecondStage();
+    }
+
   }
 
-  // Drive.whateverTheMethodWillBeToGoToTheSelectedPosition()
-  // FlipperSubsystem.flipperScore();
-
-  /*
+  /**
   ChooseVars(level, pos, rl) runs when an interface button is pressed but it does NOT execute the code
   - level is an int from 0-3 representing the targeted reef level. level 1 and 0 may have the same elevator height BUT level 0 drops
   the coral into the trough and level 1 puts it on the reef!!!! level 0 also works for recieving coral (maybe...)

@@ -28,13 +28,10 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.Constants.LedMode;
 import frc.robot.Constants.LedMode;
 import frc.robot.commandgroups.ElevatorCommandGroup;
 import frc.robot.commands.ChooseReefCmd;
@@ -43,12 +40,10 @@ import frc.robot.commands.FlipperGripperCmd;
 import frc.robot.commands.FlipperScoreCmd;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ClimberSubsystem;
-import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.FlipperSubsystem;
 import frc.robot.subsystems.LedSubsystem;
-import frc.robot.subsystems.LedSubsystem;
-import frc.robot.subsystems.PhysicalReefInterfaceSubsystem;
+import frc.robot.subsystems.InferfaceSubsystem;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.vision.Vision;
 import java.io.IOException;
@@ -75,8 +70,8 @@ public class RobotContainer {
   private final FlipperSubsystem m_flipperSubsystem = new FlipperSubsystem();
   private final ElevatorSubsystem m_elevatorSubsystem = new ElevatorSubsystem();
   private final LedSubsystem m_ledSubsystem = new LedSubsystem();
-  private final PhysicalReefInterfaceSubsystem m_PhysicalReefSubsystem =
-      new PhysicalReefInterfaceSubsystem();
+  private final InferfaceSubsystem m_PhysicalReefSubsystem =
+      new InferfaceSubsystem();
   private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);

@@ -13,28 +13,27 @@ import org.littletonrobotics.junction.Logger;
 
 public class FlipperSubsystem extends SubsystemBase {
 
-  private boolean believesHasCoral = false;
-  private Solenoid gripper =
+  private static boolean believesHasCoral = false;
+  private static Solenoid gripper =
       new Solenoid(
           Constants.SolenoidModuleType,
           Constants
               .kGripperSolenoidChannel); // The pneumatics hub channels that we are using are 0, 2,
   // and 5
-  private Solenoid flipper =
+  private static Solenoid flipper =
       new Solenoid(Constants.SolenoidModuleType, Constants.kFlipperSolenoidChannel);
-  private Solenoid coralCenterMechanism =
+  private static Solenoid coralCenterMechanism =
       new Solenoid(Constants.SolenoidModuleType, Constants.kCentererSolenoidChannel);
-  private DigitalInput coralDetector = new DigitalInput(0);
+  private static DigitalInput coralDetector = new DigitalInput(0);
 
   /** Subsystem handling coral intake and dropping onto branches/level1. */
   public FlipperSubsystem() {}
 
   /**
-   * An example method querying a boolean state of the subsystem (for example, a digital sensor).
-   *
-   * @return the opposite of the value of said boolean state.
-   */
-  public void flipperHoldingState() {
+   * If the flipper thinks it has/had coral (aka it dropped to the reef or tried gripping), it opens the gripper. 
+   * If the flipper doesn't think it has coral (right after recieving basically), it centers then grips the coral.
+  */
+  public static void flipperHoldingState() {
     if (!believesHasCoral) {
       coralCenterMechanism.setPulseDuration(0.5);
       coralCenterMechanism.startPulse();
@@ -48,15 +47,18 @@ public class FlipperSubsystem extends SubsystemBase {
     }
   }
 
-  public boolean getHasCoral() {
+  public static boolean getHasCoral() {
     return believesHasCoral;
   }
 
-  public boolean getIsntGripped() {
+  public static boolean getIsntGripped() {
     return !gripper.get();
   }
 
-  public void flipperScore() {
+  /**
+   * Flips the coral out.
+   */
+  public static void flipperScore() {
     flipper.setPulseDuration(1);
     flipper.startPulse();
   }
