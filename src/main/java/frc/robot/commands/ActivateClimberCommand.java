@@ -5,10 +5,10 @@ import frc.robot.subsystems.ClimberSubsystem;
 
 public class ActivateClimberCommand extends Command {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final ClimberSubsystem m_subsystem;
+  private final ClimberSubsystem subsystem;
 
   public ActivateClimberCommand(ClimberSubsystem subsystem) {
-    m_subsystem = subsystem;
+    this.subsystem = subsystem;
     addRequirements(subsystem);
   }
 
@@ -19,7 +19,7 @@ public class ActivateClimberCommand extends Command {
   // runs repeatedly until command is ended
   @Override
   public void execute() {
-    m_subsystem.activateClimber();
+    subsystem.activateClimber();
   }
 
   @Override

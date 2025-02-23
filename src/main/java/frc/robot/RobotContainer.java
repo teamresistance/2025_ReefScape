@@ -52,13 +52,11 @@ public class RobotContainer {
 
   // Subsystems
   private final Drive drive;
-  private final FlipperSubsystem m_flipperSubsystem = new FlipperSubsystem();
-  private final ElevatorSubsystem m_elevatorSubsystem = new ElevatorSubsystem();
-
-  private final LedSubsystem m_ledSubsystem = new LedSubsystem();
-  private final PhysicalReefInterfaceSubsystem m_PhysicalReefSubsystem =
-      new PhysicalReefInterfaceSubsystem();
-  private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
+  private final FlipperSubsystem flipper = new FlipperSubsystem();
+  private final ElevatorSubsystem elevator = new ElevatorSubsystem();
+  private final LedSubsystem led = new LedSubsystem();
+  private final PhysicalReefInterfaceSubsystem reef = new PhysicalReefInterfaceSubsystem();
+  private final ClimberSubsystem climber = new ClimberSubsystem();
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
@@ -203,62 +201,62 @@ public class RobotContainer {
     //    Codriver Bindings
     // execute
     new JoystickButton(reefController, 1)
-        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, -1, -1, true));
+        .onTrue(new ChooseReefCmd(reef, -1, -1, -1, true));
     // level
     new JoystickButton(reefController, 2)
-        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, 0, -1, -1, false));
+        .onTrue(new ChooseReefCmd(reef, 0, -1, -1, false));
     new JoystickButton(reefController, 3)
-        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, 1, -1, -1, false));
+        .onTrue(new ChooseReefCmd(reef, 1, -1, -1, false));
     new JoystickButton(reefController, 4)
-        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, 2, -1, -1, false));
+        .onTrue(new ChooseReefCmd(reef, 2, -1, -1, false));
     new JoystickButton(reefController, 6)
-        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, 3, -1, -1, false));
+        .onTrue(new ChooseReefCmd(reef, 3, -1, -1, false));
     // pos
     new JoystickButton(reefController, 7)
-        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 0, -1, false));
+        .onTrue(new ChooseReefCmd(reef, -1, 0, -1, false));
     new JoystickButton(reefController, 8)
-        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 1, -1, false));
+        .onTrue(new ChooseReefCmd(reef, -1, 1, -1, false));
     new JoystickButton(reefController, 9)
-        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 2, -1, false));
+        .onTrue(new ChooseReefCmd(reef, -1, 2, -1, false));
     new JoystickButton(reefController, 10)
-        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 3, -1, false));
+        .onTrue(new ChooseReefCmd(reef, -1, 3, -1, false));
     new JoystickButton(reefController, 11)
-        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 4, -1, false));
+        .onTrue(new ChooseReefCmd(reef, -1, 4, -1, false));
     new JoystickButton(reefController, 12)
-        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, 5, -1, false));
+        .onTrue(new ChooseReefCmd(reef, -1, 5, -1, false));
     // rightleft
     new JoystickButton(reefController, 5)
-        .onTrue(new ChooseReefCmd(m_PhysicalReefSubsystem, -1, -1, 1, false));
+        .onTrue(new ChooseReefCmd(reef, -1, -1, 1, false));
 
     //
     //    Standard Joystick Bindings
     // not sure if these should be cojoystick
     //
-    new JoystickButton(cojoystick, 1).onTrue(new FlipperScoreCmd(m_flipperSubsystem));
-    new JoystickButton(cojoystick, 5).onTrue(new FlipperGripperCmd(m_flipperSubsystem));
-    new JoystickButton(cojoystick, 3).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 0));
-    new JoystickButton(cojoystick, 4).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 1));
-    new JoystickButton(cojoystick, 6).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 2));
+    new JoystickButton(cojoystick, 1).onTrue(new FlipperScoreCmd(flipper));
+    new JoystickButton(cojoystick, 5).onTrue(new FlipperGripperCmd(flipper));
+    new JoystickButton(cojoystick, 3).onTrue(new ElevatorCommandGroup(elevator, 0));
+    new JoystickButton(cojoystick, 4).onTrue(new ElevatorCommandGroup(elevator, 1));
+    new JoystickButton(cojoystick, 6).onTrue(new ElevatorCommandGroup(elevator, 2));
 
     // LED Triggers
 
     // Coral
-    Trigger ledComplexTrigger = new Trigger(m_flipperSubsystem::getHasCoral);
+    Trigger ledComplexTrigger = new Trigger(flipper::getHasCoral);
     ledComplexTrigger.onTrue(
         new InstantCommand(
             () -> {
-              m_ledSubsystem.setMode(LedMode.STROBE);
-              m_ledSubsystem.setStrobeSetting(0);
+              led.setMode(LedMode.STROBE);
+              led.setStrobeSetting(0);
             }));
-    ledComplexTrigger.onFalse(new InstantCommand(() -> m_ledSubsystem.setMode(LedMode.SOLID)));
+    ledComplexTrigger.onFalse(new InstantCommand(() -> led.setMode(LedMode.SOLID)));
 
     // Climbing
-    Trigger ledClimbingTrigger = new Trigger(m_climberSubsystem::getClimberUsed);
+    Trigger ledClimbingTrigger = new Trigger(climber::getClimberUsed);
     ledClimbingTrigger.onTrue(
         new InstantCommand(
             () -> {
-              m_ledSubsystem.setMode(LedMode.STROBE);
-              m_ledSubsystem.setStrobeSetting(1);
+              led.setMode(LedMode.STROBE);
+              led.setStrobeSetting(1);
             }));
   }
 
