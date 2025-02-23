@@ -27,9 +27,6 @@ public class Vision extends SubsystemBase {
 
   private final PhotonCamera[] cameras;
   /* For shooting vs. path following in auto */
-  private final double singleTagStdDevScalar = 100.0;
-  private final double stdDevScalarAuto = 0.69420;
-  private final double thetaStdDevCoefficientAuto = 0.1;
   private final double stdDevScalarShooting = 0.2;
   private final double thetaStdDevCoefficientShooting = 0.075;
   private final PolynomialRegression xyStdDevModel =
