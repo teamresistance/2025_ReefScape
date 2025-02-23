@@ -51,7 +51,7 @@ public class RobotContainer {
   private final Alert cameraFailureAlert;
 
   // Subsystems
-  private final Drive drive;
+  private final DriveSubsystem drive;
   private final FlipperSubsystem flipper = new FlipperSubsystem();
   private final ElevatorSubsystem elevator = new ElevatorSubsystem();
   private final LedSubsystem led = new LedSubsystem();
@@ -122,14 +122,14 @@ public class RobotContainer {
     return aprilTagVision;
   }
 
-  private Drive configureDrive() {
+  private DriveSubsystem configureDrive() {
     // Real robot, instantiate hardware IO implementations
     // Sim robot, instantiate physics sim IO implementations
     // Replayed robot, disable IO implementations
     return switch (Constants.CURRENT_MODE) {
       case REAL ->
           // Real robot, instantiate hardware IO implementations
-          new Drive(
+          new DriveSubsystem(
               new GyroIOPigeon2(),
               new ModuleIOTalonFX(TunerConstants.FrontLeft),
               new ModuleIOTalonFX(TunerConstants.FrontRight),
@@ -137,7 +137,7 @@ public class RobotContainer {
               new ModuleIOTalonFX(TunerConstants.BackRight));
       case SIM ->
           // Sim robot, instantiate physics sim IO implementations
-          new Drive(
+          new DriveSubsystem(
               new GyroIO() {},
               new ModuleIOSim(TunerConstants.FrontLeft),
               new ModuleIOSim(TunerConstants.FrontRight),
@@ -145,7 +145,7 @@ public class RobotContainer {
               new ModuleIOSim(TunerConstants.BackRight));
       default ->
           // Replayed robot, disable IO implementations
-          new Drive(
+          new DriveSubsystem(
               new GyroIO() {},
               new ModuleIO() {},
               new ModuleIO() {},
