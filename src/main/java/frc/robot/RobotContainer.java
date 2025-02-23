@@ -200,33 +200,21 @@ public class RobotContainer {
 
     //    Codriver Bindings
     // execute
-    new JoystickButton(reefController, 1)
-        .onTrue(new ChooseReefCmd(reef, -1, -1, -1, true));
+    new JoystickButton(reefController, 1).onTrue(new ChooseReefCmd(reef, -1, -1, -1, true));
     // level
-    new JoystickButton(reefController, 2)
-        .onTrue(new ChooseReefCmd(reef, 0, -1, -1, false));
-    new JoystickButton(reefController, 3)
-        .onTrue(new ChooseReefCmd(reef, 1, -1, -1, false));
-    new JoystickButton(reefController, 4)
-        .onTrue(new ChooseReefCmd(reef, 2, -1, -1, false));
-    new JoystickButton(reefController, 6)
-        .onTrue(new ChooseReefCmd(reef, 3, -1, -1, false));
+    new JoystickButton(reefController, 2).onTrue(new ChooseReefCmd(reef, 0, -1, -1, false));
+    new JoystickButton(reefController, 3).onTrue(new ChooseReefCmd(reef, 1, -1, -1, false));
+    new JoystickButton(reefController, 4).onTrue(new ChooseReefCmd(reef, 2, -1, -1, false));
+    new JoystickButton(reefController, 6).onTrue(new ChooseReefCmd(reef, 3, -1, -1, false));
     // pos
-    new JoystickButton(reefController, 7)
-        .onTrue(new ChooseReefCmd(reef, -1, 0, -1, false));
-    new JoystickButton(reefController, 8)
-        .onTrue(new ChooseReefCmd(reef, -1, 1, -1, false));
-    new JoystickButton(reefController, 9)
-        .onTrue(new ChooseReefCmd(reef, -1, 2, -1, false));
-    new JoystickButton(reefController, 10)
-        .onTrue(new ChooseReefCmd(reef, -1, 3, -1, false));
-    new JoystickButton(reefController, 11)
-        .onTrue(new ChooseReefCmd(reef, -1, 4, -1, false));
-    new JoystickButton(reefController, 12)
-        .onTrue(new ChooseReefCmd(reef, -1, 5, -1, false));
+    new JoystickButton(reefController, 7).onTrue(new ChooseReefCmd(reef, -1, 0, -1, false));
+    new JoystickButton(reefController, 8).onTrue(new ChooseReefCmd(reef, -1, 1, -1, false));
+    new JoystickButton(reefController, 9).onTrue(new ChooseReefCmd(reef, -1, 2, -1, false));
+    new JoystickButton(reefController, 10).onTrue(new ChooseReefCmd(reef, -1, 3, -1, false));
+    new JoystickButton(reefController, 11).onTrue(new ChooseReefCmd(reef, -1, 4, -1, false));
+    new JoystickButton(reefController, 12).onTrue(new ChooseReefCmd(reef, -1, 5, -1, false));
     // rightleft
-    new JoystickButton(reefController, 5)
-        .onTrue(new ChooseReefCmd(reef, -1, -1, 1, false));
+    new JoystickButton(reefController, 5).onTrue(new ChooseReefCmd(reef, -1, -1, 1, false));
 
     //
     //    Standard Joystick Bindings
