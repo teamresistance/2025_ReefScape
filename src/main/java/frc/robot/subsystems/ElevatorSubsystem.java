@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.Solenoid;
@@ -12,9 +8,9 @@ import org.littletonrobotics.junction.Logger;
 
 public class ElevatorSubsystem extends SubsystemBase {
   static Solenoid elevatorPusher1 =
-      new Solenoid(Constants.SolenoidModuleType, Constants.kElevatorSolenoid1Channel);
+      new Solenoid(Constants.SOLENOID_MODULE_TYPE, Constants.ELEVATOR_SOLENOID1_CHANNEL);
   static Solenoid elevatorPusher2 =
-      new Solenoid(Constants.SolenoidModuleType, Constants.kElevatorSolenoid2Channel);
+      new Solenoid(Constants.SOLENOID_MODULE_TYPE, Constants.ELEVATOR_SOLENOID2_CHANNEL);
 
   /**
    * The elevator subsystem is still available from both the codriver controls and the driver

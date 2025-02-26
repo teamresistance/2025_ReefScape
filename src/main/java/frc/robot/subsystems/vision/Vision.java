@@ -27,9 +27,6 @@ public class Vision extends SubsystemBase {
 
   private final PhotonCamera[] cameras;
   /* For shooting vs. path following in auto */
-  private final double singleTagStdDevScalar = 100.0;
-  private final double stdDevScalarAuto = 0.69420;
-  private final double thetaStdDevCoefficientAuto = 0.1;
   private final double stdDevScalarShooting = 0.2;
   private final double thetaStdDevCoefficientShooting = 0.075;
   private final PolynomialRegression xyStdDevModel =
@@ -74,7 +71,7 @@ public class Vision extends SubsystemBase {
     visionUpdates = new ArrayList<>();
 
     double singleTagAdjustment = 1.0;
-    if (Constants.TuningMode) SingleTagAdjustment.updateLoggedTagAdjustments();
+    if (Constants.TUNING_MODE) SingleTagAdjustment.updateLoggedTagAdjustments();
 
     // Loop through all the cameras
     for (int instanceIndex = 0; instanceIndex < cameras.length; instanceIndex++) {

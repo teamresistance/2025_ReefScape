@@ -1,19 +1,15 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.FlipperSubsystem;
-import frc.robot.subsystems.InferfaceSubsystem;
-import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.InterfaceSubsystem;
+import frc.robot.subsystems.drive.DriveSubsystem;
 
 public class ChooseReefCmd extends Command {
 
-  private InferfaceSubsystem interfaceSubsystem;
-  private Drive driveSubsystem;
+  private InterfaceSubsystem interfaceSubsystem;
+  private DriveSubsystem driveSubsystem;
   private ElevatorSubsystem elevatorSubsystem;
   private FlipperSubsystem flipperSubsystem;
 
@@ -36,8 +32,8 @@ public class ChooseReefCmd extends Command {
   values in the subsystem. if you put new ChooseReefCmd(subsystem, 0, 4, 0, false), it would set the level and rl variables to 0!!!
   */
   public ChooseReefCmd(
-      InferfaceSubsystem interfaceSubsystem,
-      Drive driveSubsystem,
+      InterfaceSubsystem interfaceSubsystem,
+      DriveSubsystem driveSubsystem,
       ElevatorSubsystem elevatorSubsystem,
       FlipperSubsystem flipperSubsystem,
       int level,

@@ -13,11 +13,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.commands.DriveCommands;
-import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.DriveSubsystem;
 
-public class InferfaceSubsystem extends SubsystemBase {
+public class InterfaceSubsystem extends SubsystemBase {
   /** Subsystem that handles the codriver interface inputs. */
-  public InferfaceSubsystem() {}
+  public InterfaceSubsystem() {}
 
   private int level;
   private int pos;
@@ -72,7 +72,7 @@ public class InferfaceSubsystem extends SubsystemBase {
       "static-access") // VSC tries warning me that it should be accessed statically, it's 100% fine
   // currently.
   public void chooseReef(
-      Drive drive,
+      DriveSubsystem drive,
       ElevatorSubsystem elevator,
       FlipperSubsystem flipper,
       int level,
@@ -94,7 +94,7 @@ public class InferfaceSubsystem extends SubsystemBase {
         break;
         // Repeat this for the rest of the positions with the proper locations
     }
-    Timer.delay(Constants.kTimeToGetToReefSeconds);
+    Timer.delay(Constants.TIME_TO_REACH_REEF);
     // Raise elevator to level inputted
     switch (level) {
       case 0:
@@ -108,12 +108,12 @@ public class InferfaceSubsystem extends SubsystemBase {
       case 2:
         elevator.raiseFirstStage();
         elevator.lowerSecondStage();
-        Timer.delay(Constants.kTimeToRaiseStageSeconds);
+        Timer.delay(Constants.TIME_TO_RAISE_STAGE);
         break;
       case 3:
         elevator.raiseFirstStage();
         elevator.raiseSecondStage();
-        Timer.delay(Constants.kTimeToRaiseStageSeconds * 2);
+        Timer.delay(Constants.TIME_TO_RAISE_STAGE * 2);
         break;
     }
     // Shift to right/left based on rl variable
@@ -125,10 +125,10 @@ public class InferfaceSubsystem extends SubsystemBase {
         // Move the robot to the right a tiny bit
         break;
     }
-    Timer.delay(Constants.kTimeToShiftSeconds);
+    Timer.delay(Constants.TIME_TO_SHIFT_LEFTRIGHT);
     // Score
     flipper.flipperScore();
-    Timer.delay(Constants.kTimeToScoreSeconds);
+    Timer.delay(Constants.TIME_TO_SHIFT_LEFTRIGHT);
     // Lower elevator when done
     elevator.lowerFirstStage();
     elevator.lowerSecondStage();

@@ -1,18 +1,3 @@
-// Copyright 2021-2025 FRC 6328
-// http://github.com/Mechanical-Advantage
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// version 3 as published by the Free Software Foundation or
-// available in the root directory of this project.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-
-// TODO: Add a climber button
-
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -34,16 +19,9 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.LedMode;
 import frc.robot.commandgroups.ElevatorCommandGroup;
-import frc.robot.commands.ChooseReefCmd;
-import frc.robot.commands.DriveCommands;
-import frc.robot.commands.FlipperGripperCmd;
-import frc.robot.commands.FlipperScoreCmd;
+import frc.robot.commands.*;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.ClimberSubsystem;
-import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.FlipperSubsystem;
-import frc.robot.subsystems.InferfaceSubsystem;
-import frc.robot.subsystems.LedSubsystem;
+import frc.robot.subsystems.*;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.vision.Vision;
 import java.io.IOException;
@@ -66,12 +44,13 @@ public class RobotContainer {
   private final Alert cameraFailureAlert;
 
   // Subsystems
-  private final Drive drive;
-  private final FlipperSubsystem m_flipperSubsystem = new FlipperSubsystem();
-  private final ElevatorSubsystem m_elevatorSubsystem = new ElevatorSubsystem();
-  private final LedSubsystem m_ledSubsystem = new LedSubsystem();
-  private final InferfaceSubsystem m_PhysicalReefSubsystem = new InferfaceSubsystem();
-  private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
+  private final DriveSubsystem drive;
+  private final FlipperSubsystem flipper = new FlipperSubsystem();
+  private final ElevatorSubsystem elevator = new ElevatorSubsystem();
+  private final LedSubsystem led = new LedSubsystem();
+  private final InterfaceSubsystem reef = new InterfaceSubsystem();
+  private final ClimberSubsystem climber = new ClimberSubsystem();
+
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
 
@@ -136,14 +115,14 @@ public class RobotContainer {
     return aprilTagVision;
   }
 
-  private Drive configureDrive() {
+  private DriveSubsystem configureDrive() {
     // Real robot, instantiate hardware IO implementations
     // Sim robot, instantiate physics sim IO implementations
     // Replayed robot, disable IO implementations
-    return switch (Constants.CurrentMode) {
+    return switch (Constants.CURRENT_MODE) {
       case REAL ->
           // Real robot, instantiate hardware IO implementations
-          new Drive(
+          new DriveSubsystem(
               new GyroIOPigeon2(),
               new ModuleIOTalonFX(TunerConstants.FrontLeft),
               new ModuleIOTalonFX(TunerConstants.FrontRight),
@@ -151,7 +130,7 @@ public class RobotContainer {
               new ModuleIOTalonFX(TunerConstants.BackRight));
       case SIM ->
           // Sim robot, instantiate physics sim IO implementations
-          new Drive(
+          new DriveSubsystem(
               new GyroIO() {},
               new ModuleIOSim(TunerConstants.FrontLeft),
               new ModuleIOSim(TunerConstants.FrontRight),
@@ -159,7 +138,7 @@ public class RobotContainer {
               new ModuleIOSim(TunerConstants.BackRight));
       default ->
           // Replayed robot, disable IO implementations
-          new Drive(
+          new DriveSubsystem(
               new GyroIO() {},
               new ModuleIO() {},
               new ModuleIO() {},
@@ -217,169 +196,62 @@ public class RobotContainer {
     //
     // execute
     new JoystickButton(reefController, 1)
-        .onTrue(
-            new ChooseReefCmd(
-                m_PhysicalReefSubsystem,
-                drive,
-                m_elevatorSubsystem,
-                m_flipperSubsystem,
-                -1,
-                -1,
-                -1,
-                true));
+        .onTrue(new ChooseReefCmd(reef, drive, elevator, flipper, -1, -1, -1, true));
     // level
     new JoystickButton(reefController, 2)
-        .onTrue(
-            new ChooseReefCmd(
-                m_PhysicalReefSubsystem,
-                drive,
-                m_elevatorSubsystem,
-                m_flipperSubsystem,
-                0,
-                -1,
-                -1,
-                false));
+        .onTrue(new ChooseReefCmd(reef, drive, elevator, flipper, 0, -1, -1, false));
     new JoystickButton(reefController, 3)
-        .onTrue(
-            new ChooseReefCmd(
-                m_PhysicalReefSubsystem,
-                drive,
-                m_elevatorSubsystem,
-                m_flipperSubsystem,
-                1,
-                -1,
-                -1,
-                false));
+        .onTrue(new ChooseReefCmd(reef, drive, elevator, flipper, 1, -1, -1, false));
     new JoystickButton(reefController, 4)
-        .onTrue(
-            new ChooseReefCmd(
-                m_PhysicalReefSubsystem,
-                drive,
-                m_elevatorSubsystem,
-                m_flipperSubsystem,
-                2,
-                -1,
-                -1,
-                false));
+        .onTrue(new ChooseReefCmd(reef, drive, elevator, flipper, 2, -1, -1, false));
     new JoystickButton(reefController, 6)
-        .onTrue(
-            new ChooseReefCmd(
-                m_PhysicalReefSubsystem,
-                drive,
-                m_elevatorSubsystem,
-                m_flipperSubsystem,
-                3,
-                -1,
-                -1,
-                false));
+        .onTrue(new ChooseReefCmd(reef, drive, elevator, flipper, 3, -1, -1, false));
     // pos
     new JoystickButton(reefController, 7)
-        .onTrue(
-            new ChooseReefCmd(
-                m_PhysicalReefSubsystem,
-                drive,
-                m_elevatorSubsystem,
-                m_flipperSubsystem,
-                -1,
-                0,
-                -1,
-                false));
+        .onTrue(new ChooseReefCmd(reef, drive, elevator, flipper, -1, 0, -1, false));
     new JoystickButton(reefController, 8)
-        .onTrue(
-            new ChooseReefCmd(
-                m_PhysicalReefSubsystem,
-                drive,
-                m_elevatorSubsystem,
-                m_flipperSubsystem,
-                -1,
-                1,
-                -1,
-                false));
+        .onTrue(new ChooseReefCmd(reef, drive, elevator, flipper, -1, 1, -1, false));
     new JoystickButton(reefController, 9)
-        .onTrue(
-            new ChooseReefCmd(
-                m_PhysicalReefSubsystem,
-                drive,
-                m_elevatorSubsystem,
-                m_flipperSubsystem,
-                -1,
-                2,
-                -1,
-                false));
+        .onTrue(new ChooseReefCmd(reef, drive, elevator, flipper, -1, 2, -1, false));
     new JoystickButton(reefController, 10)
-        .onTrue(
-            new ChooseReefCmd(
-                m_PhysicalReefSubsystem,
-                drive,
-                m_elevatorSubsystem,
-                m_flipperSubsystem,
-                -1,
-                3,
-                -1,
-                false));
+        .onTrue(new ChooseReefCmd(reef, drive, elevator, flipper, -1, 3, -1, false));
     new JoystickButton(reefController, 11)
-        .onTrue(
-            new ChooseReefCmd(
-                m_PhysicalReefSubsystem,
-                drive,
-                m_elevatorSubsystem,
-                m_flipperSubsystem,
-                -1,
-                4,
-                -1,
-                false));
+        .onTrue(new ChooseReefCmd(reef, drive, elevator, flipper, -1, 4, -1, false));
     new JoystickButton(reefController, 12)
-        .onTrue(
-            new ChooseReefCmd(
-                m_PhysicalReefSubsystem,
-                drive,
-                m_elevatorSubsystem,
-                m_flipperSubsystem,
-                -1,
-                5,
-                -1,
-                false));
+        .onTrue(new ChooseReefCmd(reef, drive, elevator, flipper, -1, 5, -1, false));
     // rightleft
     new JoystickButton(reefController, 5)
-        .onTrue(
-            new ChooseReefCmd(
-                m_PhysicalReefSubsystem,
-                drive,
-                m_elevatorSubsystem,
-                m_flipperSubsystem,
-                -1,
-                -1,
-                1,
-                false));
+        .onTrue(new ChooseReefCmd(reef, drive, elevator, flipper, -1, -1, 1, false));
+
     //
     //    Standard Joystick Bindings
     // not sure if these should be cojoystick
     //
-    new JoystickButton(cojoystick, 1).onTrue(new FlipperScoreCmd(m_flipperSubsystem));
-    new JoystickButton(cojoystick, 5).onTrue(new FlipperGripperCmd(m_flipperSubsystem));
-    new JoystickButton(cojoystick, 3).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 0));
-    new JoystickButton(cojoystick, 4).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 1));
-    new JoystickButton(cojoystick, 6).onTrue(new ElevatorCommandGroup(m_elevatorSubsystem, 2));
-    //
+    new JoystickButton(cojoystick, 1).onTrue(new FlipperScoreCmd(flipper));
+    new JoystickButton(cojoystick, 5).onTrue(new FlipperGripperCmd(flipper));
+    new JoystickButton(cojoystick, 3).onTrue(new ElevatorCommandGroup(elevator, 0));
+    new JoystickButton(cojoystick, 4).onTrue(new ElevatorCommandGroup(elevator, 1));
+    new JoystickButton(cojoystick, 6).onTrue(new ElevatorCommandGroup(elevator, 2));
+
     // LED Triggers
     //
     // Coral
-    Trigger ledComplexTrigger = new Trigger(m_flipperSubsystem::getHasCoral);
+    Trigger ledComplexTrigger = new Trigger(flipper::getHasCoral);
     ledComplexTrigger.onTrue(
         new InstantCommand(
             () -> {
-              m_ledSubsystem.setMode(LedMode.kSTROBE);
-              m_ledSubsystem.setStrobeSetting(0);
+              led.setMode(LedMode.STROBE);
+              led.setStrobeSetting(0);
             }));
-    ledComplexTrigger.onFalse(new InstantCommand(() -> m_ledSubsystem.setMode(LedMode.kSOLID)));
+    ledComplexTrigger.onFalse(new InstantCommand(() -> led.setMode(LedMode.SOLID)));
 
     // Climbing
-    Trigger ledClimbingTrigger = new Trigger(m_climberSubsystem::getClimberUsed);
+    Trigger ledClimbingTrigger = new Trigger(climber::getClimberUsed);
     ledClimbingTrigger.onTrue(
         new InstantCommand(
             () -> {
-              m_ledSubsystem.setMode(LedMode.kSTROBE);
-              m_ledSubsystem.setStrobeSetting(1);
+              led.setMode(LedMode.STROBE);
+              led.setStrobeSetting(1);
             }));
   }
 
