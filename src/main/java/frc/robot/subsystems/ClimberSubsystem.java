@@ -10,7 +10,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
   // This is never deactivated, only activated. Climber is one and done.
   private final Solenoid climberSV =
-      new Solenoid(Constants.SolenoidModuleType, Constants.kClimberSolenoidChannel);
+      new Solenoid(Constants.SOLENOID_MODULE_TYPE, Constants.CLIMBER_SOLENOID_CHANNEL);
 
   /** Constructor for this subsystem. used to create an object in RobotContainer. */
   public ClimberSubsystem() {}

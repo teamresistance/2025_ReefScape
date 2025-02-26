@@ -12,14 +12,14 @@ public class FlipperSubsystem extends SubsystemBase {
   private boolean believesHasCoral = false;
   private Solenoid gripper =
       new Solenoid(
-          Constants.SolenoidModuleType,
+          Constants.SOLENOID_MODULE_TYPE,
           Constants
-              .kGripperSolenoidChannel); // The pneumatics hub channels that we are using are 0, 2,
+              .GRIPPER_SOLENOID_CHANNEL); // The pneumatics hub channels that we are using are 0, 2,
   // and 5
   private Solenoid flipper =
-      new Solenoid(Constants.SolenoidModuleType, Constants.kFlipperSolenoidChannel);
+      new Solenoid(Constants.SOLENOID_MODULE_TYPE, Constants.FLIPPER_SOLENOID_CHANNEL);
   private Solenoid coralCenterMechanism =
-      new Solenoid(Constants.SolenoidModuleType, Constants.kCentererSolenoidChannel);
+      new Solenoid(Constants.SOLENOID_MODULE_TYPE, Constants.CENTERER_SOLENOID_CHANNEL);
   private DigitalInput coralDetector = new DigitalInput(0);
 
   /** Subsystem handling coral intake and dropping onto branches/level1. */

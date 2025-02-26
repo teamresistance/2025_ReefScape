@@ -9,41 +9,37 @@ import edu.wpi.first.wpilibj.RobotBase;
  * (log replay from a file).
  */
 public final class Constants {
-  public static final Mode CurrentMode = RobotBase.isReal() ? Mode.REAL : Mode.SIM;
-  public static final boolean TuningMode = false;
+  public static final Mode CURRENT_MODE = RobotBase.isReal() ? Mode.REAL : Mode.SIM;
+  public static final boolean TUNING_MODE = false;
 
   // Solenoids
-  public static final PneumaticsModuleType SolenoidModuleType = PneumaticsModuleType.CTREPCM;
-  public static final int kCentererSolenoidChannel = 0;
-  public static final int kElevatorSolenoid1Channel = 1;
-  public static final int kElevatorSolenoid2Channel = 2;
-  public static final int kGripperSolenoidChannel = 3;
-  public static final int kFlipperSolenoidChannel = 4;
-  public static final int kClimberSolenoidChannel = 4;
-
-  // Drive
-  public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : Mode.SIM;
-  public static final boolean tuningMode = false;
+  public static final PneumaticsModuleType SOLENOID_MODULE_TYPE = PneumaticsModuleType.CTREPCM;
+  public static final int CENTERER_SOLENOID_CHANNEL = 0;
+  public static final int ELEVATOR_SOLENOID1_CHANNEL = 1;
+  public static final int ELEVATOR_SOLENOID2_CHANNEL = 2;
+  public static final int GRIPPER_SOLENOID_CHANNEL = 3;
+  public static final int FLIPPER_SOLENOID_CHANNEL = 4;
+  public static final int CLIMBER_SOLENOID_CHANNEL = 4;
 
   // LED Strip
-  public static final int kLedLength = 60;
-  public static final int kLedAnimationDelayMilliseconds = 100; // Can only be multiple of 20ms.
-  // has coral
-  public static final int[] kLedStrobeColor1 = {0, 0, 255};
-  public static final int[] kLedStrobeColor2 = {0, 255, 255};
-  public static final int[] kLedStrobeColor3 = {0, 255, 255};
-  // solid
-  public static final int[] kLedSolidColor = {132, 76, 130};
-  // is climbing
-  public static final int[] kLedStrobeColor4 = {50, 100, 50};
-  public static final int[] kLedStrobeColor5 = {100, 200, 100};
-  public static final int[] kLedStrobeColor6 = {50, 200, 50};
-  public static final int kLed_portNumber = 0;
+  public static final int LED_LENGTH = 60;
+  public static final int LED_ANIMATION_DELAY_MS = 100; // Can only be multiple of 20ms.
+  // Coral Indicators
+  public static final int[] LED_STROBE_COLOR1 = {0, 0, 255};
+  public static final int[] LED_STROBE_COLOR2 = {0, 255, 255};
+  public static final int[] LED_STROBE_COLOR3 = {0, 255, 255};
+  // Is Climbing
+  public static final int[] LED_STROBE_COLOR4 = {50, 100, 50};
+  public static final int[] LED_STROBE_COLOR5 = {100, 200, 100};
+  public static final int[] LED_STROBE_COLOR6 = {50, 200, 50};
+  // Solid
+  public static final int[] LED_COLOR_SOLID = {132, 76, 130};
+  public static final int LED_PORT_NUMBER = 0;
 
   public enum LedMode {
-    kSOLID,
-    kSTROBE,
-    kOFF
+    SOLID,
+    STROBE,
+    OFF
   }
 
   public enum Mode {
