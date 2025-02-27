@@ -41,7 +41,7 @@ public class InterfaceSubsystem extends SubsystemBase {
         switch (pole) {
           case "a":
             // Drive to pole A and align once nearby
-          // TODO: Add the rest of the branch positions to align to
+            // TODO: Add the rest of the branch positions to align to
         }
       case CORAL:
       // Drive commands to drive to coral station
@@ -56,7 +56,7 @@ public class InterfaceSubsystem extends SubsystemBase {
     }
   }
 
-  //** Force-ends the execution and immediately retracts the elevator. */
+  // ** Force-ends the execution and immediately retracts the elevator. */
   public void forceStopExecution() {
     executing = false;
     elevator.raiseFromInterface(0);
