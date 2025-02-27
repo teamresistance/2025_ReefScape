@@ -44,7 +44,7 @@ public class RobotContainer {
 
   // Subsystems
   private final DriveSubsystem drive;
-  private InterfaceSubsystem2 reef;
+  private InterfaceSubsystem reef;
   private final FlipperSubsystem flipper = new FlipperSubsystem();
   private final ElevatorSubsystem elevator = new ElevatorSubsystem();
   private final LedSubsystem led = new LedSubsystem();
@@ -118,8 +118,8 @@ public class RobotContainer {
     return aprilTagVision;
   }
 
-  private InterfaceSubsystem2 configureInterface() {
-    return new InterfaceSubsystem2(drive, flipper, elevator);
+  private InterfaceSubsystem configureInterface() {
+    return new InterfaceSubsystem(drive, flipper, elevator);
   }
 
   private DriveSubsystem configureDrive() {
@@ -203,42 +203,50 @@ public class RobotContainer {
     //
     // Reef branch selection
     new JoystickButton(codriverInterface_branch, 1)
-        .onTrue(new InterfaceCmd(reef, "a", 0, true, false));
+        .onTrue(new InterfaceVarsCmd(reef, "a", 0, true, false));
     new JoystickButton(codriverInterface_branch, 2)
-        .onTrue(new InterfaceCmd(reef, "b", 0, true, false));
+        .onTrue(new InterfaceVarsCmd(reef, "b", 0, true, false));
     new JoystickButton(codriverInterface_branch, 3)
-        .onTrue(new InterfaceCmd(reef, "c", 0, true, false));
+        .onTrue(new InterfaceVarsCmd(reef, "c", 0, true, false));
     new JoystickButton(codriverInterface_branch, 4)
-        .onTrue(new InterfaceCmd(reef, "d", 0, true, false));
+        .onTrue(new InterfaceVarsCmd(reef, "d", 0, true, false));
     new JoystickButton(codriverInterface_branch, 5)
-        .onTrue(new InterfaceCmd(reef, "e", 0, true, false));
+        .onTrue(new InterfaceVarsCmd(reef, "e", 0, true, false));
     new JoystickButton(codriverInterface_branch, 6)
-        .onTrue(new InterfaceCmd(reef, "f", 0, true, false));
+        .onTrue(new InterfaceVarsCmd(reef, "f", 0, true, false));
     new JoystickButton(codriverInterface_branch, 7)
-        .onTrue(new InterfaceCmd(reef, "g", 0, true, false));
+        .onTrue(new InterfaceVarsCmd(reef, "g", 0, true, false));
     new JoystickButton(codriverInterface_branch, 8)
-        .onTrue(new InterfaceCmd(reef, "h", 0, true, false));
+        .onTrue(new InterfaceVarsCmd(reef, "h", 0, true, false));
     new JoystickButton(codriverInterface_branch, 9)
-        .onTrue(new InterfaceCmd(reef, "i", 0, true, false));
+        .onTrue(new InterfaceVarsCmd(reef, "i", 0, true, false));
     new JoystickButton(codriverInterface_branch, 10)
-        .onTrue(new InterfaceCmd(reef, "j", 0, true, false));
+        .onTrue(new InterfaceVarsCmd(reef, "j", 0, true, false));
     new JoystickButton(codriverInterface_branch, 11)
-        .onTrue(new InterfaceCmd(reef, "k", 0, true, false));
+        .onTrue(new InterfaceVarsCmd(reef, "k", 0, true, false));
     new JoystickButton(codriverInterface_branch, 12)
-        .onTrue(new InterfaceCmd(reef, "l", 0, true, false));
+        .onTrue(new InterfaceVarsCmd(reef, "l", 0, true, false));
 
     // Climber toggle, elevator level selection
     new JoystickButton(codriverInterface_other, 1)
         .and(new JoystickButton(codriverInterface_other, 2))
         .onTrue(new ActivateClimberCommand(climber));
     new JoystickButton(codriverInterface_other, 3)
-        .onTrue(new InterfaceCmd(reef, "", 1, false, true));
+        .onTrue(new InterfaceVarsCmd(reef, "", 1, false, true));
     new JoystickButton(codriverInterface_other, 4)
-        .onTrue(new InterfaceCmd(reef, "", 2, false, true));
+        .onTrue(new InterfaceVarsCmd(reef, "", 2, false, true));
     new JoystickButton(codriverInterface_other, 5)
-        .onTrue(new InterfaceCmd(reef, "", 3, false, true));
+        .onTrue(new InterfaceVarsCmd(reef, "", 3, false, true));
     new JoystickButton(codriverInterface_other, 6)
-        .onTrue(new InterfaceCmd(reef, "", 4, false, true));
+        .onTrue(new InterfaceVarsCmd(reef, "", 4, false, true));
+
+    // Driver connection to interface: driver presses button - interface handles.
+    // The interface merely exists for the codriver to select locations.
+    // The driver controlls if and when said selections are actually executed.
+    driver.a().onTrue(new InterfaceActionCmd(reef, "EXECUTE"));
+    driver.b().onTrue(new InterfaceActionCmd(reef, "REEF"));
+    driver.x().onTrue(new InterfaceActionCmd(reef, "CORAL"));
+    driver.y().onTrue(new InterfaceActionCmd(reef, "CLIMBER"));
 
     //
     //    LED Triggers

@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.drive.DriveSubsystem;
 
-public class InterfaceSubsystem2 extends SubsystemBase {
+public class InterfaceSubsystem extends SubsystemBase {
 
   private String pole;
   private int level;
@@ -24,7 +24,7 @@ public class InterfaceSubsystem2 extends SubsystemBase {
    * robotcontainer. They are used because we cannot have two instances of any subsystem at the same
    * time.
    */
-  public InterfaceSubsystem2(
+  public InterfaceSubsystem(
       DriveSubsystem drive, FlipperSubsystem flipper, ElevatorSubsystem elevator) {
     this.drive = drive;
     this.flipper = flipper;
@@ -50,6 +50,8 @@ public class InterfaceSubsystem2 extends SubsystemBase {
       // Drive commands to drive to coral station
       case "CLIMBER":
         // Drive commands to drive to climber
+      case "EXECUTE":
+        executeSelected();
     }
   }
 

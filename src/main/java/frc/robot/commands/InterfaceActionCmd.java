@@ -5,28 +5,18 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.InterfaceSubsystem2;
+import frc.robot.subsystems.InterfaceSubsystem;
 
-public class InterfaceCmd extends Command {
+/* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
+public class InterfaceActionCmd extends Command {
 
-  private InterfaceSubsystem2 subsystem;
-  private String pole;
-  private int level;
-  private boolean updatepole;
-  private boolean updatelevel;
+  private InterfaceSubsystem subsystem;
+  private String loc;
 
-  public InterfaceCmd(
-      InterfaceSubsystem2 subsystem,
-      String pole,
-      int level,
-      boolean updatepole,
-      boolean updatelevel) {
+  public InterfaceActionCmd(InterfaceSubsystem subsystem, String loc) {
     addRequirements(subsystem);
     this.subsystem = subsystem;
-    this.pole = pole;
-    this.level = level;
-    this.updatepole = updatepole;
-    this.updatelevel = updatelevel;
+    this.loc = loc;
   }
 
   // Called when the command is initially scheduled.
@@ -36,7 +26,7 @@ public class InterfaceCmd extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    subsystem.updateVars(pole, level, updatepole, updatelevel);
+    subsystem.driveToLoc(loc);
   }
 
   // Called once the command ends or is interrupted.
@@ -46,6 +36,6 @@ public class InterfaceCmd extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
   }
 }
