@@ -18,6 +18,14 @@ public final class Constants {
   public static final double SECONDS_TO_SCORE = 0;
   public static final double SECONDS_GRIPPER_DELAY = 0;
 
+  // Interface
+  public enum InterfaceExecuteMode {
+    REEF,
+    CORAL,
+    CLIMBER,
+    EXECUTE
+  }
+
   // Solenoids
   public static final PneumaticsModuleType SOLENOID_MODULE_TYPE = PneumaticsModuleType.CTREPCM;
   public static final int CENTERER_SOLENOID_CHANNEL = 0;

@@ -1,13 +1,10 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.InterfaceExecuteMode;
 import frc.robot.subsystems.drive.DriveSubsystem;
 
 public class InterfaceSubsystem extends SubsystemBase {
@@ -37,20 +34,19 @@ public class InterfaceSubsystem extends SubsystemBase {
    *
    * <p>Example: Driver holding "A" button, robot auto-navigates to selected pole
    */
-  public void driveToLoc(String loc) {
+  public void driveToLoc(InterfaceExecuteMode loc) {
     switch (loc) {
-      case "REEF":
+      case REEF:
         switch (pole) {
           case "a":
             // Drive to pole A and align once nearby
-            // Repeat this for remainder of positions once we have the transforms the robot will
-            // need to be in
+          // TODO: Add the rest of the branch positions to align to
         }
-      case "CORAL":
+      case CORAL:
       // Drive commands to drive to coral station
-      case "CLIMBER":
+      case CLIMBER:
       // Drive commands to drive to climber
-      case "EXECUTE":
+      case EXECUTE:
         executeSelected();
     }
   }

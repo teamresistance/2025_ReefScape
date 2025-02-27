@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.InterfaceExecuteMode;
 import frc.robot.Constants.LedMode;
 import frc.robot.commands.*;
 import frc.robot.generated.TunerConstants;
@@ -56,8 +57,8 @@ public class RobotContainer {
   private final Joystick cojoystick = new Joystick(1);
   // There are two codriver joystick ports because only 12 buttons can be detected, and just the
   // branch select is 12 buttons.
-  private final Joystick codriverInterface_branch = new Joystick(2);
-  private final Joystick codriverInterface_other = new Joystick(3);
+  private final Joystick codriverInterfaceBranch = new Joystick(2);
+  private final Joystick codriverInterfaceOther = new Joystick(3);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -202,51 +203,51 @@ public class RobotContainer {
     //    Codriver Bindings
     //
     // Reef branch selection
-    new JoystickButton(codriverInterface_branch, 1)
+    new JoystickButton(codriverInterfaceBranch, 1)
         .onTrue(new InterfaceVarsCmd(reef, "a", 0, true, false));
-    new JoystickButton(codriverInterface_branch, 2)
+    new JoystickButton(codriverInterfaceBranch, 2)
         .onTrue(new InterfaceVarsCmd(reef, "b", 0, true, false));
-    new JoystickButton(codriverInterface_branch, 3)
+    new JoystickButton(codriverInterfaceBranch, 3)
         .onTrue(new InterfaceVarsCmd(reef, "c", 0, true, false));
-    new JoystickButton(codriverInterface_branch, 4)
+    new JoystickButton(codriverInterfaceBranch, 4)
         .onTrue(new InterfaceVarsCmd(reef, "d", 0, true, false));
-    new JoystickButton(codriverInterface_branch, 5)
+    new JoystickButton(codriverInterfaceBranch, 5)
         .onTrue(new InterfaceVarsCmd(reef, "e", 0, true, false));
-    new JoystickButton(codriverInterface_branch, 6)
+    new JoystickButton(codriverInterfaceBranch, 6)
         .onTrue(new InterfaceVarsCmd(reef, "f", 0, true, false));
-    new JoystickButton(codriverInterface_branch, 7)
+    new JoystickButton(codriverInterfaceBranch, 7)
         .onTrue(new InterfaceVarsCmd(reef, "g", 0, true, false));
-    new JoystickButton(codriverInterface_branch, 8)
+    new JoystickButton(codriverInterfaceBranch, 8)
         .onTrue(new InterfaceVarsCmd(reef, "h", 0, true, false));
-    new JoystickButton(codriverInterface_branch, 9)
+    new JoystickButton(codriverInterfaceBranch, 9)
         .onTrue(new InterfaceVarsCmd(reef, "i", 0, true, false));
-    new JoystickButton(codriverInterface_branch, 10)
+    new JoystickButton(codriverInterfaceBranch, 10)
         .onTrue(new InterfaceVarsCmd(reef, "j", 0, true, false));
-    new JoystickButton(codriverInterface_branch, 11)
+    new JoystickButton(codriverInterfaceBranch, 11)
         .onTrue(new InterfaceVarsCmd(reef, "k", 0, true, false));
-    new JoystickButton(codriverInterface_branch, 12)
+    new JoystickButton(codriverInterfaceBranch, 12)
         .onTrue(new InterfaceVarsCmd(reef, "l", 0, true, false));
 
     // Climber toggle, elevator level selection
-    new JoystickButton(codriverInterface_other, 1)
-        .and(new JoystickButton(codriverInterface_other, 2))
+    new JoystickButton(codriverInterfaceOther, 1)
+        .and(new JoystickButton(codriverInterfaceOther, 2))
         .onTrue(new ActivateClimberCommand(climber));
-    new JoystickButton(codriverInterface_other, 3)
+    new JoystickButton(codriverInterfaceOther, 3)
         .onTrue(new InterfaceVarsCmd(reef, "", 1, false, true));
-    new JoystickButton(codriverInterface_other, 4)
+    new JoystickButton(codriverInterfaceOther, 4)
         .onTrue(new InterfaceVarsCmd(reef, "", 2, false, true));
-    new JoystickButton(codriverInterface_other, 5)
+    new JoystickButton(codriverInterfaceOther, 5)
         .onTrue(new InterfaceVarsCmd(reef, "", 3, false, true));
-    new JoystickButton(codriverInterface_other, 6)
+    new JoystickButton(codriverInterfaceOther, 6)
         .onTrue(new InterfaceVarsCmd(reef, "", 4, false, true));
 
     // Driver connection to interface: driver presses button - interface handles.
     // The interface merely exists for the codriver to select locations.
-    // The driver controlls if and when said selections are actually executed.
-    driver.a().onTrue(new InterfaceActionCmd(reef, "EXECUTE"));
-    driver.b().onTrue(new InterfaceActionCmd(reef, "REEF"));
-    driver.x().onTrue(new InterfaceActionCmd(reef, "CORAL"));
-    driver.y().onTrue(new InterfaceActionCmd(reef, "CLIMBER"));
+    // The driver controls if and when said selections are actually executed.
+    driver.a().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.EXECUTE));
+    driver.b().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.REEF));
+    driver.x().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.CORAL));
+    driver.y().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.CLIMBER));
 
     //
     //    LED Triggers
