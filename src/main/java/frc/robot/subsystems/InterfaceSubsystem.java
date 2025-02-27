@@ -11,6 +11,7 @@ public class InterfaceSubsystem extends SubsystemBase {
 
   private String pole = "";
   private int level = -1;
+  private boolean executing = false;
 
   private DriveSubsystem drive;
   private FlipperSubsystem flipper;
@@ -47,17 +48,29 @@ public class InterfaceSubsystem extends SubsystemBase {
       case CLIMBER:
       // Drive commands to drive to climber
       case EXECUTE:
-        executeSelected();
+        if (!executing) {
+          executeSelected();
+        } else {
+          forceStopExecution();
+        }
     }
+  }
+
+  //** Force-ends the execution and immediately retracts the elevator. */
+  public void forceStopExecution() {
+    executing = false;
+    elevator.raiseFromInterface(0);
   }
 
   /** Moves elevator to selected level and scores. */
   public void executeSelected() {
+    executing = true;
     elevator.raiseFromInterface(level);
     Timer.delay(Constants.SECONDS_TO_RAISE_ELEVATOR);
     flipper.flipperScore();
     Timer.delay(Constants.SECONDS_TO_SCORE);
     elevator.raiseFromInterface(0);
+    executing = false;
   }
 
   /**
