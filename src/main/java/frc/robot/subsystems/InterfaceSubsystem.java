@@ -49,7 +49,7 @@ public class InterfaceSubsystem extends SubsystemBase {
       case "CORAL":
       // Drive commands to drive to coral station
       case "CLIMBER":
-        // Drive commands to drive to climber
+      // Drive commands to drive to climber
       case "EXECUTE":
         executeSelected();
     }
