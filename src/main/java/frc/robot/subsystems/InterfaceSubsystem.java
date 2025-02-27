@@ -12,8 +12,8 @@ import frc.robot.subsystems.drive.DriveSubsystem;
 
 public class InterfaceSubsystem extends SubsystemBase {
 
-  private String pole;
-  private int level;
+  private String pole = "";
+  private int level = -1;
 
   private DriveSubsystem drive;
   private FlipperSubsystem flipper;
