@@ -34,6 +34,19 @@ public class ElevatorSubsystem extends SubsystemBase {
     elevatorPusher2.set(false);
   }
 
+  public void raiseFromInterface(int level) {
+    if (level <= 2) {
+      lowerFirstStage();
+      lowerSecondStage();
+    } else if (level == 3) {
+      raiseFirstStage();
+      lowerSecondStage();
+    } else if (level == 4) {
+      raiseFirstStage();
+      raiseSecondStage();
+    }
+  }
+
   @Override
   public void periodic() {
     SmartDashboard.putBoolean("First Stage", elevatorPusher1.get());
