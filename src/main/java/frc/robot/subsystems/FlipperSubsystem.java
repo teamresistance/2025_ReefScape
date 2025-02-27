@@ -9,8 +9,8 @@ import org.littletonrobotics.junction.Logger;
 
 public class FlipperSubsystem extends SubsystemBase {
 
-  private boolean believesHasCoral = false;
-  private Solenoid gripper =
+  private static boolean believesHasCoral = false;
+  private static Solenoid gripper =
       new Solenoid(
           Constants.SOLENOID_MODULE_TYPE,
           Constants
@@ -20,15 +20,15 @@ public class FlipperSubsystem extends SubsystemBase {
       new Solenoid(Constants.SOLENOID_MODULE_TYPE, Constants.FLIPPER_SOLENOID_CHANNEL);
   private Solenoid coralCenterMechanism =
       new Solenoid(Constants.SOLENOID_MODULE_TYPE, Constants.CENTERER_SOLENOID_CHANNEL);
-  private DigitalInput coralDetector = new DigitalInput(0);
+  private DigitalInput coralDetector = new DigitalInput(Constants.CORAL_SENSOR_CHANNEL);
 
   /** Subsystem handling coral intake and dropping onto branches/level1. */
   public FlipperSubsystem() {}
 
   /**
-   * An example method querying a boolean state of the subsystem (for example, a digital sensor).
-   *
-   * @return the opposite of the value of said boolean state.
+   * If the flipper thinks it has/had coral (aka it dropped to the reef or tried gripping), it opens
+   * the gripper. If the flipper doesn't think it has coral (right after recieving basically), it
+   * centers then grips the coral.
    */
   public void flipperHoldingState() {
     if (!believesHasCoral) {
@@ -52,6 +52,7 @@ public class FlipperSubsystem extends SubsystemBase {
     return !gripper.get();
   }
 
+  /** Flips the coral out. */
   public void flipperScore() {
     flipper.setPulseDuration(1);
     flipper.startPulse();

@@ -12,6 +12,20 @@ public final class Constants {
   public static final Mode CURRENT_MODE = RobotBase.isReal() ? Mode.REAL : Mode.SIM;
   public static final boolean TUNING_MODE = false;
 
+  // Misc
+  public static final int CORAL_SENSOR_CHANNEL = 0;
+  public static final double SECONDS_TO_RAISE_ELEVATOR = 0;
+  public static final double SECONDS_TO_SCORE = 0;
+  public static final double SECONDS_GRIPPER_DELAY = 0;
+
+  // Interface
+  public enum InterfaceExecuteMode {
+    REEF,
+    CORAL,
+    CLIMBER,
+    EXECUTE
+  }
+
   // Solenoids
   public static final PneumaticsModuleType SOLENOID_MODULE_TYPE = PneumaticsModuleType.CTREPCM;
   public static final int CENTERER_SOLENOID_CHANNEL = 0;
@@ -19,7 +33,7 @@ public final class Constants {
   public static final int ELEVATOR_SOLENOID2_CHANNEL = 2;
   public static final int GRIPPER_SOLENOID_CHANNEL = 3;
   public static final int FLIPPER_SOLENOID_CHANNEL = 4;
-  public static final int CLIMBER_SOLENOID_CHANNEL = 4;
+  public static final int CLIMBER_SOLENOID_CHANNEL = 5;
 
   // LED Strip
   public static final int LED_LENGTH = 60;
