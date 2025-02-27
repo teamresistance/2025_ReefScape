@@ -20,7 +20,7 @@ public class FlipperSubsystem extends SubsystemBase {
       new Solenoid(Constants.SOLENOID_MODULE_TYPE, Constants.FLIPPER_SOLENOID_CHANNEL);
   private Solenoid coralCenterMechanism =
       new Solenoid(Constants.SOLENOID_MODULE_TYPE, Constants.CENTERER_SOLENOID_CHANNEL);
-  private DigitalInput coralDetector = new DigitalInput(0);
+  private DigitalInput coralDetector = new DigitalInput(Constants.CORAL_SENSOR_CHANNEL);
 
   /** Subsystem handling coral intake and dropping onto branches/level1. */
   public FlipperSubsystem() {}
