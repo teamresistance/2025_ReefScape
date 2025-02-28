@@ -28,24 +28,29 @@ public class FlipperSubsystem extends SubsystemBase {
   public FlipperSubsystem() {}
 
   /**
-   * If the system thinks it has coral (dropped to the reef or had coral detected by both sensors), it opens
-   * the gripper. <p>If the system doesn't think it has coral (after recieving from station), the coral centerer
-   * will run every 2 seconds until both sensors detect a coral. While doing this, the system will think that it
-   * has coral. <p>Can be cancelled by running the method again.
+   * If the system thinks it has coral (dropped to the reef or had coral detected by both sensors),
+   * it opens the gripper.
+   *
+   * <p>If the system doesn't think it has coral (after recieving from station), the coral centerer
+   * will run every 2 seconds until both sensors detect a coral. While doing this, the system will
+   * think that it has coral.
+   *
+   * <p>Can be cancelled by running the method again.
    */
   public void flipperHoldingState() {
     if (!believesHasCoral) {
       believesHasCoral = true;
       // Repeat until the coral is detected on both sensors or until the user cancels gripping
-      while ((!coralDetector1.get() || !coralDetector2.get()) && believesHasCoral){
+      while ((!coralDetector1.get() || !coralDetector2.get()) && believesHasCoral) {
         coralCenterMechanism.setPulseDuration(0.5);
         coralCenterMechanism.startPulse();
         Timer.delay(Constants.SECONDS_PER_CENTERING_ATTEMPT);
       }
-      // When detected, toggle gripper
-      gripper.set(true);
-    }
-    else if (believesHasCoral) {
+      // If the loop ends normally (not cancelled), turn on gripper
+      if (believesHasCoral) {
+        gripper.set(true);
+      }
+    } else if (believesHasCoral) {
       // Release gripper and stop trying to center the coral
       gripper.set(false);
       coralCenterMechanism.set(false);
@@ -71,10 +76,13 @@ public class FlipperSubsystem extends SubsystemBase {
   public void periodic() {
     Logger.recordOutput("Flipper/Gripper Is Closed", gripper.get());
     Logger.recordOutput("Flipper/Robot Thinks Has Coral", believesHasCoral);
-    Logger.recordOutput("Flipper/Coral Secured", (gripper.get() && (coralDetector1.get() && coralDetector2.get())));
+    Logger.recordOutput(
+        "Flipper/Coral Secured", (gripper.get() && (coralDetector1.get() && coralDetector2.get())));
     SmartDashboard.putBoolean("Gripper Closed", gripper.get());
     SmartDashboard.putBoolean("Thinks has coral", believesHasCoral);
-    SmartDashboard.putBoolean("Coral Secured and Gripped", (gripper.get() && (coralDetector1.get() && coralDetector2.get())));
+    SmartDashboard.putBoolean(
+        "Coral Secured and Gripped",
+        (gripper.get() && (coralDetector1.get() && coralDetector2.get())));
   }
 
   @Override
