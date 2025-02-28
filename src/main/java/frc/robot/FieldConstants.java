@@ -3,188 +3,177 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
-
 import java.util.Optional;
 
 public final class FieldConstants {
 
-	// -------------------------------------------------
-	// Blue Alliance Side
-	// -------------------------------------------------
+  // -------------------------------------------------
+  // Blue Alliance Side
+  // -------------------------------------------------
 
-	public static final Pose2d BLUE_RIGHT_HOME_CORNER =
-		new Pose2d(0.457, 0.457, Rotation2d.fromDegrees(0.000));
+  public static final Pose2d BLUE_RIGHT_HOME_CORNER =
+      new Pose2d(0.457, 0.457, Rotation2d.fromDegrees(0.000));
 
-	public static final Pose2d APRILTAG_18 =
-		new Pose2d(3.200, 3.874, Rotation2d.fromDegrees(0.000));
+  public static final Pose2d APRILTAG_18 = new Pose2d(3.200, 3.874, Rotation2d.fromDegrees(0.000));
 
-	public static final Pose2d BLUE_A_TREE =
-		new Pose2d(3.200, 4.039, Rotation2d.fromDegrees(0.000));
+  public static final Pose2d BLUE_A_TREE = new Pose2d(3.200, 4.039, Rotation2d.fromDegrees(0.000));
 
-	public static final Pose2d BLUE_B_TREE =
-		new Pose2d(3.200, 3.708, Rotation2d.fromDegrees(0.000));
+  public static final Pose2d BLUE_B_TREE = new Pose2d(3.200, 3.708, Rotation2d.fromDegrees(0.000));
 
-	public static final Pose2d APRILTAG_17 =
-		new Pose2d(3.977, 2.833, Rotation2d.fromDegrees(60.000));
+  public static final Pose2d APRILTAG_17 = new Pose2d(3.977, 2.833, Rotation2d.fromDegrees(60.000));
 
-	public static final Pose2d BLUE_C_TREE =
-		new Pose2d(3.834, 2.916, Rotation2d.fromDegrees(60.000));
+  public static final Pose2d BLUE_C_TREE = new Pose2d(3.834, 2.916, Rotation2d.fromDegrees(60.000));
 
-	public static final Pose2d BLUE_D_TREE =
-		new Pose2d(4.120, 2.751, Rotation2d.fromDegrees(60.000));
+  public static final Pose2d BLUE_D_TREE = new Pose2d(4.120, 2.751, Rotation2d.fromDegrees(60.000));
 
-	public static final Pose2d APRILTAG_22 =
-		new Pose2d(5.266, 2.986, Rotation2d.fromDegrees(120.000));
+  public static final Pose2d APRILTAG_22 =
+      new Pose2d(5.266, 2.986, Rotation2d.fromDegrees(120.000));
 
-	public static final Pose2d BLUE_E_TREE =
-		new Pose2d(5.123, 2.903, Rotation2d.fromDegrees(120.000));
+  public static final Pose2d BLUE_E_TREE =
+      new Pose2d(5.123, 2.903, Rotation2d.fromDegrees(120.000));
 
-	public static final Pose2d BLUE_F_TREE =
-		new Pose2d(5.409, 3.068, Rotation2d.fromDegrees(120.000));
+  public static final Pose2d BLUE_F_TREE =
+      new Pose2d(5.409, 3.068, Rotation2d.fromDegrees(120.000));
 
-	public static final Pose2d APRILTAG_21 =
-		new Pose2d(5.778, 4.178, Rotation2d.fromDegrees(180.000));
+  public static final Pose2d APRILTAG_21 =
+      new Pose2d(5.778, 4.178, Rotation2d.fromDegrees(180.000));
 
-	public static final Pose2d BLUE_G_TREE =
-		new Pose2d(5.778, 4.013, Rotation2d.fromDegrees(180.000));
+  public static final Pose2d BLUE_G_TREE =
+      new Pose2d(5.778, 4.013, Rotation2d.fromDegrees(180.000));
 
-	public static final Pose2d BLUE_H_TREE =
-		new Pose2d(5.778, 4.343, Rotation2d.fromDegrees(180.000));
+  public static final Pose2d BLUE_H_TREE =
+      new Pose2d(5.778, 4.343, Rotation2d.fromDegrees(180.000));
 
-	public static final Pose2d APRILTAG_20 =
-		new Pose2d(5.002, 5.218, Rotation2d.fromDegrees(-120.000));
+  public static final Pose2d APRILTAG_20 =
+      new Pose2d(5.002, 5.218, Rotation2d.fromDegrees(-120.000));
 
-	public static final Pose2d BLUE_I_TREE =
-		new Pose2d(5.145, 5.136, Rotation2d.fromDegrees(-120.000));
+  public static final Pose2d BLUE_I_TREE =
+      new Pose2d(5.145, 5.136, Rotation2d.fromDegrees(-120.000));
 
-	public static final Pose2d BLUE_J_TREE =
-		new Pose2d(4.859, 5.301, Rotation2d.fromDegrees(-120.000));
+  public static final Pose2d BLUE_J_TREE =
+      new Pose2d(4.859, 5.301, Rotation2d.fromDegrees(-120.000));
 
-	public static final Pose2d APRILTAG_19 =
-		new Pose2d(3.713, 5.066, Rotation2d.fromDegrees(-60.000));
+  public static final Pose2d APRILTAG_19 =
+      new Pose2d(3.713, 5.066, Rotation2d.fromDegrees(-60.000));
 
-	public static final Pose2d BLUE_K_TREE =
-		new Pose2d(3.856, 5.149, Rotation2d.fromDegrees(-60.000));
+  public static final Pose2d BLUE_K_TREE =
+      new Pose2d(3.856, 5.149, Rotation2d.fromDegrees(-60.000));
 
-	public static final Pose2d BLUE_L_TREE =
-		new Pose2d(3.570, 4.984, Rotation2d.fromDegrees(-60.000));
+  public static final Pose2d BLUE_L_TREE =
+      new Pose2d(3.570, 4.984, Rotation2d.fromDegrees(-60.000));
 
-	// -------------------------------------------------
-	// Red Alliance Side
-	// -------------------------------------------------
+  // -------------------------------------------------
+  // Red Alliance Side
+  // -------------------------------------------------
 
-	public static final Pose2d RED_RIGHT_CORNER =
-		new Pose2d(17.091, 7.595, Rotation2d.fromDegrees(0.000));
+  public static final Pose2d RED_RIGHT_CORNER =
+      new Pose2d(17.091, 7.595, Rotation2d.fromDegrees(0.000));
 
-	public static final Pose2d APRILTAG_7 =
-		new Pose2d(14.348, 4.178, Rotation2d.fromDegrees(180.000));
+  public static final Pose2d APRILTAG_7 =
+      new Pose2d(14.348, 4.178, Rotation2d.fromDegrees(180.000));
 
-	public static final Pose2d RED_A_TREE =
-		new Pose2d(14.348, 4.013, Rotation2d.fromDegrees(180.000));
+  public static final Pose2d RED_A_TREE =
+      new Pose2d(14.348, 4.013, Rotation2d.fromDegrees(180.000));
 
-	public static final Pose2d RED_B_TREE =
-		new Pose2d(14.348, 4.343, Rotation2d.fromDegrees(180.000));
+  public static final Pose2d RED_B_TREE =
+      new Pose2d(14.348, 4.343, Rotation2d.fromDegrees(180.000));
 
-	public static final Pose2d APRILTAG_8 =
-		new Pose2d(13.571, 5.218, Rotation2d.fromDegrees(-120.000));
+  public static final Pose2d APRILTAG_8 =
+      new Pose2d(13.571, 5.218, Rotation2d.fromDegrees(-120.000));
 
-	public static final Pose2d RED_C_TREE =
-		new Pose2d(13.714, 5.136, Rotation2d.fromDegrees(-120.000));
+  public static final Pose2d RED_C_TREE =
+      new Pose2d(13.714, 5.136, Rotation2d.fromDegrees(-120.000));
 
-	public static final Pose2d RED_D_TREE =
-		new Pose2d(13.428, 5.301, Rotation2d.fromDegrees(-120.000));
+  public static final Pose2d RED_D_TREE =
+      new Pose2d(13.428, 5.301, Rotation2d.fromDegrees(-120.000));
 
-	public static final Pose2d APRILTAG_9 =
-		new Pose2d(12.282, 5.066, Rotation2d.fromDegrees(-60.000));
+  public static final Pose2d APRILTAG_9 =
+      new Pose2d(12.282, 5.066, Rotation2d.fromDegrees(-60.000));
 
-	public static final Pose2d RED_E_TREE =
-		new Pose2d(12.425, 5.149, Rotation2d.fromDegrees(-60.000));
+  public static final Pose2d RED_E_TREE =
+      new Pose2d(12.425, 5.149, Rotation2d.fromDegrees(-60.000));
 
-	public static final Pose2d RED_F_TREE =
-		new Pose2d(12.139, 4.984, Rotation2d.fromDegrees(-60.000));
+  public static final Pose2d RED_F_TREE =
+      new Pose2d(12.139, 4.984, Rotation2d.fromDegrees(-60.000));
 
-	public static final Pose2d APRILTAG_10 =
-		new Pose2d(11.770, 3.874, Rotation2d.fromDegrees(0.000));
+  public static final Pose2d APRILTAG_10 = new Pose2d(11.770, 3.874, Rotation2d.fromDegrees(0.000));
 
-	public static final Pose2d RED_G_TREE =
-		new Pose2d(11.770, 4.039, Rotation2d.fromDegrees(0.000));
+  public static final Pose2d RED_G_TREE = new Pose2d(11.770, 4.039, Rotation2d.fromDegrees(0.000));
 
-	public static final Pose2d RED_H_TREE =
-		new Pose2d(11.770, 3.708, Rotation2d.fromDegrees(0.000));
+  public static final Pose2d RED_H_TREE = new Pose2d(11.770, 3.708, Rotation2d.fromDegrees(0.000));
 
-	public static final Pose2d APRILTAG_11 =
-		new Pose2d(12.546, 2.833, Rotation2d.fromDegrees(60.000));
+  public static final Pose2d APRILTAG_11 =
+      new Pose2d(12.546, 2.833, Rotation2d.fromDegrees(60.000));
 
-	public static final Pose2d RED_I_TREE =
-		new Pose2d(12.403, 2.916, Rotation2d.fromDegrees(60.000));
+  public static final Pose2d RED_I_TREE = new Pose2d(12.403, 2.916, Rotation2d.fromDegrees(60.000));
 
-	public static final Pose2d RED_J_TREE =
-		new Pose2d(12.689, 2.751, Rotation2d.fromDegrees(60.000));
+  public static final Pose2d RED_J_TREE = new Pose2d(12.689, 2.751, Rotation2d.fromDegrees(60.000));
 
-	public static final Pose2d APRILTAG_6 =
-		new Pose2d(13.835, 2.986, Rotation2d.fromDegrees(120.000));
+  public static final Pose2d APRILTAG_6 =
+      new Pose2d(13.835, 2.986, Rotation2d.fromDegrees(120.000));
 
-	public static final Pose2d RED_K_TREE =
-		new Pose2d(13.692, 2.903, Rotation2d.fromDegrees(120.000));
+  public static final Pose2d RED_K_TREE =
+      new Pose2d(13.692, 2.903, Rotation2d.fromDegrees(120.000));
 
-	public static final Pose2d RED_L_TREE =
-		new Pose2d(13.978, 3.068, Rotation2d.fromDegrees(120.000));
+  public static final Pose2d RED_L_TREE =
+      new Pose2d(13.978, 3.068, Rotation2d.fromDegrees(120.000));
 
-	// -------------------------------------------------
+  // -------------------------------------------------
 
-	public enum TreePlace {
-		A_TREE,
-		B_TREE,
-		C_TREE,
-		D_TREE,
-		E_TREE,
-		F_TREE,
-		G_TREE,
-		H_TREE,
-		I_TREE,
-		J_TREE,
-		K_TREE,
-		L_TREE
-	}
+  public enum TreePlace {
+    A_TREE,
+    B_TREE,
+    C_TREE,
+    D_TREE,
+    E_TREE,
+    F_TREE,
+    G_TREE,
+    H_TREE,
+    I_TREE,
+    J_TREE,
+    K_TREE,
+    L_TREE
+  }
 
-	public static Pose2d getSetPoint(TreePlace place) {
-		Optional<DriverStation.Alliance> ally = DriverStation.getAlliance();
-		if (ally.isPresent()) {
-			if (ally.get() == DriverStation.Alliance.Red) {
-				return switch (place) {
-					case A_TREE -> RED_A_TREE;
-					case B_TREE -> RED_B_TREE;
-					case C_TREE -> RED_C_TREE;
-					case D_TREE -> RED_D_TREE;
-					case E_TREE -> RED_E_TREE;
-					case F_TREE -> RED_F_TREE;
-					case G_TREE -> RED_G_TREE;
-					case H_TREE -> RED_H_TREE;
-					case I_TREE -> RED_I_TREE;
-					case J_TREE -> RED_J_TREE;
-					case K_TREE -> RED_K_TREE;
-					case L_TREE -> RED_L_TREE;
-				};
-			}
-			if (ally.get() == DriverStation.Alliance.Blue) {
-				return switch (place) {
-					case A_TREE -> BLUE_A_TREE;
-					case B_TREE -> BLUE_B_TREE;
-					case C_TREE -> BLUE_C_TREE;
-					case D_TREE -> BLUE_D_TREE;
-					case E_TREE -> BLUE_E_TREE;
-					case F_TREE -> BLUE_F_TREE;
-					case G_TREE -> BLUE_G_TREE;
-					case H_TREE -> BLUE_H_TREE;
-					case I_TREE -> BLUE_I_TREE;
-					case J_TREE -> BLUE_J_TREE;
-					case K_TREE -> BLUE_K_TREE;
-					case L_TREE -> BLUE_L_TREE;
-				};
-			}
-		}
-		return RED_A_TREE;
-	}
-	// Prevent instantiation
-	private FieldConstants() {}
+  public static Pose2d getSetPoint(TreePlace place) {
+    Optional<DriverStation.Alliance> ally = DriverStation.getAlliance();
+    if (ally.isPresent()) {
+      if (ally.get() == DriverStation.Alliance.Red) {
+        return switch (place) {
+          case A_TREE -> RED_A_TREE;
+          case B_TREE -> RED_B_TREE;
+          case C_TREE -> RED_C_TREE;
+          case D_TREE -> RED_D_TREE;
+          case E_TREE -> RED_E_TREE;
+          case F_TREE -> RED_F_TREE;
+          case G_TREE -> RED_G_TREE;
+          case H_TREE -> RED_H_TREE;
+          case I_TREE -> RED_I_TREE;
+          case J_TREE -> RED_J_TREE;
+          case K_TREE -> RED_K_TREE;
+          case L_TREE -> RED_L_TREE;
+        };
+      }
+      if (ally.get() == DriverStation.Alliance.Blue) {
+        return switch (place) {
+          case A_TREE -> BLUE_A_TREE;
+          case B_TREE -> BLUE_B_TREE;
+          case C_TREE -> BLUE_C_TREE;
+          case D_TREE -> BLUE_D_TREE;
+          case E_TREE -> BLUE_E_TREE;
+          case F_TREE -> BLUE_F_TREE;
+          case G_TREE -> BLUE_G_TREE;
+          case H_TREE -> BLUE_H_TREE;
+          case I_TREE -> BLUE_I_TREE;
+          case J_TREE -> BLUE_J_TREE;
+          case K_TREE -> BLUE_K_TREE;
+          case L_TREE -> BLUE_L_TREE;
+        };
+      }
+    }
+    return RED_A_TREE;
+  }
+
+  // Prevent instantiation
+  private FieldConstants() {}
 }
