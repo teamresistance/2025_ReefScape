@@ -42,7 +42,7 @@ public class FlipperSubsystem extends SubsystemBase {
 
       Timer.delay(0.7);
 
-      flipperHoldingState(); //TODO: ADD COUNTER FOR ONLY RECURSION 3 TIMES
+      flipperHoldingState(); // TODO: ADD COUNTER FOR ONLY RECURSION 3 TIMES
     } else {
       gripper.set(true);
     }
