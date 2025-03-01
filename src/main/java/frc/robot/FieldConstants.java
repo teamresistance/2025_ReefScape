@@ -118,7 +118,6 @@ public final class FieldConstants {
   public static final Pose2d RED_L_TREE =
       new Pose2d(13.978, 3.068, Rotation2d.fromDegrees(120.000));
 
-
   // -------------------------------------------------
 
   public enum Place {
@@ -159,12 +158,12 @@ public final class FieldConstants {
           case J_TREE -> RED_J_TREE;
           case K_TREE -> RED_K_TREE;
           case L_TREE -> RED_L_TREE;
-	        case LEFT_CORAL_STATION -> new Pose2d();
-	        case RIGHT_CORAL_STATION -> new Pose2d();
-	        case ALGAE_STATION -> new Pose2d();
-	        case LEFT_CAGE -> new Pose2d();
-	        case RIGHT_CAGE -> new Pose2d();
-	        case MIDDLE_CAGE -> new Pose2d();
+          case LEFT_CORAL_STATION -> new Pose2d();
+          case RIGHT_CORAL_STATION -> new Pose2d();
+          case ALGAE_STATION -> new Pose2d();
+          case LEFT_CAGE -> new Pose2d();
+          case RIGHT_CAGE -> new Pose2d();
+          case MIDDLE_CAGE -> new Pose2d();
         };
       }
       if (ally.get() == DriverStation.Alliance.Blue) {
@@ -181,12 +180,12 @@ public final class FieldConstants {
           case J_TREE -> BLUE_J_TREE;
           case K_TREE -> BLUE_K_TREE;
           case L_TREE -> BLUE_L_TREE;
-	        case LEFT_CORAL_STATION -> new Pose2d();
-	        case RIGHT_CORAL_STATION -> new Pose2d();
-	        case ALGAE_STATION -> new Pose2d();
-	        case LEFT_CAGE -> new Pose2d();
-	        case RIGHT_CAGE -> new Pose2d();
-	        case MIDDLE_CAGE -> new Pose2d();
+          case LEFT_CORAL_STATION -> new Pose2d();
+          case RIGHT_CORAL_STATION -> new Pose2d();
+          case ALGAE_STATION -> new Pose2d();
+          case LEFT_CAGE -> new Pose2d();
+          case RIGHT_CAGE -> new Pose2d();
+          case MIDDLE_CAGE -> new Pose2d();
         };
       }
     }

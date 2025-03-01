@@ -319,7 +319,7 @@ public class DriveCommands {
             new PathConstraints(
                 TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.8,
                 4.0,
-              ANGLE_MAX_VELOCITY,
+                ANGLE_MAX_VELOCITY,
                 ANGLE_MAX_ACCELERATION),
             0.0 // Goal end velocity in meters/sec
             )
