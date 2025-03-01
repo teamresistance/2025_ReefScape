@@ -1,7 +1,6 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -11,13 +10,11 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.Constants.InterfaceExecuteMode;
 import frc.robot.Constants.LedMode;
 import frc.robot.commands.*;
 import frc.robot.generated.TunerConstants;
@@ -167,37 +164,37 @@ public class RobotContainer {
             drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> -driver.getRightX()));
 
     // Lock to 0° when A button is held
-    driver
-        .a()
-        .whileTrue(
-            DriveCommands.joystickDriveAtAngle(
-                drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), Rotation2d::new));
+    // driver
+    // .a()
+    // .whileTrue(
+    //     DriveCommands.joystickDriveAtAngle(
+    //         drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), Rotation2d::new));
 
     // Switch to X pattern when X button is pressed
-    driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    // driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     // need both commands
-    driver
-        .rightBumper()
-        .whileTrue(
-            DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-                .andThen(DriveCommands.goToTransform(drive, targetTransform))
-                .beforeStarting(
-                    () -> {
-                      DriveCommands.goToTransform(drive, targetTransform).cancel();
-                      DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
-                    }));
+    // driver
+    //     .rightBumper()
+    //     .whileTrue(
+    //         DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
+    //             .andThen(DriveCommands.goToTransform(drive, targetTransform))
+    //             .beforeStarting(
+    //                 () -> {
+    //                   DriveCommands.goToTransform(drive, targetTransform).cancel();
+    //                   DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
+    //                 }));
 
     // Reset gyro to 0 when B button is pressed
-    driver
-        .b()
-        .onTrue(
-            Commands.runOnce(
-                    () ->
-                        drive.setPose(
-                            new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
-                    drive)
-                .ignoringDisable(true));
+    // driver
+    //     .b()
+    //     .onTrue(
+    //         Commands.runOnce(
+    //                 () ->
+    //                     drive.setPose(
+    //                         new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
+    //                 drive)
+    //             .ignoringDisable(true));
 
     //
     //    Codriver Bindings
@@ -244,10 +241,22 @@ public class RobotContainer {
     // Driver connection to interface: driver presses button - interface handles.
     // The interface merely exists for the codriver to select locations.
     // The driver controls if and when said selections are actually executed.
-    driver.a().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.EXECUTE));
-    driver.b().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.REEF));
-    driver.x().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.CORAL));
-    driver.y().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.CLIMBER));
+    // driver.a().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.EXECUTE));
+    // driver.b().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.REEF));
+    // driver.x().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.CORAL));
+    // driver.y().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.CLIMBER));
+
+    driver.a().onTrue(new ElevatorCmd(elevator, 2, true));
+    driver.a().onFalse(new ElevatorCmd(elevator, 2, false));
+
+    driver.b().onTrue(new ElevatorCmd(elevator, 1, true));
+    driver.b().onFalse(new ElevatorCmd(elevator, 1, false));
+
+    driver.y().onTrue(new FlipperGripperCmd(flipper));
+    driver.x().onTrue(new FlipperScoreCmd(flipper));
+    // driver.rightTrigger().onTrue();
+
+    driver.leftBumper().and(driver.rightBumper()).onTrue(new ActivateClimberCommand(climber));
 
     //
     //    LED Triggers

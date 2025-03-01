@@ -13,7 +13,8 @@ public final class Constants {
   public static final boolean TUNING_MODE = false;
 
   // Misc
-  public static final int CORAL_SENSOR_CHANNEL = 0;
+  public static final int CORAL_SENSOR_CHANNEL1 = 0;
+  public static final int CORAL_SENSOR_CHANNEL2 = 1;
   public static final double SECONDS_TO_RAISE_ELEVATOR = 0;
   public static final double SECONDS_TO_SCORE = 0;
   public static final double SECONDS_GRIPPER_DELAY = 0;

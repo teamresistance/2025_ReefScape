@@ -141,7 +141,12 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+    // Solenoid sol = new Solenoid(Constants.SOLENOID_MODULE_TYPE,
+    // Constants.ELEVATOR_SOLENOID1_CHANNEL);
+    // sol.set(true); // Force ON for testing
+
+  }
 
   /** This function is called once when the robot is first started up. */
   @Override
