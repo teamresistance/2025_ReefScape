@@ -50,6 +50,7 @@ public class RobotContainer {
   private final ElevatorSubsystem elevator = new ElevatorSubsystem();
   private final LedSubsystem led = new LedSubsystem();
   private final ClimberSubsystem climber = new ClimberSubsystem();
+  private final PressureSubsystem pressure = new PressureSubsystem();
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
