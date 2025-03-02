@@ -12,10 +12,6 @@ public class ElevatorSubsystem extends SubsystemBase {
   static Solenoid elevatorPusher2 =
       new Solenoid(Constants.SOLENOID_MODULE_TYPE, Constants.ELEVATOR_SOLENOID2_CHANNEL);
 
-  /**
-   * The elevator subsystem is still available from both the codriver controls and the driver
-   * controls. The codriver has the interface while the driver has buttons.
-   */
   public ElevatorSubsystem() {}
 
   /** Raises lower stage of elevator */
@@ -56,7 +52,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // Logging / smartdashboard info
+    // Logging / SmartDashboard info
     SmartDashboard.putBoolean("First Stage", elevatorPusher1.get());
     SmartDashboard.putBoolean("Second Stage", elevatorPusher2.get());
     Logger.recordOutput("Elevator/First Stage Up", elevatorPusher1.get());

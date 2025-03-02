@@ -35,7 +35,6 @@ public class FlipperSubsystem extends SubsystemBase {
   private DigitalInput coralDetector1 = new DigitalInput(Constants.CORAL_SENSOR_CHANNEL_1);
   private DigitalInput coralDetector2 = new DigitalInput(Constants.CORAL_SENSOR_CHANNEL_2);
 
-  /** Subsystem handling coral intake and dropping onto branches/level1. */
   public FlipperSubsystem() {}
 
   /**
@@ -102,7 +101,7 @@ public class FlipperSubsystem extends SubsystemBase {
       flipperHoldingState();
     }
 
-    // Logging / smartdashboard
+    // Logging / SmartDashboard
     Logger.recordOutput("Flipper/Gripper Is Closed", gripperState);
     Logger.recordOutput("Flipper/Robot Thinks Has Coral", believesHasCoral);
     Logger.recordOutput(

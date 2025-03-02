@@ -12,7 +12,6 @@ public class ClimberSubsystem extends SubsystemBase {
   private final Solenoid climberSV =
       new Solenoid(Constants.SOLENOID_MODULE_TYPE, Constants.CLIMBER_SOLENOID_CHANNEL);
 
-  /** ClimberSubsystem constructor */
   public ClimberSubsystem() {}
 
   /** Activates the climber. Cannot be deactivated!! One-use. */
@@ -27,7 +26,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // Logging / smartdashboard info
+    // Logging / SmartDashboard info
     SmartDashboard.putBoolean("Climber is Activated:", climberSV.get());
     Logger.recordOutput("Climber/Activated", climberSV.get());
   }

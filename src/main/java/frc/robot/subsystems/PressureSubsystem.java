@@ -15,7 +15,6 @@ public class PressureSubsystem extends SubsystemBase {
   private final AnalogInput pressureSensor = new AnalogInput(Constants.PRESSURE_SENSOR_ID);
   public static Compressor pcm = new Compressor(modID, modType);
 
-  /** Subsystem for the compressor */
   public PressureSubsystem() {
     pcm.enableDigital();
   }
