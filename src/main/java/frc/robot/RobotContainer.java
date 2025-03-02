@@ -253,7 +253,7 @@ public class RobotContainer {
     //    LED Triggers
     //
     // Coral
-    Trigger ledComplexTrigger = new Trigger(flipper::getHasCoral);
+    Trigger ledComplexTrigger = new Trigger(flipper::getIsGripped);
     ledComplexTrigger.onTrue(
         new InstantCommand(
             () -> {

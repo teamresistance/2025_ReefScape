@@ -57,8 +57,8 @@ public class FlipperSubsystem extends SubsystemBase {
     }
   }
 
-  public boolean getHasCoral() {
-    return believesHasCoral;
+  public boolean getIsGripped() {
+    return gripper.get();
   }
 
   public boolean getIsntGripped() {
