@@ -61,8 +61,10 @@ public class RobotContainer {
   private final LoggedDashboardChooser<Command> autoChooser;
   public Vision aprilTagVision;
   // Create the target Transform2d (Translation and Rotation)
-  Translation2d targetTranslation = new Translation2d(14.35, 4.31); // X = 14, Y = 4
-  Rotation2d targetRotation = new Rotation2d(Units.degreesToRadians(-178.0)); // No rotation
+  //   public static final Pose2d RED_A_TREE =
+  //       new Pose2d(14.348, 4.013, Rotation2d.fromDegrees(180.000));
+  Translation2d targetTranslation = new Translation2d(14.348, 4.013); // X = 14, Y = 4
+  Rotation2d targetRotation = new Rotation2d(Units.degreesToRadians(-90.0)); // No rotation
   Transform2d targetTransform = new Transform2d(targetTranslation, targetRotation);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -101,13 +103,11 @@ public class RobotContainer {
 
   private Vision configureAprilTagVision() {
     try {
-      aprilTagVision =
-          new Vision(
-              frontLeftCamera,
-              frontRightCamera,
-              backLeftCamera,
-              backRightCamera,
-              frontCenterCamera);
+      aprilTagVision = new Vision(frontLeftCamera, frontRightCamera);
+
+      //   backLeftCamera,
+      //   backRightCamera,
+      //   frontCenterCamera
     } catch (IOException e) {
       assert cameraFailureAlert != null;
       cameraFailureAlert.set(true);
@@ -161,7 +161,7 @@ public class RobotContainer {
     // Default command, normal field-relative drive
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
-            drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> -driver.getRightX()));
+            drive, () -> driver.getLeftY(), () -> driver.getLeftX(), () -> -driver.getRightX()));
 
     // Lock to 0° when A button is held
     // driver
@@ -174,16 +174,16 @@ public class RobotContainer {
     // driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     // need both commands
-    // driver
-    //     .rightBumper()
-    //     .whileTrue(
-    //         DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-    //             .andThen(DriveCommands.goToTransform(drive, targetTransform))
-    //             .beforeStarting(
-    //                 () -> {
-    //                   DriveCommands.goToTransform(drive, targetTransform).cancel();
-    //                   DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
-    //                 }));
+    driver
+        .rightTrigger()
+        .whileTrue(
+            DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
+                .andThen(DriveCommands.goToTransform(drive, targetTransform))
+                .beforeStarting(
+                    () -> {
+                      DriveCommands.goToTransform(drive, targetTransform).cancel();
+                      DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
+                    }));
 
     // Reset gyro to 0 when B button is pressed
     // driver
@@ -254,6 +254,7 @@ public class RobotContainer {
 
     driver.y().onTrue(new FlipperGripperCmd(flipper));
     driver.x().onTrue(new FlipperScoreCmd(flipper));
+
     // driver.rightTrigger().onTrue();
 
     driver.leftBumper().and(driver.rightBumper()).onTrue(new ActivateClimberCommand(climber));

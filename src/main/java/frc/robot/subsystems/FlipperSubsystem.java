@@ -78,7 +78,7 @@ public class FlipperSubsystem extends SubsystemBase {
 
   /** Flips the coral out. */
   public void flipperScore() {
-    flipper.setPulseDuration(1.5);
+    flipper.setPulseDuration(5);
     flipper.startPulse();
 
     Timer.delay(0.75);
