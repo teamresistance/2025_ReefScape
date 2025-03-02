@@ -38,7 +38,9 @@ public class ElevatorSubsystem extends SubsystemBase {
     elevatorPusher2.set(false);
   }
 
-  /** Method used in the elevator command. Raises elevator levels according to the level parameter. */
+  /**
+   * Method used in the elevator command. Raises elevator levels according to the level parameter.
+   */
   public void raiseFromInterface(int level) {
     if (level <= 2) {
       lowerFirstStage();
@@ -63,5 +65,4 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   @Override
   public void simulationPeriodic() {}
-
 }

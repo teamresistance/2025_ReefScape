@@ -38,9 +38,12 @@ public class FlipperSubsystem extends SubsystemBase {
   /** Subsystem handling coral intake and dropping onto branches/level1. */
   public FlipperSubsystem() {}
 
-  /** Activates the centerer, then checks if the banner sensors detect coral.
-   * <p> If not: Tries again, maximum of 3 reattempts before it gives up
-   * <p> If coral detected: Grip the coral and reset recursions counter
+  /**
+   * Activates the centerer, then checks if the banner sensors detect coral.
+   *
+   * <p>If not: Tries again, maximum of 3 reattempts before it gives up
+   *
+   * <p>If coral detected: Grip the coral and reset recursions counter
    */
   public void flipperHoldingState() {
     if (!(detectorState1 && detectorState2) && !stopTryingGripper) { // If one sees something
@@ -112,5 +115,4 @@ public class FlipperSubsystem extends SubsystemBase {
 
   @Override
   public void simulationPeriodic() {}
-
 }

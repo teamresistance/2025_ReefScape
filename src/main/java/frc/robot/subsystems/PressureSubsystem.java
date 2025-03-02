@@ -39,5 +39,4 @@ public class PressureSubsystem extends SubsystemBase {
 
   @Override
   public void simulationPeriodic() {}
-
 }

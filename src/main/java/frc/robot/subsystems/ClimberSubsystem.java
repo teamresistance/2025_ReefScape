@@ -15,7 +15,6 @@ public class ClimberSubsystem extends SubsystemBase {
   /** ClimberSubsystem constructor */
   public ClimberSubsystem() {}
 
-  
   /** Activates the climber. Cannot be deactivated!! One-use. */
   public void activateClimber() {
     climberSV.set(true);
@@ -34,5 +33,4 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   public void simulationPeriodic() {}
-
 }
