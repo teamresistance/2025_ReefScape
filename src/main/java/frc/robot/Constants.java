@@ -12,11 +12,14 @@ public final class Constants {
   public static final Mode CURRENT_MODE = RobotBase.isReal() ? Mode.REAL : Mode.SIM;
   public static final boolean TUNING_MODE = false;
 
-  // Misc
-  public static final int CORAL_SENSOR_CHANNEL = 0;
+  // Elevator / Flipper / Gripper
   public static final double SECONDS_TO_RAISE_ELEVATOR = 0;
   public static final double SECONDS_TO_SCORE = 0;
   public static final double SECONDS_GRIPPER_DELAY = 0;
+  public static final int CORAL_SENSOR_CHANNEL_1 = 0;
+  public static final int CORAL_SENSOR_CHANNEL_2 = 1;
+  public static final double SECONDS_PER_CENTERING_ATTEMPT = 0.7;
+  public static final double SECONDS_OF_CENTERING_PULSE = 0.5;
 
   // Interface
   public enum InterfaceExecuteMode {
@@ -26,9 +29,11 @@ public final class Constants {
     EXECUTE
   }
 
-  // Solenoids
+  // Solenoids / Pressure
   public static final PneumaticsModuleType SOLENOID_MODULE_TYPE = PneumaticsModuleType.CTREPCM;
   public static final int PRESSURE_HUB_ID = 2;
+  public static final int PRESSURE_SENSOR_ID = 0;
+  public static final int COMPRESSOR_RELAY_ID = 0;
   public static final int CENTERER_SOLENOID_CHANNEL = 0;
   public static final int ELEVATOR_SOLENOID1_CHANNEL = 1;
   public static final int ELEVATOR_SOLENOID2_CHANNEL = 2;

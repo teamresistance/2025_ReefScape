@@ -9,10 +9,10 @@ import frc.robot.Constants;
 
 public class PressureSubsystem extends SubsystemBase {
 
-  private final Relay compressorRelay = new Relay(0); // Relay port 0
+  private final Relay compressorRelay = new Relay(Constants.COMPRESSOR_RELAY_ID); // Relay port 0
   private static PneumaticsModuleType modType = PneumaticsModuleType.CTREPCM;
   private static int modID = Constants.PRESSURE_HUB_ID; // CAN adr, ID, of PDH
-  private final AnalogInput pressureSensor = new AnalogInput(0);
+  private final AnalogInput pressureSensor = new AnalogInput(Constants.PRESSURE_SENSOR_ID);
   public static Compressor pcm = new Compressor(modID, modType);
 
   /** Creates a new PressureSubsystem. */
