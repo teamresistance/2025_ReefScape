@@ -140,6 +140,7 @@ public class LedSubsystem extends SubsystemBase {
       case OFF:
         turnOff();
         break;
+      default: // Do nothing
     }
   }
 
