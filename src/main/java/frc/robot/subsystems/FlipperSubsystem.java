@@ -24,6 +24,7 @@ public class FlipperSubsystem extends SubsystemBase {
       new Solenoid(2, Constants.SOLENOID_MODULE_TYPE, Constants.CENTERER_SOLENOID_CHANNEL);
   private DigitalInput coralDetector1 = new DigitalInput(Constants.CORAL_SENSOR_CHANNEL1);
   private DigitalInput coralDetector2 = new DigitalInput(Constants.CORAL_SENSOR_CHANNEL2);
+  private int counter= 0;
 
   /** Subsystem handling coral intake and dropping onto branches/level1. */
   public FlipperSubsystem() {}
@@ -34,7 +35,7 @@ public class FlipperSubsystem extends SubsystemBase {
    * centers then grips the coral.
    */
   public void flipperHoldingState() {
-    if (!(coralDetector1.get() && coralDetector2.get())) { // If one sees something
+    if (!(coralDetector1.get() && coralDetector2.get())&&counter<3) { // If one sees something
       gripper.set(false);
 
       coralCenterMechanism.setPulseDuration(0.5);
@@ -43,31 +44,14 @@ public class FlipperSubsystem extends SubsystemBase {
       Timer.delay(0.7);
 
       flipperHoldingState(); // TODO: ADD COUNTER FOR ONLY RECURSION 3 TIMES
+      counter++;
     } else {
       gripper.set(true);
+      counter=0;
+      }
     }
 
-    // if (coralDetector.get()) {
-    //   gripper.set(true);
-    // } else {
-    //   gripper.set(false);
-    //   coralCenterMechanism.setPulseDuration(0.5);
-    //   coralCenterMechanism.startPulse();
-    //   gripper.set(true);
-    // }
-
-    // if (!believesHasCoral) {
-
-    //   while (coralCenterMechanism.get()) {}
-    //   gripper.set(coralDetector.get());
-    //   believesHasCoral = true;
-    // } else if (believesHasCoral) {
-    //   gripper.set(false);
-    //   coralCenterMechanism.set(false);
-    //   believesHasCoral = false;
-    // }
-  }
-
+    
   public boolean getHasCoral() {
     return believesHasCoral;
   }
@@ -102,4 +86,5 @@ public class FlipperSubsystem extends SubsystemBase {
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
   }
+  
 }
