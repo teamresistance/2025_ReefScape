@@ -12,7 +12,7 @@ public class FlipperSubsystem extends SubsystemBase {
 
   private static boolean believesHasCoral = false;
   private int recursions;
-  private boolean stopTryingGripper;
+  private boolean stopTryingGripper = false;
   private static Solenoid gripper =
       new Solenoid(
           Constants.SOLENOID_MODULE_TYPE,
@@ -35,7 +35,7 @@ public class FlipperSubsystem extends SubsystemBase {
    * centers then grips the coral.
    */
   public void flipperHoldingState() {
-    if (!(coralDetector1.get() && coralDetector2.get())) { // If one sees something
+    if (!(coralDetector1.get() && coralDetector2.get()) && !stopTryingGripper) { // If one sees something
       if (!stopTryingGripper) {
         if (recursions >= 3) {
           stopTryingGripper = true;
@@ -48,7 +48,12 @@ public class FlipperSubsystem extends SubsystemBase {
         recursions++;
         Timer.delay(Constants.SECONDS_PER_CENTERING_ATTEMPT);
 
-        flipperHoldingState();
+        // If it will stop trying to grip, do not continue, if it won't stop, ensure it won't stop
+        if (!stopTryingGripper){
+          flipperHoldingState();
+        } else {
+          stopTryingGripper = false;
+        }
       }
     } else {
       gripper.set(true);
