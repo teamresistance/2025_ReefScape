@@ -56,7 +56,7 @@ public class FlipperSubsystem extends SubsystemBase {
         }
         gripper.set(false);
 
-        coralCenterMechanism.setPulseDuration(0.5);
+        coralCenterMechanism.setPulseDuration(Constants.SECONDS_OF_CENTERING_PULSE);
         coralCenterMechanism.startPulse();
 
         recursions++;

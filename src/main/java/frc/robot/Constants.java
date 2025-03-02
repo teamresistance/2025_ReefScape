@@ -19,6 +19,7 @@ public final class Constants {
   public static final int CORAL_SENSOR_CHANNEL_1 = 0;
   public static final int CORAL_SENSOR_CHANNEL_2 = 1;
   public static final double SECONDS_PER_CENTERING_ATTEMPT = 0.7;
+  public static final double SECONDS_OF_CENTERING_PULSE = 0.5;
 
   // Interface
   public enum InterfaceExecuteMode {
