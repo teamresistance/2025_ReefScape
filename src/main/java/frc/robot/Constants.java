@@ -28,6 +28,7 @@ public final class Constants {
 
   // Solenoids
   public static final PneumaticsModuleType SOLENOID_MODULE_TYPE = PneumaticsModuleType.CTREPCM;
+  public static final int PRESSURE_HUB_ID = 2;
   public static final int CENTERER_SOLENOID_CHANNEL = 0;
   public static final int ELEVATOR_SOLENOID1_CHANNEL = 1;
   public static final int ELEVATOR_SOLENOID2_CHANNEL = 2;
