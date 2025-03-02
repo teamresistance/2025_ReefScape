@@ -13,8 +13,6 @@ public final class Constants {
   public static final boolean TUNING_MODE = false;
 
   // Elevator / Flipper / Gripper
-  public static final int CORAL_SENSOR_1_CHANNEL = 0;
-  public static final int CORAL_SENSOR_2_CHANNEL = 1;
   public static final double SECONDS_TO_RAISE_ELEVATOR = 0;
   public static final double SECONDS_TO_SCORE = 0;
   public static final double SECONDS_GRIPPER_DELAY = 0;
@@ -30,9 +28,11 @@ public final class Constants {
     EXECUTE
   }
 
-  // Solenoids
+  // Solenoids / Pressure
   public static final PneumaticsModuleType SOLENOID_MODULE_TYPE = PneumaticsModuleType.CTREPCM;
   public static final int PRESSURE_HUB_ID = 2;
+  public static final int PRESSURE_SENSOR_ID = 0;
+  public static final int COMPRESSOR_RELAY_ID = 0;
   public static final int CENTERER_SOLENOID_CHANNEL = 0;
   public static final int ELEVATOR_SOLENOID1_CHANNEL = 1;
   public static final int ELEVATOR_SOLENOID2_CHANNEL = 2;

@@ -12,6 +12,9 @@ public class FlipperSubsystem extends SubsystemBase {
 
   private static boolean believesHasCoral = false;
   private int recursions;
+  private boolean detectorState1;
+  private boolean detectorState2;
+  private boolean gripperState;
   private boolean stopTryingGripper = false;
   private static Solenoid gripper =
       new Solenoid(
@@ -46,8 +49,7 @@ public class FlipperSubsystem extends SubsystemBase {
    * <p>Can be cancelled by running the method again.
    */
   public void flipperHoldingState() {
-    if (!(coralDetector1.get() && coralDetector2.get())
-        && !stopTryingGripper) { // If one sees something
+    if (!(detectorState1 && detectorState2) && !stopTryingGripper) { // If one sees something
       if (!stopTryingGripper) {
         if (recursions >= 3) {
           stopTryingGripper = true;
@@ -75,11 +77,11 @@ public class FlipperSubsystem extends SubsystemBase {
   }
 
   public boolean getIsGripped() {
-    return gripper.get();
+    return gripperState;
   }
 
   public boolean getIsntGripped() {
-    return !gripper.get();
+    return !gripperState;
   }
 
   /** Flips the coral out. */
@@ -90,18 +92,23 @@ public class FlipperSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if (coralDetector1.get() || coralDetector2.get()) {
+    // Vars
+    detectorState1 = coralDetector1.get();
+    detectorState2 = coralDetector2.get();
+    gripperState = gripper.get();
+    // Automatic trigger if one detects a coral
+    if (detectorState1 || detectorState2) {
       flipperHoldingState();
     }
-    Logger.recordOutput("Flipper/Gripper Is Closed", gripper.get());
+    // Logging / smartdashboard
+    Logger.recordOutput("Flipper/Gripper Is Closed", gripperState);
     Logger.recordOutput("Flipper/Robot Thinks Has Coral", believesHasCoral);
     Logger.recordOutput(
-        "Flipper/Coral Secured", (gripper.get() && (coralDetector1.get() && coralDetector2.get())));
-    SmartDashboard.putBoolean("Gripper Closed", gripper.get());
+        "Flipper/Coral Secured", (gripperState && (detectorState1 && detectorState2)));
+    SmartDashboard.putBoolean("Gripper Closed", gripperState);
     SmartDashboard.putBoolean("Thinks has coral", believesHasCoral);
     SmartDashboard.putBoolean(
-        "Coral Secured and Gripped",
-        (gripper.get() && (coralDetector1.get() && coralDetector2.get())));
+        "Coral Secured and Gripped", (gripperState && (detectorState1 && detectorState2)));
   }
 
   @Override
