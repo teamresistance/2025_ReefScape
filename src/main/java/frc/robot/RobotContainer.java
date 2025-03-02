@@ -252,26 +252,26 @@ public class RobotContainer {
     driver.y().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.CLIMBER));
 
     //
-    //    LED Triggers
+    //    LED Triggers (UNUSED)
     //
     // Coral
-    Trigger ledComplexTrigger = new Trigger(flipper::getIsGripped);
-    ledComplexTrigger.onTrue(
-        new InstantCommand(
-            () -> {
-              led.setMode(LedMode.STROBE);
-              led.setStrobeSetting(0);
-            }));
-    ledComplexTrigger.onFalse(new InstantCommand(() -> led.setMode(LedMode.SOLID)));
+    // Trigger ledComplexTrigger = new Trigger(flipper::getIsGripped);
+    // ledComplexTrigger.onTrue(
+    //     new InstantCommand(
+    //         () -> {
+    //           led.setMode(LedMode.STROBE);
+    //           led.setStrobeSetting(0);
+    //         }));
+    // ledComplexTrigger.onFalse(new InstantCommand(() -> led.setMode(LedMode.SOLID)));
 
-    // Climbing
-    Trigger ledClimbingTrigger = new Trigger(climber::getClimberUsed);
-    ledClimbingTrigger.onTrue(
-        new InstantCommand(
-            () -> {
-              led.setMode(LedMode.STROBE);
-              led.setStrobeSetting(1);
-            }));
+    // // Climbing
+    // Trigger ledClimbingTrigger = new Trigger(climber::getClimberUsed);
+    // ledClimbingTrigger.onTrue(
+    //     new InstantCommand(
+    //         () -> {
+    //           led.setMode(LedMode.STROBE);
+    //           led.setStrobeSetting(1);
+    //         }));
   }
 
   /**

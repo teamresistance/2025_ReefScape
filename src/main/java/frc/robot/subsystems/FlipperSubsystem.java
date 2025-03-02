@@ -38,24 +38,20 @@ public class FlipperSubsystem extends SubsystemBase {
   /** Subsystem handling coral intake and dropping onto branches/level1. */
   public FlipperSubsystem() {}
 
-  /**
-   * If the system thinks it has coral (dropped to the reef or had coral detected by both sensors),
-   * it opens the gripper.
-   *
-   * <p>If the system doesn't think it has coral (after recieving from station), the coral centerer
-   * will run every 2 seconds until both sensors detect a coral. While doing this, the system will
-   * think that it has coral.
-   *
-   * <p>Can be cancelled by running the method again.
+  /** Activates the centerer, then checks if the banner sensors detect coral.
+   * <p> If not: Tries again, maximum of 3 reattempts before it gives up
+   * <p> If coral detected: Grip the coral and reset recursions counter
    */
   public void flipperHoldingState() {
     if (!(detectorState1 && detectorState2) && !stopTryingGripper) { // If one sees something
       if (!stopTryingGripper) {
+        // Check for recursions, if >3 stop
         if (recursions >= 3) {
           stopTryingGripper = true;
         }
         gripper.set(false);
 
+        // Center croal
         coralCenterMechanism.setPulseDuration(Constants.SECONDS_OF_CENTERING_PULSE);
         coralCenterMechanism.startPulse();
 
@@ -67,6 +63,7 @@ public class FlipperSubsystem extends SubsystemBase {
           flipperHoldingState();
         } else {
           stopTryingGripper = false;
+          recursions = 0;
         }
       }
     } else {
@@ -92,14 +89,16 @@ public class FlipperSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // Vars
+    // Variable updates
     detectorState1 = coralDetector1.get();
     detectorState2 = coralDetector2.get();
     gripperState = gripper.get();
+
     // Automatic trigger if one detects a coral
     if (detectorState1 || detectorState2) {
       flipperHoldingState();
     }
+
     // Logging / smartdashboard
     Logger.recordOutput("Flipper/Gripper Is Closed", gripperState);
     Logger.recordOutput("Flipper/Robot Thinks Has Coral", believesHasCoral);
@@ -112,7 +111,6 @@ public class FlipperSubsystem extends SubsystemBase {
   }
 
   @Override
-  public void simulationPeriodic() {
-    // This method will be called once per scheduler run during simulation
-  }
+  public void simulationPeriodic() {}
+
 }

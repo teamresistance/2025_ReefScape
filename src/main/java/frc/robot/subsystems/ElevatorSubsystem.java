@@ -18,22 +18,27 @@ public class ElevatorSubsystem extends SubsystemBase {
    */
   public ElevatorSubsystem() {}
 
+  /** Raises lower stage of elevator */
   public static void raiseFirstStage() {
     elevatorPusher1.set(true);
   }
 
+  /** Raises upper stage of elevator */
   public static void raiseSecondStage() {
     elevatorPusher2.set(true);
   }
 
+  /** Lowers lower stage of elevator */
   public static void lowerFirstStage() {
     elevatorPusher1.set(false);
   }
 
+  /** Lowers upper stage of elevator */
   public static void lowerSecondStage() {
     elevatorPusher2.set(false);
   }
 
+  /** Method used in the elevator command. Raises elevator levels according to the level parameter. */
   public void raiseFromInterface(int level) {
     if (level <= 2) {
       lowerFirstStage();
@@ -49,6 +54,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    // Logging / smartdashboard info
     SmartDashboard.putBoolean("First Stage", elevatorPusher1.get());
     SmartDashboard.putBoolean("Second Stage", elevatorPusher2.get());
     Logger.recordOutput("Elevator/First Stage Up", elevatorPusher1.get());
@@ -56,7 +62,6 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   @Override
-  public void simulationPeriodic() {
-    // This method will be called once per scheduler run during simulation
-  }
+  public void simulationPeriodic() {}
+
 }

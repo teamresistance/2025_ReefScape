@@ -15,7 +15,7 @@ public class PressureSubsystem extends SubsystemBase {
   private final AnalogInput pressureSensor = new AnalogInput(Constants.PRESSURE_SENSOR_ID);
   public static Compressor pcm = new Compressor(modID, modType);
 
-  /** Creates a new PressureSubsystem. */
+  /** Subsystem for the compressor */
   public PressureSubsystem() {
     pcm.enableDigital();
   }
@@ -36,4 +36,8 @@ public class PressureSubsystem extends SubsystemBase {
     // System.out.println("Pressure Switch Value: " + pcm.getPressureSwitchValue());
     // This method will be called once per scheduler run
   }
+
+  @Override
+  public void simulationPeriodic() {}
+
 }
