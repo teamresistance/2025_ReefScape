@@ -73,6 +73,9 @@ public class FlipperSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    if (coralDetector1.get() || coralDetector2.get()) {
+      flipperHoldingState();
+    }
     Logger.recordOutput("Flipper/Gripper Is Closed", gripper.get());
     Logger.recordOutput("Flipper/Robot Thinks Has Coral", believesHasCoral);
     Logger.recordOutput("Flipper/Coral Secured", (gripper.get() && (coralDetector1.get() && coralDetector2.get())));
