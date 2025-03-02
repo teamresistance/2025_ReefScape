@@ -245,6 +245,7 @@ public class RobotContainer {
     // Driver connection to interface: driver presses button - interface handles.
     // The interface merely exists for the codriver to select locations.
     // The driver controls if and when said selections are actually executed.
+    // The execute button scores, other buttons drive to a location.
     driver.a().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.EXECUTE));
     driver.b().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.REEF));
     driver.x().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.CORAL));
@@ -254,7 +255,7 @@ public class RobotContainer {
     //    LED Triggers
     //
     // Coral
-    Trigger ledComplexTrigger = new Trigger(flipper::getHasCoral);
+    Trigger ledComplexTrigger = new Trigger(flipper::getIsGripped);
     ledComplexTrigger.onTrue(
         new InstantCommand(
             () -> {
