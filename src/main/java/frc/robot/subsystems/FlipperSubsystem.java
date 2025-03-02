@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -10,6 +11,8 @@ import org.littletonrobotics.junction.Logger;
 public class FlipperSubsystem extends SubsystemBase {
 
   private static boolean believesHasCoral = false;
+  private int recursions;
+  private boolean stopTryingGripper;
   private static Solenoid gripper =
       new Solenoid(
           Constants.SOLENOID_MODULE_TYPE,
@@ -17,10 +20,11 @@ public class FlipperSubsystem extends SubsystemBase {
               .GRIPPER_SOLENOID_CHANNEL); // The pneumatics hub channels that we are using are 0, 2,
   // and 5
   private Solenoid flipper =
-      new Solenoid(Constants.SOLENOID_MODULE_TYPE, Constants.FLIPPER_SOLENOID_CHANNEL);
+      new Solenoid(Constants.PRESSURE_HUB_ID, Constants.SOLENOID_MODULE_TYPE, Constants.FLIPPER_SOLENOID_CHANNEL);
   private Solenoid coralCenterMechanism =
-      new Solenoid(Constants.SOLENOID_MODULE_TYPE, Constants.CENTERER_SOLENOID_CHANNEL);
-  private DigitalInput coralDetector = new DigitalInput(Constants.CORAL_SENSOR_CHANNEL);
+      new Solenoid(Constants.PRESSURE_HUB_ID, Constants.SOLENOID_MODULE_TYPE, Constants.CENTERER_SOLENOID_CHANNEL);
+  private DigitalInput coralDetector1 = new DigitalInput(Constants.CORAL_SENSOR_CHANNEL_1);
+  private DigitalInput coralDetector2 = new DigitalInput(Constants.CORAL_SENSOR_CHANNEL_2);
 
   /** Subsystem handling coral intake and dropping onto branches/level1. */
   public FlipperSubsystem() {}
@@ -31,16 +35,25 @@ public class FlipperSubsystem extends SubsystemBase {
    * centers then grips the coral.
    */
   public void flipperHoldingState() {
-    if (!believesHasCoral) {
-      coralCenterMechanism.setPulseDuration(0.5);
-      coralCenterMechanism.startPulse();
-      while (coralCenterMechanism.get()) {}
-      gripper.set(coralDetector.get());
-      believesHasCoral = true;
-    } else if (believesHasCoral) {
-      gripper.set(false);
-      coralCenterMechanism.set(false);
-      believesHasCoral = false;
+    if (!(coralDetector1.get() && coralDetector2.get())) { // If one sees something
+      if (!stopTryingGripper) {
+        if (recursions >= 3) {
+          stopTryingGripper = true;
+        }
+        gripper.set(false);
+
+        coralCenterMechanism.setPulseDuration(0.5);
+        coralCenterMechanism.startPulse();
+
+        recursions++;
+        Timer.delay(Constants.SECONDS_PER_CENTERING_ATTEMPT);
+
+        flipperHoldingState();
+      }
+    } else {
+      gripper.set(true);
+      stopTryingGripper = false;
+      recursions = 0;
     }
   }
 
@@ -62,10 +75,10 @@ public class FlipperSubsystem extends SubsystemBase {
   public void periodic() {
     Logger.recordOutput("Flipper/Gripper Is Closed", gripper.get());
     Logger.recordOutput("Flipper/Robot Thinks Has Coral", believesHasCoral);
-    Logger.recordOutput("Flipper/Coral Secured", (gripper.get() && coralDetector.get()));
+    Logger.recordOutput("Flipper/Coral Secured", (gripper.get() && (coralDetector1.get() && coralDetector2.get())));
     SmartDashboard.putBoolean("Gripper Closed", gripper.get());
     SmartDashboard.putBoolean("Thinks has coral", believesHasCoral);
-    SmartDashboard.putBoolean("Coral Secured and Gripped", (gripper.get() && coralDetector.get()));
+    SmartDashboard.putBoolean("Coral Secured and Gripped", (gripper.get() && (coralDetector1.get() && coralDetector2.get())));
   }
 
   @Override
