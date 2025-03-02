@@ -24,7 +24,7 @@ public class PressureSubsystem extends SubsystemBase {
     double voltage = pressureSensor.getVoltage();
     return (250 * (voltage / 5.0)) - 25; // Example conversion
   }
-  
+
   @Override
   public void periodic() {
     if (getPressurePSI() < 90) {
