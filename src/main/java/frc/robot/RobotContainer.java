@@ -252,7 +252,7 @@ public class RobotContainer {
     driver.y().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.CLIMBER));
 
     //
-    //    LED Triggers
+    //    LED Triggers (UNUSED)
     //
     // Coral
     Trigger ledComplexTrigger = new Trigger(flipper::getIsGripped);

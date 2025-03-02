@@ -12,28 +12,31 @@ public class ElevatorSubsystem extends SubsystemBase {
   static Solenoid elevatorPusher2 =
       new Solenoid(Constants.SOLENOID_MODULE_TYPE, Constants.ELEVATOR_SOLENOID2_CHANNEL);
 
-  /**
-   * The elevator subsystem is still available from both the codriver controls and the driver
-   * controls. The codriver has the interface while the driver has buttons.
-   */
   public ElevatorSubsystem() {}
 
+  /** Raises lower stage of elevator */
   public static void raiseFirstStage() {
     elevatorPusher1.set(true);
   }
 
+  /** Raises upper stage of elevator */
   public static void raiseSecondStage() {
     elevatorPusher2.set(true);
   }
 
+  /** Lowers lower stage of elevator */
   public static void lowerFirstStage() {
     elevatorPusher1.set(false);
   }
 
+  /** Lowers upper stage of elevator */
   public static void lowerSecondStage() {
     elevatorPusher2.set(false);
   }
 
+  /**
+   * Method used in the elevator command. Raises elevator levels according to the level parameter.
+   */
   public void raiseFromInterface(int level) {
     if (level <= 2) {
       lowerFirstStage();
@@ -49,6 +52,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    // Logging / SmartDashboard info
     SmartDashboard.putBoolean("First Stage", elevatorPusher1.get());
     SmartDashboard.putBoolean("Second Stage", elevatorPusher2.get());
     Logger.recordOutput("Elevator/First Stage Up", elevatorPusher1.get());
@@ -56,7 +60,5 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   @Override
-  public void simulationPeriodic() {
-    // This method will be called once per scheduler run during simulation
-  }
+  public void simulationPeriodic() {}
 }

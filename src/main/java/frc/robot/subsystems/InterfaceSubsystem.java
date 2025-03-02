@@ -18,7 +18,7 @@ public class InterfaceSubsystem extends SubsystemBase {
   private ElevatorSubsystem elevator;
 
   /**
-   * Interface subsystem constructor. Drive, flipper, elevator, subsystems are params from
+   * Interface subsystem constructor - drive, flipper, elevator, subsystems are params from
    * robotcontainer. They are used because we cannot have two instances of any subsystem at the same
    * time.
    */
@@ -88,6 +88,7 @@ public class InterfaceSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    // Logger / SmartDashboard info
     SmartDashboard.putString("Selected Pole", pole);
     SmartDashboard.putNumber("Selected Level", level);
   }

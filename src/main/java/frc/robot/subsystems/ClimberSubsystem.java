@@ -8,43 +8,28 @@ import org.littletonrobotics.junction.Logger;
 
 public class ClimberSubsystem extends SubsystemBase {
 
-  // This is never deactivated, only activated. Climber is one and done.
+  // This is never deactivated after use. It exists to turn on.
   private final Solenoid climberSV =
       new Solenoid(Constants.SOLENOID_MODULE_TYPE, Constants.CLIMBER_SOLENOID_CHANNEL);
 
-  /** Constructor for this subsystem. used to create an object in RobotContainer. */
   public ClimberSubsystem() {}
 
-  /**
-   * Sets the climberSV solenoid to the positon expressed by {@code state}. Also changes {@code
-   * isActivated} to that state.
-   *
-   * @return void
-   */
+  /** Activates the climber. Cannot be deactivated!! One-use. */
   public void activateClimber() {
     climberSV.set(true);
   }
 
+  /** Returns if the climber has been activated or not */
   public boolean getClimberUsed() {
     return climberSV.get();
   }
 
-  /*
-   * This method is called every 20 ms.
-   */
   @Override
   public void periodic() {
-    // SmartDashboard reporting
+    // Logging / SmartDashboard info
     SmartDashboard.putBoolean("Climber is Activated:", climberSV.get());
-
-    // Logging
     Logger.recordOutput("Climber/Activated", climberSV.get());
   }
 
-  /*
-   * This method is called every 20 ms in simulation.
-   */
-  public void simulationPeriodic() {
-    // This method will be called once per scheduler run
-  }
+  public void simulationPeriodic() {}
 }
