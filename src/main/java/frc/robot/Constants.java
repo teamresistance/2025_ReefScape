@@ -12,8 +12,9 @@ public final class Constants {
   public static final Mode CURRENT_MODE = RobotBase.isReal() ? Mode.REAL : Mode.SIM;
   public static final boolean TUNING_MODE = false;
 
-  // Misc
-  public static final int CORAL_SENSOR_CHANNEL = 0;
+  // Elevator / Flipper / Gripper
+  public static final int CORAL_SENSOR_1_CHANNEL = 0;
+  public static final int CORAL_SENSOR_2_CHANNEL = 1;
   public static final double SECONDS_TO_RAISE_ELEVATOR = 0;
   public static final double SECONDS_TO_SCORE = 0;
   public static final double SECONDS_GRIPPER_DELAY = 0;

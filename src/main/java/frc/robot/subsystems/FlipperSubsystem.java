@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -36,9 +37,10 @@ public class FlipperSubsystem extends SubsystemBase {
   public FlipperSubsystem() {}
 
   /**
-   * If the flipper thinks it has/had coral (aka it dropped to the reef or tried gripping), it opens
-   * the gripper. If the flipper doesn't think it has coral (right after recieving basically), it
-   * centers then grips the coral.
+   * If the system thinks it has coral (dropped to the reef or had coral detected by both sensors), it opens
+   * the gripper. <p>If the system doesn't think it has coral (after recieving from station), the coral centerer
+   * will run every 2 seconds until both sensors detect a coral. While doing this, the system will think that it
+   * has coral. <p>Can be cancelled by running the method again.
    */
   public void flipperHoldingState() {
     if (!(coralDetector1.get() && coralDetector2.get())
