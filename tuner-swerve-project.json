@@ -1,6 +1,6 @@
 {
   "Version": "1.0.0.0",
-  "LastState": 11,
+  "LastState": 10,
   "Modules": [
     {
       "ModuleName": "Front Left",
@@ -22,7 +22,9 @@
         "CANbusFriendly": "",
         "SelectedMotorType": {
           "Name": "WCP Kraken x60",
-          "FreeSpeedRps": 96.7
+          "FreeSpeedRps": 96.7,
+          "SlipCurrentLimit": 120,
+          "StatorCurrentLimit": 60
         },
         "IsStandaloneFx": false
       },
@@ -34,7 +36,9 @@
         "CANbusFriendly": "",
         "SelectedMotorType": {
           "Name": "WCP Kraken x60",
-          "FreeSpeedRps": 96.7
+          "FreeSpeedRps": 96.7,
+          "SlipCurrentLimit": 120,
+          "StatorCurrentLimit": 60
         },
         "IsStandaloneFx": false
       },
@@ -48,51 +52,7 @@
       "IsModuleValidationComplete": true,
       "ValidatedSteerId": 27,
       "ValidatedDriveId": 22,
-      "ValidatedEncoderId": 31,
-      "AvailEncoders": [
-        {
-          "Id": 30,
-          "Name": "CANCoder (Device ID 30)",
-          "Model": "CANCoder",
-          "CANbus": "rio",
-          "CANbusFriendly": "",
-          "SelectedMotorType": null,
-          "IsStandaloneFx": false
-        },
-        {
-          "Id": 31,
-          "Name": "CANCoder (Device ID 31)",
-          "Model": "CANCoder",
-          "CANbus": "rio",
-          "CANbusFriendly": "",
-          "SelectedMotorType": null,
-          "IsStandaloneFx": false
-        },
-        {
-          "Id": 32,
-          "Name": "CANCoder (Device ID 32)",
-          "Model": "CANCoder",
-          "CANbus": "rio",
-          "CANbusFriendly": "",
-          "SelectedMotorType": null,
-          "IsStandaloneFx": false
-        },
-        {
-          "Id": 33,
-          "Name": "CANCoder vers. H (Device ID 33)",
-          "Model": "CANCoder vers. H",
-          "CANbus": "rio",
-          "CANbusFriendly": "",
-          "SelectedMotorType": null,
-          "IsStandaloneFx": false
-        }
-      ],
-      "IsEncoderTypeCAN": true,
-      "IsDeviceSelectionCompleted": true,
-      "IsConfigurationCompleted": true,
-      "AvailEncoderTypes": [
-        "CANcoder"
-      ]
+      "ValidatedEncoderId": 31
     },
     {
       "ModuleName": "Front Right",
@@ -114,7 +74,9 @@
         "CANbusFriendly": "",
         "SelectedMotorType": {
           "Name": "WCP Kraken x60",
-          "FreeSpeedRps": 96.7
+          "FreeSpeedRps": 96.7,
+          "SlipCurrentLimit": 120,
+          "StatorCurrentLimit": 60
         },
         "IsStandaloneFx": false
       },
@@ -126,7 +88,9 @@
         "CANbusFriendly": "",
         "SelectedMotorType": {
           "Name": "WCP Kraken x60",
-          "FreeSpeedRps": 96.7
+          "FreeSpeedRps": 96.7,
+          "SlipCurrentLimit": 120,
+          "StatorCurrentLimit": 60
         },
         "IsStandaloneFx": false
       },
@@ -140,51 +104,7 @@
       "IsModuleValidationComplete": true,
       "ValidatedSteerId": 24,
       "ValidatedDriveId": 26,
-      "ValidatedEncoderId": 32,
-      "AvailEncoders": [
-        {
-          "Id": 30,
-          "Name": "CANCoder (Device ID 30)",
-          "Model": "CANCoder",
-          "CANbus": "rio",
-          "CANbusFriendly": "",
-          "SelectedMotorType": null,
-          "IsStandaloneFx": false
-        },
-        {
-          "Id": 31,
-          "Name": "CANCoder (Device ID 31)",
-          "Model": "CANCoder",
-          "CANbus": "rio",
-          "CANbusFriendly": "",
-          "SelectedMotorType": null,
-          "IsStandaloneFx": false
-        },
-        {
-          "Id": 32,
-          "Name": "CANCoder (Device ID 32)",
-          "Model": "CANCoder",
-          "CANbus": "rio",
-          "CANbusFriendly": "",
-          "SelectedMotorType": null,
-          "IsStandaloneFx": false
-        },
-        {
-          "Id": 33,
-          "Name": "CANCoder vers. H (Device ID 33)",
-          "Model": "CANCoder vers. H",
-          "CANbus": "rio",
-          "CANbusFriendly": "",
-          "SelectedMotorType": null,
-          "IsStandaloneFx": false
-        }
-      ],
-      "IsEncoderTypeCAN": true,
-      "IsDeviceSelectionCompleted": true,
-      "IsConfigurationCompleted": true,
-      "AvailEncoderTypes": [
-        "CANcoder"
-      ]
+      "ValidatedEncoderId": 32
     },
     {
       "ModuleName": "Back Left",
@@ -206,7 +126,9 @@
         "CANbusFriendly": "",
         "SelectedMotorType": {
           "Name": "WCP Kraken x60",
-          "FreeSpeedRps": 96.7
+          "FreeSpeedRps": 96.7,
+          "SlipCurrentLimit": 120,
+          "StatorCurrentLimit": 60
         },
         "IsStandaloneFx": false
       },
@@ -218,7 +140,9 @@
         "CANbusFriendly": "",
         "SelectedMotorType": {
           "Name": "WCP Kraken x60",
-          "FreeSpeedRps": 96.7
+          "FreeSpeedRps": 96.7,
+          "SlipCurrentLimit": 120,
+          "StatorCurrentLimit": 60
         },
         "IsStandaloneFx": false
       },
@@ -232,51 +156,7 @@
       "IsModuleValidationComplete": true,
       "ValidatedSteerId": 23,
       "ValidatedDriveId": 25,
-      "ValidatedEncoderId": 33,
-      "AvailEncoders": [
-        {
-          "Id": 30,
-          "Name": "CANCoder (Device ID 30)",
-          "Model": "CANCoder",
-          "CANbus": "rio",
-          "CANbusFriendly": "",
-          "SelectedMotorType": null,
-          "IsStandaloneFx": false
-        },
-        {
-          "Id": 31,
-          "Name": "CANCoder (Device ID 31)",
-          "Model": "CANCoder",
-          "CANbus": "rio",
-          "CANbusFriendly": "",
-          "SelectedMotorType": null,
-          "IsStandaloneFx": false
-        },
-        {
-          "Id": 32,
-          "Name": "CANCoder (Device ID 32)",
-          "Model": "CANCoder",
-          "CANbus": "rio",
-          "CANbusFriendly": "",
-          "SelectedMotorType": null,
-          "IsStandaloneFx": false
-        },
-        {
-          "Id": 33,
-          "Name": "CANCoder vers. H (Device ID 33)",
-          "Model": "CANCoder vers. H",
-          "CANbus": "rio",
-          "CANbusFriendly": "",
-          "SelectedMotorType": null,
-          "IsStandaloneFx": false
-        }
-      ],
-      "IsEncoderTypeCAN": true,
-      "IsDeviceSelectionCompleted": true,
-      "IsConfigurationCompleted": true,
-      "AvailEncoderTypes": [
-        "CANcoder"
-      ]
+      "ValidatedEncoderId": 33
     },
     {
       "ModuleName": "Back Right",
@@ -298,7 +178,9 @@
         "CANbusFriendly": "",
         "SelectedMotorType": {
           "Name": "WCP Kraken x60",
-          "FreeSpeedRps": 96.7
+          "FreeSpeedRps": 96.7,
+          "SlipCurrentLimit": 120,
+          "StatorCurrentLimit": 60
         },
         "IsStandaloneFx": false
       },
@@ -310,7 +192,9 @@
         "CANbusFriendly": "",
         "SelectedMotorType": {
           "Name": "WCP Kraken x60",
-          "FreeSpeedRps": 96.7
+          "FreeSpeedRps": 96.7,
+          "SlipCurrentLimit": 120,
+          "StatorCurrentLimit": 60
         },
         "IsStandaloneFx": false
       },
@@ -324,51 +208,7 @@
       "IsModuleValidationComplete": true,
       "ValidatedSteerId": 21,
       "ValidatedDriveId": 20,
-      "ValidatedEncoderId": 30,
-      "AvailEncoders": [
-        {
-          "Id": 30,
-          "Name": "CANCoder (Device ID 30)",
-          "Model": "CANCoder",
-          "CANbus": "rio",
-          "CANbusFriendly": "",
-          "SelectedMotorType": null,
-          "IsStandaloneFx": false
-        },
-        {
-          "Id": 31,
-          "Name": "CANCoder (Device ID 31)",
-          "Model": "CANCoder",
-          "CANbus": "rio",
-          "CANbusFriendly": "",
-          "SelectedMotorType": null,
-          "IsStandaloneFx": false
-        },
-        {
-          "Id": 32,
-          "Name": "CANCoder (Device ID 32)",
-          "Model": "CANCoder",
-          "CANbus": "rio",
-          "CANbusFriendly": "",
-          "SelectedMotorType": null,
-          "IsStandaloneFx": false
-        },
-        {
-          "Id": 33,
-          "Name": "CANCoder vers. H (Device ID 33)",
-          "Model": "CANCoder vers. H",
-          "CANbus": "rio",
-          "CANbusFriendly": "",
-          "SelectedMotorType": null,
-          "IsStandaloneFx": false
-        }
-      ],
-      "IsEncoderTypeCAN": true,
-      "IsDeviceSelectionCompleted": true,
-      "IsConfigurationCompleted": true,
-      "AvailEncoderTypes": [
-        "CANcoder"
-      ]
+      "ValidatedEncoderId": 30
     }
   ],
   "SwerveOptions": {
@@ -383,8 +223,8 @@
       "IsStandaloneFx": false
     },
     "IsValidGyroCANbus": true,
-    "VerticalTrackSizeInches": 20.0833333333,
-    "HorizontalTrackSizeInches": 25.0833333333,
+    "VerticalTrackSizeInches": 21.5,
+    "HorizontalTrackSizeInches": 21.5,
     "WheelRadiusInches": 2.0,
     "IsLeftSideInverted": false,
     "IsRightSideInverted": true,
@@ -397,6 +237,7 @@
       "CustomName": "X2 10T"
     },
     "HasVerifiedSteer": true,
+    "SelectedModuleManufacturer": "WestCoast Products (WCP)",
     "HasVerifiedDrive": true,
     "IsValidConfiguration": true
   }
