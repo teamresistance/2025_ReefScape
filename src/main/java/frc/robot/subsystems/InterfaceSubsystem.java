@@ -43,16 +43,21 @@ public class InterfaceSubsystem extends SubsystemBase {
             // Drive to pole A and align once nearby
             // TODO: Add the rest of the branch positions to align to
         }
+        break;
       case CORAL:
-      // Drive commands to drive to coral station
+        // Drive commands to drive to coral station
+        break;
       case CLIMBER:
-      // Drive commands to drive to climber
+        // Drive commands to drive to climber
+        break;
       case EXECUTE:
         if (!executing) {
           executeSelected();
         } else {
           forceStopExecution();
         }
+        break;
+      default: // Do nothing
     }
   }
 
