@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.RobotBase;
  */
 public final class Constants {
   public static final Mode CURRENT_MODE = RobotBase.isReal() ? Mode.REAL : Mode.SIM;
-  public static final boolean TUNING_MODE = false;
+  public static final boolean TUNING_MODE = true;
 
   // Misc
   public static final int CORAL_SENSOR_CHANNEL1 = 0;

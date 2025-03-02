@@ -63,8 +63,8 @@ public class RobotContainer {
   // Create the target Transform2d (Translation and Rotation)
   //   public static final Pose2d RED_A_TREE =
   //       new Pose2d(14.348, 4.013, Rotation2d.fromDegrees(180.000));
-  Translation2d targetTranslation = new Translation2d(14.348, 4.013); // X = 14, Y = 4
-  Rotation2d targetRotation = new Rotation2d(Units.degreesToRadians(-90.0)); // No rotation
+  Translation2d targetTranslation = new Translation2d(14.41, 4.34); // X = 14, Y = 4
+  Rotation2d targetRotation = new Rotation2d(Units.degreesToRadians(180.0)); // No rotation
   Transform2d targetTransform = new Transform2d(targetTranslation, targetRotation);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -103,7 +103,7 @@ public class RobotContainer {
 
   private Vision configureAprilTagVision() {
     try {
-      aprilTagVision = new Vision(frontLeftCamera, frontRightCamera);
+      aprilTagVision = new Vision(frontLeftCamera, frontRightCamera, frontCenterCamera);
 
       //   backLeftCamera,
       //   backRightCamera,
@@ -161,7 +161,7 @@ public class RobotContainer {
     // Default command, normal field-relative drive
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
-            drive, () -> driver.getLeftY(), () -> driver.getLeftX(), () -> -driver.getRightX()));
+            drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> -driver.getRightX()));
 
     // Lock to 0° when A button is held
     // driver
