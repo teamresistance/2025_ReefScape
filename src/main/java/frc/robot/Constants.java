@@ -41,27 +41,6 @@ public final class Constants {
   public static final int FLIPPER_SOLENOID_CHANNEL = 4;
   public static final int CLIMBER_SOLENOID_CHANNEL = 5;
 
-  // LED Strip
-  public static final int LED_LENGTH = 60;
-  public static final int LED_ANIMATION_DELAY_MS = 100; // Can only be multiple of 20ms.
-  // Coral Indicators
-  public static final int[] LED_STROBE_COLOR1 = {0, 0, 255};
-  public static final int[] LED_STROBE_COLOR2 = {0, 255, 255};
-  public static final int[] LED_STROBE_COLOR3 = {0, 255, 255};
-  // Is Climbing
-  public static final int[] LED_STROBE_COLOR4 = {50, 100, 50};
-  public static final int[] LED_STROBE_COLOR5 = {100, 200, 100};
-  public static final int[] LED_STROBE_COLOR6 = {50, 200, 50};
-  // Solid
-  public static final int[] LED_COLOR_SOLID = {132, 76, 130};
-  public static final int LED_PORT_NUMBER = 0;
-
-  public enum LedMode {
-    SOLID,
-    STROBE,
-    OFF
-  }
-
   public enum Mode {
     /** Running on a real robot. */
     REAL,
