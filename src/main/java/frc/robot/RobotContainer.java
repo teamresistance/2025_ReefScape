@@ -12,13 +12,10 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.InterfaceExecuteMode;
-import frc.robot.Constants.LedMode;
 import frc.robot.commands.*;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.*;
@@ -48,7 +45,6 @@ public class RobotContainer {
   private InterfaceSubsystem reef;
   private final FlipperSubsystem flipper = new FlipperSubsystem();
   private final ElevatorSubsystem elevator = new ElevatorSubsystem();
-  private final LedSubsystem led = new LedSubsystem();
   private final ClimberSubsystem climber = new ClimberSubsystem();
   private final PressureSubsystem pressure = new PressureSubsystem();
 
@@ -250,28 +246,6 @@ public class RobotContainer {
     driver.b().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.REEF));
     driver.x().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.CORAL));
     driver.y().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.CLIMBER));
-
-    //
-    //    LED Triggers (UNUSED)
-    //
-    // Coral
-    Trigger ledComplexTrigger = new Trigger(flipper::getIsGripped);
-    ledComplexTrigger.onTrue(
-        new InstantCommand(
-            () -> {
-              led.setMode(LedMode.STROBE);
-              led.setStrobeSetting(0);
-            }));
-    ledComplexTrigger.onFalse(new InstantCommand(() -> led.setMode(LedMode.SOLID)));
-
-    // Climbing
-    Trigger ledClimbingTrigger = new Trigger(climber::getClimberUsed);
-    ledClimbingTrigger.onTrue(
-        new InstantCommand(
-            () -> {
-              led.setMode(LedMode.STROBE);
-              led.setStrobeSetting(1);
-            }));
   }
 
   /**
