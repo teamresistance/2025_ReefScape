@@ -35,12 +35,12 @@ public class CameraPoses {
         // front_center
         new Pose3d(
             new Translation3d(
-                Units.inchesToMeters(-5),
-                Units.inchesToMeters(13),
-                Units.inchesToMeters(7.5)), // Left camera translation (X, Y, Z)
+                Units.inchesToMeters(12.5),
+                Units.inchesToMeters(3.0),
+                Units.inchesToMeters(6.5)), // Left camera translation (X, Y, Z)
             new Rotation3d(
                 Units.degreesToRadians(0.0),
-                Units.degreesToRadians(-13.5),
-                Units.degreesToRadians(-5.0))), // in radians btw
+                Units.degreesToRadians(-14.5),
+                Units.degreesToRadians(0.0))), // in radians btw
       };
 }

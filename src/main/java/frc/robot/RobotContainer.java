@@ -36,7 +36,7 @@ public class RobotContainer {
   public final PhotonCamera frontRightCamera = new PhotonCamera("front-right");
   public final PhotonCamera backLeftCamera = new PhotonCamera("back_left");
   public final PhotonCamera backRightCamera = new PhotonCamera("back_right");
-  public final PhotonCamera frontCenterCamera = new PhotonCamera("front_center");
+  public final PhotonCamera frontCenterCamera = new PhotonCamera("front-center");
 
   private final Alert cameraFailureAlert;
 
@@ -54,17 +54,21 @@ public class RobotContainer {
   private final Joystick cojoystick = new Joystick(1);
   // There are two codriver joystick ports because only 12 buttons can be detected, and just the
   // branch select is 12 buttons.
-  private final Joystick codriverInterfaceBranch = new Joystick(2);
-  private final Joystick codriverInterfaceOther = new Joystick(3);
+  //   private final Joystick codriverInterfaceBranch = new Joystick(2);
+  //   private final Joystick codriverInterfaceOther = new Joystick(3);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
   public Vision aprilTagVision;
   // Create the target Transform2d (Translation and Rotation)
-  //   public static final Pose2d RED_A_TREE =
-  //       new Pose2d(14.348, 4.013, Rotation2d.fromDegrees(180.000));
-  Translation2d targetTranslation = new Translation2d(14.41, 4.34); // X = 14, Y = 4
+  Translation2d targetTranslation = new Translation2d(14.82, 4.06); // X = 14, Y = 4
   Rotation2d targetRotation = new Rotation2d(Units.degreesToRadians(180.0)); // No rotation
+
+  // new Pose2d(13.714, 5.136, Rotation2d.fromDegrees(-120.000));
+  //   Translation2d targetTranslation = new Translation2d(13.5, 5.5); // DO NOT TOUCH
+  //   Translation2d targetTranslation = new Translation2d(14.186, 5.136); // for later
+  //   Rotation2d targetRotation = new Rotation2d(Units.degreesToRadians(-120.0)); // 
+
   Transform2d targetTransform = new Transform2d(targetTranslation, targetRotation);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -174,11 +178,63 @@ public class RobotContainer {
     // driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     // need both commands
-    driver
+    driver // Right reef facing red riverstation (temporary)
         .rightTrigger()
         .whileTrue(
-            DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-                .andThen(DriveCommands.goToTransform(drive, targetTransform))
+            DriveCommands.goToTransformWithPathFinderPlusOffset(
+                drive, targetTransform, new Transform2d(0.50, -0.24, new Rotation2d())));
+    // DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
+    //     .andThen(
+    //         DriveCommands.goToTransform(
+    //             drive,
+    //             targetTransform.plus(new Transform2d(0.50, -0.23, new Rotation2d()))))
+    //     .beforeStarting(
+    //         () -> {
+    //           DriveCommands.goToTransform(drive, targetTransform).cancel();
+    //           DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
+    //         }));
+
+    driver // Left reef facing red driverstatoin (temporary)
+        .leftTrigger()
+        .whileTrue(
+            DriveCommands.goToTransformWithPathFinderPlusOffset(
+                drive,
+                targetTransform,
+                new Transform2d(0.50, 0.11, new Rotation2d(Units.degreesToRadians(0.0)))));
+
+    driver // Left reef facing red driverstatoin (temporary)
+        .rightBumper()
+        .whileTrue(
+            DriveCommands.goToTransformWithPathFinderPlusOffset(
+                    drive,
+                    targetTransform,
+                    new Transform2d(0.51, -0.05, new Rotation2d(Units.degreesToRadians(0.0))))
+                .andThen(new ElevatorCmd(elevator, 2, true))
+                .andThen(new FlipperScoreCmd(flipper)));
+    // DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
+    //     .andThen(
+    //         DriveCommands.goToTransform(
+    //             drive,
+    //             targetTransform.plus(
+    //                 new Transform2d(
+    //                     0.51, 0.14, new Rotation2d(Units.degreesToRadians(-2.0))))))
+    //     .beforeStarting(
+    //         () -> {
+    //           DriveCommands.goToTransform(drive, targetTransform).cancel();
+    //           DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
+    //         }));
+
+    driver
+        .leftBumper()
+        .whileTrue(
+            DriveCommands.goToTransformWithPathFinder(
+                    drive,
+                    new Transform2d(16.7, 1.2, new Rotation2d(Units.degreesToRadians(-45.0))))
+                .andThen(
+                    DriveCommands.goToTransform(
+                        drive,
+                        new Transform2d(16.7, 1.2, new Rotation2d(Units.degreesToRadians(-45.0)))
+                            .plus(new Transform2d(0.15, 0.15, new Rotation2d()))))
                 .beforeStarting(
                     () -> {
                       DriveCommands.goToTransform(drive, targetTransform).cancel();
@@ -200,43 +256,43 @@ public class RobotContainer {
     //    Codriver Bindings
     //
     // Reef branch selection
-    new JoystickButton(codriverInterfaceBranch, 1)
-        .onTrue(new InterfaceVarsCmd(reef, "a", 0, true, false));
-    new JoystickButton(codriverInterfaceBranch, 2)
-        .onTrue(new InterfaceVarsCmd(reef, "b", 0, true, false));
-    new JoystickButton(codriverInterfaceBranch, 3)
-        .onTrue(new InterfaceVarsCmd(reef, "c", 0, true, false));
-    new JoystickButton(codriverInterfaceBranch, 4)
-        .onTrue(new InterfaceVarsCmd(reef, "d", 0, true, false));
-    new JoystickButton(codriverInterfaceBranch, 5)
-        .onTrue(new InterfaceVarsCmd(reef, "e", 0, true, false));
-    new JoystickButton(codriverInterfaceBranch, 6)
-        .onTrue(new InterfaceVarsCmd(reef, "f", 0, true, false));
-    new JoystickButton(codriverInterfaceBranch, 7)
-        .onTrue(new InterfaceVarsCmd(reef, "g", 0, true, false));
-    new JoystickButton(codriverInterfaceBranch, 8)
-        .onTrue(new InterfaceVarsCmd(reef, "h", 0, true, false));
-    new JoystickButton(codriverInterfaceBranch, 9)
-        .onTrue(new InterfaceVarsCmd(reef, "i", 0, true, false));
-    new JoystickButton(codriverInterfaceBranch, 10)
-        .onTrue(new InterfaceVarsCmd(reef, "j", 0, true, false));
-    new JoystickButton(codriverInterfaceBranch, 11)
-        .onTrue(new InterfaceVarsCmd(reef, "k", 0, true, false));
-    new JoystickButton(codriverInterfaceBranch, 12)
-        .onTrue(new InterfaceVarsCmd(reef, "l", 0, true, false));
+    // new JoystickButton(codriverInterfaceBranch, 1)
+    //     .onTrue(new InterfaceVarsCmd(reef, "a", 0, true, false));
+    // new JoystickButton(codriverInterfaceBranch, 2)
+    //     .onTrue(new InterfaceVarsCmd(reef, "b", 0, true, false));
+    // new JoystickButton(codriverInterfaceBranch, 3)
+    //     .onTrue(new InterfaceVarsCmd(reef, "c", 0, true, false));
+    // new JoystickButton(codriverInterfaceBranch, 4)
+    //     .onTrue(new InterfaceVarsCmd(reef, "d", 0, true, false));
+    // new JoystickButton(codriverInterfaceBranch, 5)
+    //     .onTrue(new InterfaceVarsCmd(reef, "e", 0, true, false));
+    // new JoystickButton(codriverInterfaceBranch, 6)
+    //     .onTrue(new InterfaceVarsCmd(reef, "f", 0, true, false));
+    // new JoystickButton(codriverInterfaceBranch, 7)
+    //     .onTrue(new InterfaceVarsCmd(reef, "g", 0, true, false));
+    // new JoystickButton(codriverInterfaceBranch, 8)
+    //     .onTrue(new InterfaceVarsCmd(reef, "h", 0, true, false));
+    // new JoystickButton(codriverInterfaceBranch, 9)
+    //     .onTrue(new InterfaceVarsCmd(reef, "i", 0, true, false));
+    // new JoystickButton(codriverInterfaceBranch, 10)
+    //     .onTrue(new InterfaceVarsCmd(reef, "j", 0, true, false));
+    // new JoystickButton(codriverInterfaceBranch, 11)
+    //     .onTrue(new InterfaceVarsCmd(reef, "k", 0, true, false));
+    // new JoystickButton(codriverInterfaceBranch, 12)
+    //     .onTrue(new InterfaceVarsCmd(reef, "l", 0, true, false));
 
-    // Climber toggle, elevator level selection
-    new JoystickButton(codriverInterfaceOther, 1)
-        .and(new JoystickButton(codriverInterfaceOther, 2))
-        .onTrue(new ActivateClimberCommand(climber));
-    new JoystickButton(codriverInterfaceOther, 3)
-        .onTrue(new InterfaceVarsCmd(reef, "", 1, false, true));
-    new JoystickButton(codriverInterfaceOther, 4)
-        .onTrue(new InterfaceVarsCmd(reef, "", 2, false, true));
-    new JoystickButton(codriverInterfaceOther, 5)
-        .onTrue(new InterfaceVarsCmd(reef, "", 3, false, true));
-    new JoystickButton(codriverInterfaceOther, 6)
-        .onTrue(new InterfaceVarsCmd(reef, "", 4, false, true));
+    // // Climber toggle, elevator level selection
+    // new JoystickButton(codriverInterfaceOther, 1)
+    //     .and(new JoystickButton(codriverInterfaceOther, 2))
+    //     .onTrue(new ActivateClimberCommand(climber));
+    // new JoystickButton(codriverInterfaceOther, 3)
+    //     .onTrue(new InterfaceVarsCmd(reef, "", 1, false, true));
+    // new JoystickButton(codriverInterfaceOther, 4)
+    //     .onTrue(new InterfaceVarsCmd(reef, "", 2, false, true));
+    // new JoystickButton(codriverInterfaceOther, 5)
+    //     .onTrue(new InterfaceVarsCmd(reef, "", 3, false, true));
+    // new JoystickButton(codriverInterfaceOther, 6)
+    //     .onTrue(new InterfaceVarsCmd(reef, "", 4, false, true));
 
     // Driver connection to interface: driver presses button - interface handles.
     // The interface merely exists for the codriver to select locations.
