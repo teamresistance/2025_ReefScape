@@ -58,14 +58,6 @@ public class InterfaceSubsystem extends SubsystemBase {
                         FieldConstants.getSetPoint(Place.A_TREE).getX(),
                         FieldConstants.getSetPoint(Place.A_TREE).getY()),
                     FieldConstants.getSetPoint(Place.A_TREE).getRotation());
-
-            DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-                .andThen(DriveCommands.goToTransform(drive, targetTransform))
-                .beforeStarting(
-                    () -> {
-                      DriveCommands.goToTransform(drive, targetTransform).cancel();
-                      DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
-                    });
             break;
           case "b":
             targetTransform =
@@ -74,14 +66,6 @@ public class InterfaceSubsystem extends SubsystemBase {
                         FieldConstants.getSetPoint(Place.B_TREE).getX(),
                         FieldConstants.getSetPoint(Place.B_TREE).getY()),
                     FieldConstants.getSetPoint(Place.B_TREE).getRotation());
-
-            DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-                .andThen(DriveCommands.goToTransform(drive, targetTransform))
-                .beforeStarting(
-                    () -> {
-                      DriveCommands.goToTransform(drive, targetTransform).cancel();
-                      DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
-                    });
             break;
           case "c":
             targetTransform =
@@ -90,14 +74,6 @@ public class InterfaceSubsystem extends SubsystemBase {
                         FieldConstants.getSetPoint(Place.C_TREE).getX(),
                         FieldConstants.getSetPoint(Place.C_TREE).getY()),
                     FieldConstants.getSetPoint(Place.C_TREE).getRotation());
-
-            DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-                .andThen(DriveCommands.goToTransform(drive, targetTransform))
-                .beforeStarting(
-                    () -> {
-                      DriveCommands.goToTransform(drive, targetTransform).cancel();
-                      DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
-                    });
             break;
           case "d":
             targetTransform =
@@ -106,14 +82,6 @@ public class InterfaceSubsystem extends SubsystemBase {
                         FieldConstants.getSetPoint(Place.D_TREE).getX(),
                         FieldConstants.getSetPoint(Place.D_TREE).getY()),
                     FieldConstants.getSetPoint(Place.D_TREE).getRotation());
-
-            DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-                .andThen(DriveCommands.goToTransform(drive, targetTransform))
-                .beforeStarting(
-                    () -> {
-                      DriveCommands.goToTransform(drive, targetTransform).cancel();
-                      DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
-                    });
             break;
           case "e":
             targetTransform =
@@ -122,14 +90,6 @@ public class InterfaceSubsystem extends SubsystemBase {
                         FieldConstants.getSetPoint(Place.E_TREE).getX(),
                         FieldConstants.getSetPoint(Place.E_TREE).getY()),
                     FieldConstants.getSetPoint(Place.E_TREE).getRotation());
-
-            DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-                .andThen(DriveCommands.goToTransform(drive, targetTransform))
-                .beforeStarting(
-                    () -> {
-                      DriveCommands.goToTransform(drive, targetTransform).cancel();
-                      DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
-                    });
             break;
           case "f":
             targetTransform =
@@ -138,14 +98,6 @@ public class InterfaceSubsystem extends SubsystemBase {
                         FieldConstants.getSetPoint(Place.F_TREE).getX(),
                         FieldConstants.getSetPoint(Place.F_TREE).getY()),
                     FieldConstants.getSetPoint(Place.F_TREE).getRotation());
-
-            DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-                .andThen(DriveCommands.goToTransform(drive, targetTransform))
-                .beforeStarting(
-                    () -> {
-                      DriveCommands.goToTransform(drive, targetTransform).cancel();
-                      DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
-                    });
             break;
           case "g":
             targetTransform =
@@ -154,14 +106,6 @@ public class InterfaceSubsystem extends SubsystemBase {
                         FieldConstants.getSetPoint(Place.G_TREE).getX(),
                         FieldConstants.getSetPoint(Place.G_TREE).getY()),
                     FieldConstants.getSetPoint(Place.G_TREE).getRotation());
-
-            DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-                .andThen(DriveCommands.goToTransform(drive, targetTransform))
-                .beforeStarting(
-                    () -> {
-                      DriveCommands.goToTransform(drive, targetTransform).cancel();
-                      DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
-                    });
             break;
           case "h":
             targetTransform =
@@ -170,14 +114,6 @@ public class InterfaceSubsystem extends SubsystemBase {
                         FieldConstants.getSetPoint(Place.H_TREE).getX(),
                         FieldConstants.getSetPoint(Place.H_TREE).getY()),
                     FieldConstants.getSetPoint(Place.H_TREE).getRotation());
-
-            DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-                .andThen(DriveCommands.goToTransform(drive, targetTransform))
-                .beforeStarting(
-                    () -> {
-                      DriveCommands.goToTransform(drive, targetTransform).cancel();
-                      DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
-                    });
             break;
           case "i":
             targetTransform =
@@ -186,14 +122,6 @@ public class InterfaceSubsystem extends SubsystemBase {
                         FieldConstants.getSetPoint(Place.I_TREE).getX(),
                         FieldConstants.getSetPoint(Place.I_TREE).getY()),
                     FieldConstants.getSetPoint(Place.I_TREE).getRotation());
-
-            DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-                .andThen(DriveCommands.goToTransform(drive, targetTransform))
-                .beforeStarting(
-                    () -> {
-                      DriveCommands.goToTransform(drive, targetTransform).cancel();
-                      DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
-                    });
             break;
           case "j":
             targetTransform =
@@ -202,14 +130,6 @@ public class InterfaceSubsystem extends SubsystemBase {
                         FieldConstants.getSetPoint(Place.J_TREE).getX(),
                         FieldConstants.getSetPoint(Place.J_TREE).getY()),
                     FieldConstants.getSetPoint(Place.J_TREE).getRotation());
-
-            DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-                .andThen(DriveCommands.goToTransform(drive, targetTransform))
-                .beforeStarting(
-                    () -> {
-                      DriveCommands.goToTransform(drive, targetTransform).cancel();
-                      DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
-                    });
             break;
           case "k":
             targetTransform =
@@ -218,14 +138,6 @@ public class InterfaceSubsystem extends SubsystemBase {
                         FieldConstants.getSetPoint(Place.K_TREE).getX(),
                         FieldConstants.getSetPoint(Place.K_TREE).getY()),
                     FieldConstants.getSetPoint(Place.K_TREE).getRotation());
-
-            DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-                .andThen(DriveCommands.goToTransform(drive, targetTransform))
-                .beforeStarting(
-                    () -> {
-                      DriveCommands.goToTransform(drive, targetTransform).cancel();
-                      DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
-                    });
             break;
           case "l":
             targetTransform =
@@ -234,16 +146,15 @@ public class InterfaceSubsystem extends SubsystemBase {
                         FieldConstants.getSetPoint(Place.L_TREE).getX(),
                         FieldConstants.getSetPoint(Place.L_TREE).getY()),
                     FieldConstants.getSetPoint(Place.L_TREE).getRotation());
-
-            DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-                .andThen(DriveCommands.goToTransform(drive, targetTransform))
-                .beforeStarting(
-                    () -> {
-                      DriveCommands.goToTransform(drive, targetTransform).cancel();
-                      DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
-                    });
             break;
         }
+        DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
+            .andThen(DriveCommands.goToTransform(drive, targetTransform))
+            .beforeStarting(
+                () -> {
+                  DriveCommands.goToTransform(drive, targetTransform).cancel();
+                  DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
+                });
         break;
       case CORAL:
         targetTransform =
@@ -252,7 +163,6 @@ public class InterfaceSubsystem extends SubsystemBase {
                     FieldConstants.getSetPoint(Place.LEFT_CORAL_STATION).getX(),
                     FieldConstants.getSetPoint(Place.LEFT_CORAL_STATION).getY()),
                 FieldConstants.getSetPoint(Place.LEFT_CORAL_STATION).getRotation());
-
         DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
             .andThen(DriveCommands.goToTransform(drive, targetTransform))
             .beforeStarting(
