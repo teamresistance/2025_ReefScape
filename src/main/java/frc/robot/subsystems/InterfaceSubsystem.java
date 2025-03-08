@@ -55,7 +55,7 @@ public class InterfaceSubsystem extends SubsystemBase {
   /** Actually drives the robot to the position. Only called from driveToLoc() !!!! */
   private void executeDrive(Transform2d targetTransform, boolean isLeft, boolean useOffset) {
     if (useOffset) {
-      if (isLeft){
+      if (isLeft) {
         leftRightOffset = new Transform2d(0.50, 0.11, new Rotation2d(Units.degreesToRadians(0.0)));
       } else {
         leftRightOffset = new Transform2d(-0.50, 0.11, new Rotation2d(Units.degreesToRadians(0.0)));
@@ -63,10 +63,7 @@ public class InterfaceSubsystem extends SubsystemBase {
     } else {
       leftRightOffset = new Transform2d(0, 0, new Rotation2d(0));
     }
-    DriveCommands.goToTransformWithPathFinderPlusOffset(
-      drive,
-      targetTransform,
-      leftRightOffset);
+    DriveCommands.goToTransformWithPathFinderPlusOffset(drive, targetTransform, leftRightOffset);
   }
 
   /**
