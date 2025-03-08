@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.InterfaceExecuteMode;
 import frc.robot.FieldConstants;
+import frc.robot.FieldConstants.AllianceTreePlace;
 import frc.robot.FieldConstants.Place;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.drive.DriveSubsystem;
@@ -46,16 +47,17 @@ public class InterfaceSubsystem extends SubsystemBase {
    * <p>Example: Driver holding "A" button, robot auto-navigates to selected pole
    */
   private Transform2d getTranslationFromPlace(Place place) {
+
+    AllianceTreePlace allianceplace = FieldConstants.getAllianceBranchFromBranch(place);
     return new Transform2d(
-        new Translation2d(
-            FieldConstants.getSetPoint(place).getX(), FieldConstants.getSetPoint(place).getY()),
-        FieldConstants.getSetPoint(place).getRotation());
+        new Translation2d(FieldConstants.getOffsetApriltagFromTree(allianceplace).getX(), FieldConstants.getOffsetApriltagFromTree(allianceplace).getY()),
+        FieldConstants.getOffsetApriltagFromTree(allianceplace).getRotation());
   }
 
   /** Actually drives the robot to the position. Only called from driveToLoc() !!!! */
-  private void executeDrive(Transform2d targetTransform, boolean isLeft, boolean useOffset) {
+  private void executeDrive(Transform2d targetTransform, boolean isRight, boolean useOffset) {
     if (useOffset) {
-      if (isLeft) {
+      if (isRight) {
         leftRightOffset = new Transform2d(0.50, 0.11, new Rotation2d(Units.degreesToRadians(0.0)));
       } else {
         leftRightOffset = new Transform2d(-0.50, 0.11, new Rotation2d(Units.degreesToRadians(0.0)));
@@ -71,7 +73,7 @@ public class InterfaceSubsystem extends SubsystemBase {
    * transform then pathfinder-ing to it.
    */
   public void driveToLoc(InterfaceExecuteMode loc) {
-    boolean isLeft = false;
+    boolean isRight = false;
     switch (loc) {
       case REEF:
         switch (pole) {
@@ -80,46 +82,46 @@ public class InterfaceSubsystem extends SubsystemBase {
             break;
           case "b":
             targetTransform = getTranslationFromPlace(Place.B_TREE);
-            isLeft = true;
+            isRight = true;
             break;
           case "c":
             targetTransform = getTranslationFromPlace(Place.C_TREE);
             break;
           case "d":
             targetTransform = getTranslationFromPlace(Place.D_TREE);
-            isLeft = true;
+            isRight = true;
             break;
           case "e":
             targetTransform = getTranslationFromPlace(Place.E_TREE);
             break;
           case "f":
             targetTransform = getTranslationFromPlace(Place.F_TREE);
-            isLeft = true;
+            isRight = true;
             break;
           case "g":
             targetTransform = getTranslationFromPlace(Place.G_TREE);
             break;
           case "h":
             targetTransform = getTranslationFromPlace(Place.H_TREE);
-            isLeft = true;
+            isRight = true;
             break;
           case "i":
             targetTransform = getTranslationFromPlace(Place.I_TREE);
             break;
           case "j":
             targetTransform = getTranslationFromPlace(Place.J_TREE);
-            isLeft = true;
+            isRight = true;
             break;
           case "k":
             targetTransform = getTranslationFromPlace(Place.K_TREE);
             break;
           case "l":
             targetTransform = getTranslationFromPlace(Place.L_TREE);
-            isLeft = true;
+            isRight = true;
             break;
         }
 
-        executeDrive(targetTransform, isLeft, true);
+        executeDrive(targetTransform, isRight, true);
         break;
       case CORAL:
         targetTransform = getTranslationFromPlace(Place.LEFT_CORAL_STATION);
