@@ -11,13 +11,14 @@ import org.littletonrobotics.junction.Logger;
 public class FlipperSubsystem extends SubsystemBase {
 
   private static boolean believesHasCoral = false;
-  private int recursions;
+  private int counter;
   private boolean detectorState1;
   private boolean detectorState2;
   private boolean gripperState;
   private boolean stopTryingGripper = false;
   private static Solenoid gripper =
       new Solenoid(
+          2,
           Constants.SOLENOID_MODULE_TYPE,
           Constants
               .GRIPPER_SOLENOID_CHANNEL); // The pneumatics hub channels that we are using are 0, 2,
@@ -45,34 +46,39 @@ public class FlipperSubsystem extends SubsystemBase {
    * <p>If coral detected: Grip the coral and reset recursions counter
    */
   public void flipperHoldingState() {
-    if (!(detectorState1 && detectorState2) && !stopTryingGripper) { // If one sees something
-      if (!stopTryingGripper) {
-        // Check for recursions, if >3 stop
-        if (recursions >= 3) {
-          stopTryingGripper = true;
-        }
-        gripper.set(false);
+    if (!(coralDetector1.get() && coralDetector2.get())) { // If one sees something
+      gripper.set(false);
 
-        // Center croal
-        coralCenterMechanism.setPulseDuration(Constants.SECONDS_OF_CENTERING_PULSE);
-        coralCenterMechanism.startPulse();
+      coralCenterMechanism.setPulseDuration(0.5);
+      coralCenterMechanism.startPulse();
+      counter++;
+      Timer.delay(0.7);
 
-        recursions++;
-        Timer.delay(Constants.SECONDS_PER_CENTERING_ATTEMPT);
-
-        // If it will stop trying to grip, do not continue, if it won't stop, ensure it won't stop
-        if (!stopTryingGripper) {
-          flipperHoldingState();
-        } else {
-          stopTryingGripper = false;
-          recursions = 0;
-        }
-      }
+      flipperHoldingState(); // TODO: ADD COUNTER FOR ONLY RECURSION 3 TIMES
     } else {
       gripper.set(true);
-      stopTryingGripper = false;
-      recursions = 0;
+      counter = 0;
     }
+
+    // if (coralDetector.get()) {
+    //   gripper.set(true);
+    // } else {
+    //   gripper.set(false);
+    //   coralCenterMechanism.setPulseDuration(0.5);
+    //   coralCenterMechanism.startPulse();
+    //   gripper.set(true);
+    // }
+
+    // if (!believesHasCoral) {
+
+    //   while (coralCenterMechanism.get()) {}
+    //   gripper.set(coralDetector.get());
+    //   believesHasCoral = true;
+    // } else if (believesHasCoral) {
+    //   gripper.set(false);
+    //   coralCenterMechanism.set(false);
+    //   believesHasCoral = false;
+    // }
   }
 
   public boolean getIsGripped() {
@@ -84,9 +90,12 @@ public class FlipperSubsystem extends SubsystemBase {
   }
 
   /** Flips the coral out. */
-  public void flipperScore() {
-    flipper.setPulseDuration(1);
+  public void flipperScore(double flipperDelay) {
+    flipper.setPulseDuration(flipperDelay);
     flipper.startPulse();
+
+    Timer.delay(0.75);
+    gripper.set(false);
   }
 
   @Override
@@ -105,11 +114,12 @@ public class FlipperSubsystem extends SubsystemBase {
     Logger.recordOutput("Flipper/Gripper Is Closed", gripperState);
     Logger.recordOutput("Flipper/Robot Thinks Has Coral", believesHasCoral);
     Logger.recordOutput(
-        "Flipper/Coral Secured", (gripperState && (detectorState1 && detectorState2)));
-    SmartDashboard.putBoolean("Gripper Closed", gripperState);
+        "Flipper/Coral Secured", (gripper.get() && coralDetector1.get() && coralDetector2.get()));
+    SmartDashboard.putBoolean("Gripper Closed", gripper.get());
     SmartDashboard.putBoolean("Thinks has coral", believesHasCoral);
     SmartDashboard.putBoolean(
-        "Coral Secured and Gripped", (gripperState && (detectorState1 && detectorState2)));
+        "Coral Secured and Gripped",
+        (gripper.get() && coralDetector1.get() && coralDetector2.get()));
   }
 
   @Override

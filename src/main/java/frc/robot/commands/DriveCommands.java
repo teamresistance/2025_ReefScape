@@ -307,7 +307,11 @@ public class DriveCommands {
             })
         .until(
             () ->
-                false); // Timeout to prevent infinite looping if the target is unreachable (adjust
+                Math.abs(targetTranslation.getX() - drive.getPose().getX()) < 0.02
+                    && Math.abs(targetTranslation.getY() - drive.getPose().getY()) < 0.02
+                    && Math.abs(targetRotation.minus(drive.getRotation()).getRadians())
+                        < Math.toRadians(5));
+    // Timeout to prevent infinite looping if the target is unreachable (adjust
     // as
     // needed)
   }
@@ -315,15 +319,32 @@ public class DriveCommands {
   public static Command goToTransformWithPathFinder(
       DriveSubsystem drive, Transform2d targetTransform) {
     return AutoBuilder.pathfindToPose(
+        GeomUtil.transformToPose(targetTransform),
+        new PathConstraints(
+            TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.3, // TODO: CHANGE BACK
+            0.5, // TODO: CHANGE BACK
+            Units.degreesToRadians(440),
+            Units.degreesToRadians(720)),
+        0.0 // Goal end velocity in meters/sec
+        );
+    // .andThen(
+    //     goToTransform(
+    //         drive, targetTransform.plus(new Transform2d(0.50, -0.23, new Rotation2d()))));
+  }
+
+  public static Command
+      goToTransformWithPathFinderPlusOffset( // Go to transform, then move to another offset
+      DriveSubsystem drive, Transform2d targetTransform, Transform2d offset) {
+    return AutoBuilder.pathfindToPose(
             GeomUtil.transformToPose(targetTransform),
             new PathConstraints(
-                TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.8,
-                4.0,
-                ANGLE_MAX_VELOCITY,
-                ANGLE_MAX_ACCELERATION),
+                TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.3, // TODO: CHANGE BACK
+                0.5, // TODO: CHANGE BACK
+                Units.degreesToRadians(440),
+                Units.degreesToRadians(720)),
             0.0 // Goal end velocity in meters/sec
             )
-        .andThen(goToTransform(drive, targetTransform));
+        .andThen(goToTransform(drive, targetTransform.plus(offset)));
   }
 
   /** Measures the robot's wheel radius by spinning in a circle. */

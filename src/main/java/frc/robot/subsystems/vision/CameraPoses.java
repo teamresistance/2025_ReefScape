@@ -10,32 +10,37 @@ public class CameraPoses {
       new Pose3d[] {
         // Front Left
         new Pose3d(
-            new Translation3d(0.270, 0.334, 0.267), // Right camera translation (X, Y, Z)
+            new Translation3d(0.235, 0.235, 0.267), // Right camera translation (X, Y, Z)
             new Rotation3d(0.0, Units.degreesToRadians(-12.63), Units.degreesToRadians(45))),
         // Front Right
         new Pose3d(
-            new Translation3d(0.270, -0.334, 0.267), // Left camera translation (X, Y, Z)
+            new Translation3d(0.235, -0.235, 0.267), // Left camera translation (X, Y, Z)
             new Rotation3d(
                 0.0,
                 Units.degreesToRadians(-12.63),
                 Units.degreesToRadians(-45))), // in radians btw
         // Back Left
-        new Pose3d(
-            new Translation3d(-0.27, 0.334, 0.267), // Right camera translation (X, Y, Z)
-            new Rotation3d(0.0, Units.degreesToRadians(-12.63), Units.degreesToRadians(45 + 90))),
-        // Back Right
-        new Pose3d(
-            new Translation3d(-0.27, -0.334, 0.267), // Left camera translation (X, Y, Z)
-            new Rotation3d(
-                0.0,
-                Units.degreesToRadians(-12.63),
-                Units.degreesToRadians(-45 - 90))), // in radians btw
+        //        new Pose3d(
+        //            new Translation3d(-0.235, 0.235, 0.267), // Right camera translation (X, Y, Z)
+        //            new Rotation3d(0.0, Units.degreesToRadians(-12.63), Units.degreesToRadians(45
+        // + 90))),
+        //        // Back Right
+        //        new Pose3d(
+        //            new Translation3d(-0.235, -0.235, 0.267), // Left camera translation (X, Y, Z)
+        //            new Rotation3d(
+        //                0.0,
+        //                Units.degreesToRadians(-12.63),
+        //                Units.degreesToRadians(-45 - 90))), // in radians btw
 
         // front_center
         new Pose3d(
             new Translation3d(
-                0.31, -0.03, Units.inchesToMeters(7.7)), // Left camera translation (X, Y, Z)
+                Units.inchesToMeters(12.5),
+                Units.inchesToMeters(3.0),
+                Units.inchesToMeters(6.5)), // Left camera translation (X, Y, Z)
             new Rotation3d(
-                0.0, Units.degreesToRadians(-13.5), Units.degreesToRadians(0))), // in radians btw
+                Units.degreesToRadians(0.0),
+                Units.degreesToRadians(-14.5),
+                Units.degreesToRadians(0.0))), // in radians btw
       };
 }
