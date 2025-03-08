@@ -238,12 +238,8 @@ public class RobotContainer {
     new JoystickButton(codriverInterfaceOther, 6)
         .onTrue(new InterfaceVarsCmd(reef, "", 4, false, true));
 
-    // Driver connection to interface: driver presses button - interface handles.
-    // The interface merely exists for the codriver to select locations.
-    // The driver controls if and when said selections are actually executed.
-    // The execute button scores, other buttons drive to a location.
-    driver.a().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.EXECUTE));
-    driver.b().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.REEF));
+    driver.a().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.EXECUTE)); 
+    driver.rightTrigger().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.REEF)); // When right trigger is pressed, drive to the location selected
     driver.x().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.CORAL));
     driver.y().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.CLIMBER));
   }
