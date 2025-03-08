@@ -42,23 +42,22 @@ public class InterfaceSubsystem extends SubsystemBase {
    *
    * <p>Example: Driver holding "A" button, robot auto-navigates to selected pole
    */
-
-  private Transform2d getTranslationFromPlace(Place place){
+  private Transform2d getTranslationFromPlace(Place place) {
     return new Transform2d(
-      new Translation2d(
-          FieldConstants.getSetPoint(Place.A_TREE).getX(),
-          FieldConstants.getSetPoint(Place.A_TREE).getY()),
-      FieldConstants.getSetPoint(Place.A_TREE).getRotation());
+        new Translation2d(
+            FieldConstants.getSetPoint(Place.A_TREE).getX(),
+            FieldConstants.getSetPoint(Place.A_TREE).getY()),
+        FieldConstants.getSetPoint(Place.A_TREE).getRotation());
   }
 
-  private void driveExecution(Transform2d targetTransform){
+  private void driveExecution(Transform2d targetTransform) {
     DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-            .andThen(DriveCommands.goToTransform(drive, targetTransform))
-            .beforeStarting(
-                () -> {
-                  DriveCommands.goToTransform(drive, targetTransform).cancel();
-                  DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
-                });
+        .andThen(DriveCommands.goToTransform(drive, targetTransform))
+        .beforeStarting(
+            () -> {
+              DriveCommands.goToTransform(drive, targetTransform).cancel();
+              DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
+            });
   }
 
   /**
