@@ -40,7 +40,7 @@ public class RobotContainer {
 
   // Subsystems
   private final DriveSubsystem drive;
-  private InterfaceSubsystem reef;
+  private final InterfaceSubsystem reef;
   private final FlipperSubsystem flipper = new FlipperSubsystem();
   private final ElevatorSubsystem elevator = new ElevatorSubsystem();
   private final ClimberSubsystem climber = new ClimberSubsystem();
@@ -303,7 +303,7 @@ public class RobotContainer {
     driver.a().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.EXECUTE));
     driver
         .rightTrigger()
-        .onTrue(
+        .whileTrue(
             new InterfaceActionCmd(
                 reef,
                 InterfaceExecuteMode
