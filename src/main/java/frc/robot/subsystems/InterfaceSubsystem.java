@@ -45,8 +45,8 @@ public class InterfaceSubsystem extends SubsystemBase {
   private Transform2d getTranslationFromPlace(Place place) {
     return new Transform2d(
         new Translation2d(
-            FieldConstants.getSetPoint(Place.A_TREE).getX(),
-            FieldConstants.getSetPoint(Place.A_TREE).getY()),
+            FieldConstants.getSetPoint(place).getX(),
+            FieldConstants.getSetPoint(place).getY()),
         FieldConstants.getSetPoint(Place.A_TREE).getRotation());
   }
 
@@ -72,37 +72,37 @@ public class InterfaceSubsystem extends SubsystemBase {
             targetTransform = getTranslationFromPlace(Place.A_TREE);
             break;
           case "b":
-            targetTransform = getTranslationFromPlace(Place.A_TREE);
+            targetTransform = getTranslationFromPlace(Place.B_TREE);
             break;
           case "c":
-            targetTransform = getTranslationFromPlace(Place.A_TREE);
+            targetTransform = getTranslationFromPlace(Place.C_TREE);
             break;
           case "d":
-            targetTransform = getTranslationFromPlace(Place.A_TREE);
+            targetTransform = getTranslationFromPlace(Place.D_TREE);
             break;
           case "e":
-            targetTransform = getTranslationFromPlace(Place.A_TREE);
+            targetTransform = getTranslationFromPlace(Place.E_TREE);
             break;
           case "f":
-            targetTransform = getTranslationFromPlace(Place.A_TREE);
+            targetTransform = getTranslationFromPlace(Place.F_TREE);
             break;
           case "g":
-            targetTransform = getTranslationFromPlace(Place.A_TREE);
+            targetTransform = getTranslationFromPlace(Place.G_TREE);
             break;
           case "h":
-            targetTransform = getTranslationFromPlace(Place.A_TREE);
+            targetTransform = getTranslationFromPlace(Place.H_TREE);
             break;
           case "i":
-            targetTransform = getTranslationFromPlace(Place.A_TREE);
+            targetTransform = getTranslationFromPlace(Place.I_TREE);
             break;
           case "j":
-            targetTransform = getTranslationFromPlace(Place.A_TREE);
+            targetTransform = getTranslationFromPlace(Place.J_TREE);
             break;
           case "k":
-            targetTransform = getTranslationFromPlace(Place.A_TREE);
+            targetTransform = getTranslationFromPlace(Place.K_TREE);
             break;
           case "l":
-            targetTransform = getTranslationFromPlace(Place.A_TREE);
+            targetTransform = getTranslationFromPlace(Place.L_TREE);
             break;
         }
 
