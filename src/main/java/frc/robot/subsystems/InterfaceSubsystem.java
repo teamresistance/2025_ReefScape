@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Timer;
@@ -9,9 +8,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.InterfaceExecuteMode;
 import frc.robot.FieldConstants;
+import frc.robot.FieldConstants.Place;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.drive.DriveSubsystem;
-import frc.robot.FieldConstants.Place;
 
 public class InterfaceSubsystem extends SubsystemBase {
 
@@ -44,210 +43,239 @@ public class InterfaceSubsystem extends SubsystemBase {
    * <p>Example: Driver holding "A" button, robot auto-navigates to selected pole
    */
 
-  /** Drives to the selected location
-   * Works by converting Pose2d of the branch selected to a transform then pathfinder-ing to it.
-  */
+  /**
+   * Drives to the selected location Works by converting Pose2d of the branch selected to a
+   * transform then pathfinder-ing to it.
+   */
   public void driveToLoc(InterfaceExecuteMode loc) {
     switch (loc) {
       case REEF:
         switch (pole) {
           case "a":
-            targetTransform = new Transform2d(new Translation2d(
-              FieldConstants.getSetPoint(Place.A_TREE).getX(), 
-              FieldConstants.getSetPoint(Place.A_TREE).getY()),
-              FieldConstants.getSetPoint(Place.A_TREE).getRotation());
-            
+            targetTransform =
+                new Transform2d(
+                    new Translation2d(
+                        FieldConstants.getSetPoint(Place.A_TREE).getX(),
+                        FieldConstants.getSetPoint(Place.A_TREE).getY()),
+                    FieldConstants.getSetPoint(Place.A_TREE).getRotation());
+
             DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-              .andThen(DriveCommands.goToTransform(drive, targetTransform))
-              .beforeStarting(
-                () -> {
-                  DriveCommands.goToTransform(drive, targetTransform).cancel();
-                  DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
-                });
+                .andThen(DriveCommands.goToTransform(drive, targetTransform))
+                .beforeStarting(
+                    () -> {
+                      DriveCommands.goToTransform(drive, targetTransform).cancel();
+                      DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
+                    });
             break;
           case "b":
-            targetTransform = new Transform2d(new Translation2d(
-              FieldConstants.getSetPoint(Place.B_TREE).getX(), 
-              FieldConstants.getSetPoint(Place.B_TREE).getY()),
-              FieldConstants.getSetPoint(Place.B_TREE).getRotation());
-            
+            targetTransform =
+                new Transform2d(
+                    new Translation2d(
+                        FieldConstants.getSetPoint(Place.B_TREE).getX(),
+                        FieldConstants.getSetPoint(Place.B_TREE).getY()),
+                    FieldConstants.getSetPoint(Place.B_TREE).getRotation());
+
             DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-              .andThen(DriveCommands.goToTransform(drive, targetTransform))
-              .beforeStarting(
-                () -> {
-                  DriveCommands.goToTransform(drive, targetTransform).cancel();
-                  DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
-                });
+                .andThen(DriveCommands.goToTransform(drive, targetTransform))
+                .beforeStarting(
+                    () -> {
+                      DriveCommands.goToTransform(drive, targetTransform).cancel();
+                      DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
+                    });
             break;
           case "c":
-            targetTransform = new Transform2d(new Translation2d(
-              FieldConstants.getSetPoint(Place.C_TREE).getX(), 
-              FieldConstants.getSetPoint(Place.C_TREE).getY()),
-              FieldConstants.getSetPoint(Place.C_TREE).getRotation());
-            
+            targetTransform =
+                new Transform2d(
+                    new Translation2d(
+                        FieldConstants.getSetPoint(Place.C_TREE).getX(),
+                        FieldConstants.getSetPoint(Place.C_TREE).getY()),
+                    FieldConstants.getSetPoint(Place.C_TREE).getRotation());
+
             DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-              .andThen(DriveCommands.goToTransform(drive, targetTransform))
-              .beforeStarting(
-                () -> {
-                  DriveCommands.goToTransform(drive, targetTransform).cancel();
-                  DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
-                });
+                .andThen(DriveCommands.goToTransform(drive, targetTransform))
+                .beforeStarting(
+                    () -> {
+                      DriveCommands.goToTransform(drive, targetTransform).cancel();
+                      DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
+                    });
             break;
           case "d":
-            targetTransform = new Transform2d(new Translation2d(
-              FieldConstants.getSetPoint(Place.D_TREE).getX(), 
-              FieldConstants.getSetPoint(Place.D_TREE).getY()),
-              FieldConstants.getSetPoint(Place.D_TREE).getRotation());
-            
+            targetTransform =
+                new Transform2d(
+                    new Translation2d(
+                        FieldConstants.getSetPoint(Place.D_TREE).getX(),
+                        FieldConstants.getSetPoint(Place.D_TREE).getY()),
+                    FieldConstants.getSetPoint(Place.D_TREE).getRotation());
+
             DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-              .andThen(DriveCommands.goToTransform(drive, targetTransform))
-              .beforeStarting(
-                () -> {
-                  DriveCommands.goToTransform(drive, targetTransform).cancel();
-                  DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
-                });
+                .andThen(DriveCommands.goToTransform(drive, targetTransform))
+                .beforeStarting(
+                    () -> {
+                      DriveCommands.goToTransform(drive, targetTransform).cancel();
+                      DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
+                    });
             break;
           case "e":
-            targetTransform = new Transform2d(new Translation2d(
-              FieldConstants.getSetPoint(Place.E_TREE).getX(), 
-              FieldConstants.getSetPoint(Place.E_TREE).getY()),
-              FieldConstants.getSetPoint(Place.E_TREE).getRotation());
-            
+            targetTransform =
+                new Transform2d(
+                    new Translation2d(
+                        FieldConstants.getSetPoint(Place.E_TREE).getX(),
+                        FieldConstants.getSetPoint(Place.E_TREE).getY()),
+                    FieldConstants.getSetPoint(Place.E_TREE).getRotation());
+
             DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-              .andThen(DriveCommands.goToTransform(drive, targetTransform))
-              .beforeStarting(
-                () -> {
-                  DriveCommands.goToTransform(drive, targetTransform).cancel();
-                  DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
-                });
+                .andThen(DriveCommands.goToTransform(drive, targetTransform))
+                .beforeStarting(
+                    () -> {
+                      DriveCommands.goToTransform(drive, targetTransform).cancel();
+                      DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
+                    });
             break;
           case "f":
-            targetTransform = new Transform2d(new Translation2d(
-              FieldConstants.getSetPoint(Place.F_TREE).getX(), 
-              FieldConstants.getSetPoint(Place.F_TREE).getY()),
-              FieldConstants.getSetPoint(Place.F_TREE).getRotation());
-            
+            targetTransform =
+                new Transform2d(
+                    new Translation2d(
+                        FieldConstants.getSetPoint(Place.F_TREE).getX(),
+                        FieldConstants.getSetPoint(Place.F_TREE).getY()),
+                    FieldConstants.getSetPoint(Place.F_TREE).getRotation());
+
             DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-              .andThen(DriveCommands.goToTransform(drive, targetTransform))
-              .beforeStarting(
-                () -> {
-                  DriveCommands.goToTransform(drive, targetTransform).cancel();
-                  DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
-                });
+                .andThen(DriveCommands.goToTransform(drive, targetTransform))
+                .beforeStarting(
+                    () -> {
+                      DriveCommands.goToTransform(drive, targetTransform).cancel();
+                      DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
+                    });
             break;
           case "g":
-            targetTransform = new Transform2d(new Translation2d(
-              FieldConstants.getSetPoint(Place.G_TREE).getX(), 
-              FieldConstants.getSetPoint(Place.G_TREE).getY()),
-              FieldConstants.getSetPoint(Place.G_TREE).getRotation());
-            
+            targetTransform =
+                new Transform2d(
+                    new Translation2d(
+                        FieldConstants.getSetPoint(Place.G_TREE).getX(),
+                        FieldConstants.getSetPoint(Place.G_TREE).getY()),
+                    FieldConstants.getSetPoint(Place.G_TREE).getRotation());
+
             DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-              .andThen(DriveCommands.goToTransform(drive, targetTransform))
-              .beforeStarting(
-                () -> {
-                  DriveCommands.goToTransform(drive, targetTransform).cancel();
-                  DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
-                });
+                .andThen(DriveCommands.goToTransform(drive, targetTransform))
+                .beforeStarting(
+                    () -> {
+                      DriveCommands.goToTransform(drive, targetTransform).cancel();
+                      DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
+                    });
             break;
           case "h":
-            targetTransform = new Transform2d(new Translation2d(
-              FieldConstants.getSetPoint(Place.H_TREE).getX(), 
-              FieldConstants.getSetPoint(Place.H_TREE).getY()),
-              FieldConstants.getSetPoint(Place.H_TREE).getRotation());
-            
+            targetTransform =
+                new Transform2d(
+                    new Translation2d(
+                        FieldConstants.getSetPoint(Place.H_TREE).getX(),
+                        FieldConstants.getSetPoint(Place.H_TREE).getY()),
+                    FieldConstants.getSetPoint(Place.H_TREE).getRotation());
+
             DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-              .andThen(DriveCommands.goToTransform(drive, targetTransform))
-              .beforeStarting(
-                () -> {
-                  DriveCommands.goToTransform(drive, targetTransform).cancel();
-                  DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
-                });
+                .andThen(DriveCommands.goToTransform(drive, targetTransform))
+                .beforeStarting(
+                    () -> {
+                      DriveCommands.goToTransform(drive, targetTransform).cancel();
+                      DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
+                    });
             break;
           case "i":
-            targetTransform = new Transform2d(new Translation2d(
-              FieldConstants.getSetPoint(Place.I_TREE).getX(), 
-              FieldConstants.getSetPoint(Place.I_TREE).getY()),
-              FieldConstants.getSetPoint(Place.I_TREE).getRotation());
-            
+            targetTransform =
+                new Transform2d(
+                    new Translation2d(
+                        FieldConstants.getSetPoint(Place.I_TREE).getX(),
+                        FieldConstants.getSetPoint(Place.I_TREE).getY()),
+                    FieldConstants.getSetPoint(Place.I_TREE).getRotation());
+
             DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-              .andThen(DriveCommands.goToTransform(drive, targetTransform))
-              .beforeStarting(
-                () -> {
-                  DriveCommands.goToTransform(drive, targetTransform).cancel();
-                  DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
-                });
+                .andThen(DriveCommands.goToTransform(drive, targetTransform))
+                .beforeStarting(
+                    () -> {
+                      DriveCommands.goToTransform(drive, targetTransform).cancel();
+                      DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
+                    });
             break;
           case "j":
-            targetTransform = new Transform2d(new Translation2d(
-              FieldConstants.getSetPoint(Place.J_TREE).getX(), 
-              FieldConstants.getSetPoint(Place.J_TREE).getY()),
-              FieldConstants.getSetPoint(Place.J_TREE).getRotation());
-            
+            targetTransform =
+                new Transform2d(
+                    new Translation2d(
+                        FieldConstants.getSetPoint(Place.J_TREE).getX(),
+                        FieldConstants.getSetPoint(Place.J_TREE).getY()),
+                    FieldConstants.getSetPoint(Place.J_TREE).getRotation());
+
             DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-              .andThen(DriveCommands.goToTransform(drive, targetTransform))
-              .beforeStarting(
-                () -> {
-                  DriveCommands.goToTransform(drive, targetTransform).cancel();
-                  DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
-                });
+                .andThen(DriveCommands.goToTransform(drive, targetTransform))
+                .beforeStarting(
+                    () -> {
+                      DriveCommands.goToTransform(drive, targetTransform).cancel();
+                      DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
+                    });
             break;
           case "k":
-            targetTransform = new Transform2d(new Translation2d(
-              FieldConstants.getSetPoint(Place.K_TREE).getX(), 
-              FieldConstants.getSetPoint(Place.K_TREE).getY()),
-              FieldConstants.getSetPoint(Place.K_TREE).getRotation());
-            
+            targetTransform =
+                new Transform2d(
+                    new Translation2d(
+                        FieldConstants.getSetPoint(Place.K_TREE).getX(),
+                        FieldConstants.getSetPoint(Place.K_TREE).getY()),
+                    FieldConstants.getSetPoint(Place.K_TREE).getRotation());
+
             DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-              .andThen(DriveCommands.goToTransform(drive, targetTransform))
-              .beforeStarting(
-                () -> {
-                  DriveCommands.goToTransform(drive, targetTransform).cancel();
-                  DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
-                });
+                .andThen(DriveCommands.goToTransform(drive, targetTransform))
+                .beforeStarting(
+                    () -> {
+                      DriveCommands.goToTransform(drive, targetTransform).cancel();
+                      DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
+                    });
             break;
           case "l":
-            targetTransform = new Transform2d(new Translation2d(
-              FieldConstants.getSetPoint(Place.L_TREE).getX(), 
-              FieldConstants.getSetPoint(Place.L_TREE).getY()),
-              FieldConstants.getSetPoint(Place.L_TREE).getRotation());
-            
+            targetTransform =
+                new Transform2d(
+                    new Translation2d(
+                        FieldConstants.getSetPoint(Place.L_TREE).getX(),
+                        FieldConstants.getSetPoint(Place.L_TREE).getY()),
+                    FieldConstants.getSetPoint(Place.L_TREE).getRotation());
+
             DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-              .andThen(DriveCommands.goToTransform(drive, targetTransform))
-              .beforeStarting(
-                () -> {
-                  DriveCommands.goToTransform(drive, targetTransform).cancel();
-                  DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
-                });
+                .andThen(DriveCommands.goToTransform(drive, targetTransform))
+                .beforeStarting(
+                    () -> {
+                      DriveCommands.goToTransform(drive, targetTransform).cancel();
+                      DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
+                    });
             break;
         }
         break;
       case CORAL:
-        targetTransform = new Transform2d(new Translation2d(
-          FieldConstants.getSetPoint(Place.LEFT_CORAL_STATION).getX(), 
-          FieldConstants.getSetPoint(Place.LEFT_CORAL_STATION).getY()),
-          FieldConstants.getSetPoint(Place.LEFT_CORAL_STATION).getRotation());
-        
+        targetTransform =
+            new Transform2d(
+                new Translation2d(
+                    FieldConstants.getSetPoint(Place.LEFT_CORAL_STATION).getX(),
+                    FieldConstants.getSetPoint(Place.LEFT_CORAL_STATION).getY()),
+                FieldConstants.getSetPoint(Place.LEFT_CORAL_STATION).getRotation());
+
         DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-          .andThen(DriveCommands.goToTransform(drive, targetTransform))
-          .beforeStarting(
-            () -> {
-              DriveCommands.goToTransform(drive, targetTransform).cancel();
-              DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
-            });
+            .andThen(DriveCommands.goToTransform(drive, targetTransform))
+            .beforeStarting(
+                () -> {
+                  DriveCommands.goToTransform(drive, targetTransform).cancel();
+                  DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
+                });
         break;
       case CLIMBER:
-        targetTransform = new Transform2d(new Translation2d(
-          FieldConstants.getSetPoint(Place.MIDDLE_CAGE).getX(), 
-          FieldConstants.getSetPoint(Place.MIDDLE_CAGE).getY()),
-          FieldConstants.getSetPoint(Place.MIDDLE_CAGE).getRotation());
-        
+        targetTransform =
+            new Transform2d(
+                new Translation2d(
+                    FieldConstants.getSetPoint(Place.MIDDLE_CAGE).getX(),
+                    FieldConstants.getSetPoint(Place.MIDDLE_CAGE).getY()),
+                FieldConstants.getSetPoint(Place.MIDDLE_CAGE).getRotation());
+
         DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-          .andThen(DriveCommands.goToTransform(drive, targetTransform))
-          .beforeStarting(
-            () -> {
-              DriveCommands.goToTransform(drive, targetTransform).cancel();
-              DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
-            });
+            .andThen(DriveCommands.goToTransform(drive, targetTransform))
+            .beforeStarting(
+                () -> {
+                  DriveCommands.goToTransform(drive, targetTransform).cancel();
+                  DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
+                });
         break;
       case EXECUTE:
         if (!executing) {
