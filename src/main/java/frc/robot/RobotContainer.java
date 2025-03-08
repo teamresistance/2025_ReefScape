@@ -44,7 +44,7 @@ public class RobotContainer {
   private final FlipperSubsystem flipper = new FlipperSubsystem();
   private final ElevatorSubsystem elevator = new ElevatorSubsystem();
   private final ClimberSubsystem climber = new ClimberSubsystem();
-  private final PressureSubsystem pressure = new PressureSubsystem();
+  //   private final PressureSubsystem pressure = new PressureSubsystem();
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
@@ -73,8 +73,8 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    reef = configureInterface();
     drive = configureDrive();
+    reef = configureInterface();
     autoChooser = configureAutos();
     aprilTagVision = configureAprilTagVision();
     configureButtonBindings();
@@ -178,45 +178,45 @@ public class RobotContainer {
     // driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     // need both commands
-    driver // Right reef facing red riverstation (temporary)
-        .rightTrigger()
-        .whileTrue(
-            DriveCommands.goToTransformWithPathFinderPlusOffset(
-                drive, targetTransform, new Transform2d(0.50, -0.24, new Rotation2d())));
-    // DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-    //     .andThen(
-    //         DriveCommands.goToTransform(
+    // driver // Right reef facing red riverstation (temporary)
+    //     .rightTrigger()
+    //     .whileTrue(
+    //         DriveCommands.goToTransformWithPathFinderPlusOffset(
+    //             drive, targetTransform, new Transform2d(0.50, -0.24, new Rotation2d())));
+    // // DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
+    // //     .andThen(
+    // //         DriveCommands.goToTransform(
+    // //             drive,
+    // //             targetTransform.plus(new Transform2d(0.50, -0.23, new Rotation2d()))))
+    // //     .beforeStarting(
+    // //         () -> {
+    // //           DriveCommands.goToTransform(drive, targetTransform).cancel();
+    // //           DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
+    // //         }));
+
+    // driver // Left reef facing red driverstatoin (temporary)
+    //     .leftTrigger()
+    //     .whileTrue(
+    //         DriveCommands.goToTransformWithPathFinderPlusOffset(
     //             drive,
-    //             targetTransform.plus(new Transform2d(0.50, -0.23, new Rotation2d()))))
-    //     .beforeStarting(
-    //         () -> {
-    //           DriveCommands.goToTransform(drive, targetTransform).cancel();
-    //           DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
-    //         }));
+    //             targetTransform,
+    //             new Transform2d(0.50, 0.11, new Rotation2d(Units.degreesToRadians(0.0)))));
 
-    driver // Left reef facing red driverstatoin (temporary)
-        .leftTrigger()
-        .whileTrue(
-            DriveCommands.goToTransformWithPathFinderPlusOffset(
-                drive,
-                targetTransform,
-                new Transform2d(0.50, 0.11, new Rotation2d(Units.degreesToRadians(0.0)))));
-
-    driver // Left reef facing red driverstatoin (temporary)
-        .rightBumper()
-        .whileTrue(
-            DriveCommands.goToTransformWithPathFinderPlusOffset(
-                    drive,
-                    targetTransform,
-                    new Transform2d(0.52, -0.05, new Rotation2d(Units.degreesToRadians(2.0))))
-                .andThen(new WaitForTimeCmd(0.5))
-                .andThen(new ElevatorCmd(elevator, 2, true))
-                .andThen(new WaitForTimeCmd(0.5))
-                .andThen(new FlipperScoreCmd(flipper, 10.0))
-                .andThen(new WaitForTimeCmd(0.5))
-                .andThen(new ElevatorCmd(elevator, 2, false))
-                .andThen(new WaitForTimeCmd(1.1))
-                .andThen(DriveCommands.goToTransform(drive, targetTransform)));
+    // driver // Left reef facing red driverstatoin (temporary)
+    //     .rightBumper()
+    //     .whileTrue(
+    //         DriveCommands.goToTransformWithPathFinderPlusOffset(
+    //                 drive,
+    //                 targetTransform,
+    //                 new Transform2d(0.52, -0.05, new Rotation2d(Units.degreesToRadians(2.0))))
+    //             .andThen(new WaitForTimeCmd(0.5))
+    //             .andThen(new ElevatorCmd(elevator, 2, true))
+    //             .andThen(new WaitForTimeCmd(0.5))
+    //             .andThen(new FlipperScoreCmd(flipper, 10.0))
+    //             .andThen(new WaitForTimeCmd(0.5))
+    //             .andThen(new ElevatorCmd(elevator, 2, false))
+    //             .andThen(new WaitForTimeCmd(1.1))
+    //             .andThen(DriveCommands.goToTransform(drive, targetTransform)));
     // DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
     //     .andThen(
     //         DriveCommands.goToTransform(

@@ -34,91 +34,93 @@ public final class FieldConstants {
     if (ally.isPresent()) {
       if (ally.get() == DriverStation.Alliance.Red) {
         switch (place) {
-            case A_TREE:
-                return AllianceTreePlace.RED_A_TREE;
-            case B_TREE:
-                return AllianceTreePlace.RED_B_TREE;
-            case C_TREE:
-                return AllianceTreePlace.RED_C_TREE;
-            case D_TREE:
-                return AllianceTreePlace.RED_D_TREE;
-            case E_TREE:
-                return AllianceTreePlace.RED_E_TREE;
-            case F_TREE:
-                return AllianceTreePlace.RED_F_TREE;
-            case G_TREE:
-                return AllianceTreePlace.RED_G_TREE;
-            case H_TREE:
-                return AllianceTreePlace.RED_H_TREE;
-            case I_TREE:
-                return AllianceTreePlace.RED_I_TREE;
-            case J_TREE:
-                return AllianceTreePlace.RED_J_TREE;
-            case K_TREE:
-                return AllianceTreePlace.RED_K_TREE;
-            case L_TREE:
-                return AllianceTreePlace.RED_L_TREE;
-            default:
-                return AllianceTreePlace.RED_A_TREE;}
+          case A_TREE:
+            return AllianceTreePlace.RED_A_TREE;
+          case B_TREE:
+            return AllianceTreePlace.RED_B_TREE;
+          case C_TREE:
+            return AllianceTreePlace.RED_C_TREE;
+          case D_TREE:
+            return AllianceTreePlace.RED_D_TREE;
+          case E_TREE:
+            return AllianceTreePlace.RED_E_TREE;
+          case F_TREE:
+            return AllianceTreePlace.RED_F_TREE;
+          case G_TREE:
+            return AllianceTreePlace.RED_G_TREE;
+          case H_TREE:
+            return AllianceTreePlace.RED_H_TREE;
+          case I_TREE:
+            return AllianceTreePlace.RED_I_TREE;
+          case J_TREE:
+            return AllianceTreePlace.RED_J_TREE;
+          case K_TREE:
+            return AllianceTreePlace.RED_K_TREE;
+          case L_TREE:
+            return AllianceTreePlace.RED_L_TREE;
+          default:
+            return AllianceTreePlace.RED_A_TREE;
+        }
       } else if (ally.get() == DriverStation.Alliance.Blue) {
         switch (place) {
-            case A_TREE:
-                return AllianceTreePlace.BLUE_A_TREE;
-            case B_TREE:
-                return AllianceTreePlace.BLUE_B_TREE;
-            case C_TREE:
-                return AllianceTreePlace.BLUE_C_TREE;
-            case D_TREE:
-                return AllianceTreePlace.BLUE_D_TREE;
-            case E_TREE:
-                return AllianceTreePlace.BLUE_E_TREE;
-            case F_TREE:
-                return AllianceTreePlace.BLUE_F_TREE;
-            case G_TREE:
-                return AllianceTreePlace.BLUE_G_TREE;
-            case H_TREE:
-                return AllianceTreePlace.BLUE_H_TREE;
-            case I_TREE:
-                return AllianceTreePlace.BLUE_I_TREE;
-            case J_TREE:
-                return AllianceTreePlace.BLUE_J_TREE;
-            case K_TREE:
-                return AllianceTreePlace.BLUE_K_TREE;
-            case L_TREE:
-                return AllianceTreePlace.BLUE_L_TREE;
-            default:
-                return AllianceTreePlace.BLUE_A_TREE;
-            }
-        }}
-    return null;
+          case A_TREE:
+            return AllianceTreePlace.BLUE_A_TREE;
+          case B_TREE:
+            return AllianceTreePlace.BLUE_B_TREE;
+          case C_TREE:
+            return AllianceTreePlace.BLUE_C_TREE;
+          case D_TREE:
+            return AllianceTreePlace.BLUE_D_TREE;
+          case E_TREE:
+            return AllianceTreePlace.BLUE_E_TREE;
+          case F_TREE:
+            return AllianceTreePlace.BLUE_F_TREE;
+          case G_TREE:
+            return AllianceTreePlace.BLUE_G_TREE;
+          case H_TREE:
+            return AllianceTreePlace.BLUE_H_TREE;
+          case I_TREE:
+            return AllianceTreePlace.BLUE_I_TREE;
+          case J_TREE:
+            return AllianceTreePlace.BLUE_J_TREE;
+          case K_TREE:
+            return AllianceTreePlace.BLUE_K_TREE;
+          case L_TREE:
+            return AllianceTreePlace.BLUE_L_TREE;
+          default:
+            return AllianceTreePlace.BLUE_A_TREE;
+        }
+      }
     }
+    return null;
+  }
 
   public static Pose2d getOffsetApriltagFromTree(AllianceTreePlace tree) {
     return switch (tree) {
       case RED_A_TREE -> OFFSET_TAG_7;
-      case RED_B_TREE ->  OFFSET_TAG_7;
-      case RED_C_TREE ->  OFFSET_TAG_8;
-      case RED_D_TREE ->  OFFSET_TAG_8;
-      case RED_E_TREE ->  OFFSET_TAG_9;
-      case RED_F_TREE ->  OFFSET_TAG_9;
-      case RED_G_TREE ->  OFFSET_TAG_10;
-      case RED_H_TREE ->  OFFSET_TAG_10;
-      case RED_I_TREE ->  OFFSET_TAG_11;
-      case RED_J_TREE ->  OFFSET_TAG_11;
-      case RED_K_TREE ->  OFFSET_TAG_6;
-      case RED_L_TREE ->  OFFSET_TAG_6;
-      case BLUE_A_TREE ->  OFFSET_TAG_18;
-      case BLUE_B_TREE ->  OFFSET_TAG_18;
-      case BLUE_C_TREE ->  OFFSET_TAG_17;
-      case BLUE_D_TREE ->  OFFSET_TAG_17;
-      case BLUE_E_TREE ->  OFFSET_TAG_22;
-      case BLUE_F_TREE ->  OFFSET_TAG_22;
-      case BLUE_G_TREE ->  OFFSET_TAG_21;
-      case BLUE_H_TREE ->  OFFSET_TAG_21;
-      case BLUE_I_TREE ->  OFFSET_TAG_20;
-      case BLUE_J_TREE ->  OFFSET_TAG_20;
-      case BLUE_K_TREE ->  OFFSET_TAG_19;
-      case BLUE_L_TREE ->  OFFSET_TAG_19;
+      case RED_B_TREE -> OFFSET_TAG_7;
+      case RED_C_TREE -> OFFSET_TAG_8;
+      case RED_D_TREE -> OFFSET_TAG_8;
+      case RED_E_TREE -> OFFSET_TAG_9;
+      case RED_F_TREE -> OFFSET_TAG_9;
+      case RED_G_TREE -> OFFSET_TAG_10;
+      case RED_H_TREE -> OFFSET_TAG_10;
+      case RED_I_TREE -> OFFSET_TAG_11;
+      case RED_J_TREE -> OFFSET_TAG_11;
+      case RED_K_TREE -> OFFSET_TAG_6;
+      case RED_L_TREE -> OFFSET_TAG_6;
+      case BLUE_A_TREE -> OFFSET_TAG_18;
+      case BLUE_B_TREE -> OFFSET_TAG_18;
+      case BLUE_C_TREE -> OFFSET_TAG_17;
+      case BLUE_D_TREE -> OFFSET_TAG_17;
+      case BLUE_E_TREE -> OFFSET_TAG_22;
+      case BLUE_F_TREE -> OFFSET_TAG_22;
+      case BLUE_G_TREE -> OFFSET_TAG_21;
+      case BLUE_H_TREE -> OFFSET_TAG_21;
+      case BLUE_I_TREE -> OFFSET_TAG_20;
+      case BLUE_J_TREE -> OFFSET_TAG_20;
+      case BLUE_K_TREE -> OFFSET_TAG_19;
+      case BLUE_L_TREE -> OFFSET_TAG_19;
     };
   }
 
