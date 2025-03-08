@@ -230,6 +230,8 @@ public class RobotContainer {
     //           DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
     //         }));
 
+    driver.y().onTrue(new FlipperGripperCmd(flipper));
+
     driver
         .leftBumper()
         .whileTrue(
@@ -304,12 +306,12 @@ public class RobotContainer {
     driver
         .rightTrigger()
         .whileTrue(
-            new InterfaceActionCmd(
-                reef,
-                InterfaceExecuteMode
-                    .REEF)); // When right trigger is pressed, drive to the location selected
-    driver.x().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.CORAL));
-    driver.y().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.CLIMBER));
+            new InterfaceActionCmd(reef, InterfaceExecuteMode.REEF)
+                .andThen(
+                    () -> {})); // When right trigger is pressed, drive to the location selected
+    driver.rightTrigger().onFalse(new InterfaceActionCmd(reef, InterfaceExecuteMode.DISABLE));
+    //    driver.x().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.CORAL));
+    //    driver.y().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.CLIMBER));
   }
 
   /**

@@ -22,12 +22,12 @@ public final class FieldConstants {
   // Red Alliance Offset Positions
   // -------------------------------------------------
 
-  public static final Pose2d OFFSET_TAG_7 = new Pose2d(14.82, 4.08, Rotation2d.fromDegrees(-60));
-  public static final Pose2d OFFSET_TAG_8 = new Pose2d(13.889, 5.57, Rotation2d.fromDegrees(0));
-  public static final Pose2d OFFSET_TAG_9 = new Pose2d(12.132, 5.523, Rotation2d.fromDegrees(60));
-  public static final Pose2d OFFSET_TAG_10 = new Pose2d(11.297, 3.971, Rotation2d.fromDegrees(120));
-  public static final Pose2d OFFSET_TAG_11 = new Pose2d(12.225, 2.474, Rotation2d.fromDegrees(180));
-  public static final Pose2d OFFSET_TAG_6 = new Pose2d(13.985, 2.528, Rotation2d.fromDegrees(-120));
+  public static final Pose2d OFFSET_TAG_7 = new Pose2d(14.82, 4.08, Rotation2d.fromDegrees(180.0));
+  public static final Pose2d OFFSET_TAG_8 = new Pose2d(13.889, 5.57, Rotation2d.fromDegrees(-120));
+  public static final Pose2d OFFSET_TAG_9 = new Pose2d(12.132, 5.523, Rotation2d.fromDegrees(-60));
+  public static final Pose2d OFFSET_TAG_10 = new Pose2d(11.297, 3.971, Rotation2d.fromDegrees(0));
+  public static final Pose2d OFFSET_TAG_11 = new Pose2d(12.225, 2.474, Rotation2d.fromDegrees(60));
+  public static final Pose2d OFFSET_TAG_6 = new Pose2d(13.985, 2.528, Rotation2d.fromDegrees(120));
 
   public static AllianceTreePlace getAllianceBranchFromBranch(Place place) {
     Optional<DriverStation.Alliance> ally = DriverStation.getAlliance();

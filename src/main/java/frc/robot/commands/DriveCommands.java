@@ -321,8 +321,8 @@ public class DriveCommands {
     return AutoBuilder.pathfindToPose(
         GeomUtil.transformToPose(targetTransform),
         new PathConstraints(
-            TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.3, // TODO: CHANGE BACK
-            0.5, // TODO: CHANGE BACK
+            TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.6, // TODO: CHANGE BACK
+            1, // TODO: CHANGE BACK
             Units.degreesToRadians(440),
             Units.degreesToRadians(720)),
         0.0 // Goal end velocity in meters/sec
@@ -338,7 +338,7 @@ public class DriveCommands {
     return AutoBuilder.pathfindToPose(
             GeomUtil.transformToPose(targetTransform),
             new PathConstraints(
-                TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.3, // TODO: CHANGE BACK
+                TunerConstants.kSpeedAt12Volts.in(MetersPerSecond), // TODO: CHANGE BACK
                 0.5, // TODO: CHANGE BACK
                 Units.degreesToRadians(440),
                 Units.degreesToRadians(720)),

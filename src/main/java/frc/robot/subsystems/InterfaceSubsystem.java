@@ -6,6 +6,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.InterfaceExecuteMode;
@@ -14,6 +16,7 @@ import frc.robot.FieldConstants.AllianceTreePlace;
 import frc.robot.FieldConstants.Place;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.drive.DriveSubsystem;
+import org.littletonrobotics.junction.Logger;
 
 public class InterfaceSubsystem extends SubsystemBase {
 
@@ -56,18 +59,30 @@ public class InterfaceSubsystem extends SubsystemBase {
         FieldConstants.getOffsetApriltagFromTree(allianceplace).getRotation());
   }
 
+  public Command drive_command;
+
   /** Actually drives the robot to the position. Only called from driveToLoc() !!!! */
   private void executeDrive(Transform2d targetTransform, boolean isRight, boolean useOffset) {
+    Logger.recordOutput("running work", true);
     if (useOffset) {
       if (isRight) {
-        leftRightOffset = new Transform2d(0.50, 0.11, new Rotation2d(Units.degreesToRadians(0.0)));
+        leftRightOffset = new Transform2d(0.50, -0.24, new Rotation2d(Units.degreesToRadians(0.0)));
       } else {
-        leftRightOffset = new Transform2d(-0.50, 0.11, new Rotation2d(Units.degreesToRadians(0.0)));
+        leftRightOffset = new Transform2d(0.50, 0.11, new Rotation2d(Units.degreesToRadians(0.0)));
       }
     } else {
       leftRightOffset = new Transform2d(0, 0, new Rotation2d(0));
     }
-    DriveCommands.goToTransformWithPathFinderPlusOffset(drive, targetTransform, leftRightOffset);
+    Logger.recordOutput("now putting things up", false);
+    drive_command =
+        DriveCommands.goToTransformWithPathFinderPlusOffset(drive, targetTransform, leftRightOffset)
+            .andThen(
+                () -> {
+                  Logger.recordOutput("now putting things up", true);
+                  executeSelected();
+                });
+    CommandScheduler.getInstance().schedule(drive_command);
+    Logger.recordOutput("offsetted pose", targetTransform.plus(leftRightOffset));
   }
 
   /**
@@ -129,6 +144,10 @@ public class InterfaceSubsystem extends SubsystemBase {
         targetTransform = getTranslationFromPlace(Place.LEFT_CORAL_STATION);
         executeDrive(targetTransform, false, false);
         break;
+      case DISABLE:
+        //          forceStopExecution();
+        drive_command.cancel();
+        break;
       case CLIMBER:
         targetTransform = getTranslationFromPlace(Place.MIDDLE_CAGE);
         executeDrive(targetTransform, false, false);
@@ -148,15 +167,17 @@ public class InterfaceSubsystem extends SubsystemBase {
   public void forceStopExecution() {
     executing = false;
     elevator.raiseFromInterface(0);
+    // CommandScheduler.getInstance().cancel(drive_command);
+    // drive_command.cancel();
   }
 
   /** Moves elevator to selected level and scores. */
   public void executeSelected() {
     executing = true;
     elevator.raiseFromInterface(level);
-    Timer.delay(Constants.SECONDS_TO_RAISE_ELEVATOR);
-    // flipper.flipperScore();
-    Timer.delay(Constants.SECONDS_TO_SCORE);
+    Timer.delay(Constants.SECONDS_TO_RAISE_ELEVATOR.get());
+    flipper.flipperScore(Constants.SECONDS_TO_SCORE.get());
+    Timer.delay(Constants.SECONDS_TO_SCORE.get() + 0.1);
     elevator.raiseFromInterface(0);
     executing = false;
   }
@@ -179,5 +200,8 @@ public class InterfaceSubsystem extends SubsystemBase {
     // Logger / SmartDashboard info
     SmartDashboard.putString("Selected Pole", pole);
     SmartDashboard.putNumber("Selected Level", level);
+
+    Logger.recordOutput("Selected Pole", pole);
+    Logger.recordOutput("Selected Level", level);
   }
 }
