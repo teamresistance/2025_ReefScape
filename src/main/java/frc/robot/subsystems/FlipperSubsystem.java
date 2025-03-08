@@ -24,52 +24,63 @@ public class FlipperSubsystem extends SubsystemBase {
       new Solenoid(2, Constants.SOLENOID_MODULE_TYPE, Constants.CENTERER_SOLENOID_CHANNEL);
   private DigitalInput coralDetector1 = new DigitalInput(Constants.CORAL_SENSOR_CHANNEL1);
   private DigitalInput coralDetector2 = new DigitalInput(Constants.CORAL_SENSOR_CHANNEL2);
-  private int counter = 0;
 
   /** Subsystem handling coral intake and dropping onto branches/level1. */
-  public FlipperSubsystem() {
-    counter = 0;
-  }
+  public FlipperSubsystem() {}
 
-  /**
-   * If the flipper thinks it has/had coral (aka it dropped to the reef or tried gripping), it opens
-   * the gripper. If the flipper doesn't think it has coral (right after recieving basically), it
-   * centers then grips the coral.
-   */
+  // Variables to control flipperHoldingState execution
+  private int flipperCallCount = 0; // Counter for function calls
+  private Timer flipperTimer = new Timer(); // Timer instance for non-blocking delay
+  private boolean waitingForDelay = false; // Flag to track delay state
+  private boolean isFlipperActive = false; // Flag to manage repeated calls
+
   public void flipperHoldingState() {
-    if (!(coralDetector1.get() && coralDetector2.get())) { // If one sees something
-      gripper.set(false);
-
-      coralCenterMechanism.setPulseDuration(0.5);
-      coralCenterMechanism.startPulse();
-      counter++;
-      Timer.delay(0.7);
-
-      flipperHoldingState(); // TODO: ADD COUNTER FOR ONLY RECURSION 3 TIMES
-    } else {
-      gripper.set(true);
-      counter = 0;
+    if (flipperCallCount > 3) {
+      // Reset everything if it exceeds the limit
+      flipperCallCount = 0;
+      waitingForDelay = false;
+      isFlipperActive = false;
+      return;
     }
 
-    // if (coralDetector.get()) {
-    //   gripper.set(true);
-    // } else {
-    //   gripper.set(false);
-    //   coralCenterMechanism.setPulseDuration(0.5);
-    //   coralCenterMechanism.startPulse();
-    //   gripper.set(true);
-    // }
+    if (!(coralDetector1.get() && coralDetector2.get())) { // If one sees something
+      if (!waitingForDelay) {
+        gripper.set(false);
 
-    // if (!believesHasCoral) {
+        coralCenterMechanism.setPulseDuration(0.5);
+        coralCenterMechanism.startPulse();
 
-    //   while (coralCenterMechanism.get()) {}
-    //   gripper.set(coralDetector.get());
-    //   believesHasCoral = true;
-    // } else if (believesHasCoral) {
-    //   gripper.set(false);
-    //   coralCenterMechanism.set(false);
-    //   believesHasCoral = false;
-    // }
+        flipperTimer.reset();
+        flipperTimer.start(); // Start non-blocking timer
+        waitingForDelay = true;
+        isFlipperActive = true; // Start tracking execution
+      }
+    } else {
+      gripper.set(true);
+      flipperCallCount = 0; // Reset count after gripping
+      waitingForDelay = false;
+      isFlipperActive = false;
+    }
+  }
+
+  @Override
+  public void periodic() {
+    // Handle flipperHoldingState retries with a non-blocking delay
+    if (isFlipperActive && waitingForDelay && flipperTimer.hasElapsed(0.7)) {
+      flipperCallCount++; // Increment count after delay
+      waitingForDelay = false; // Reset delay flag
+      flipperHoldingState(); // Retry if needed
+    }
+
+    Logger.recordOutput("Flipper/Gripper Is Closed", gripper.get());
+    Logger.recordOutput("Flipper/Robot Thinks Has Coral", believesHasCoral);
+    Logger.recordOutput(
+        "Flipper/Coral Secured", (gripper.get() && coralDetector1.get() && coralDetector2.get()));
+    SmartDashboard.putBoolean("Gripper Closed", gripper.get());
+    SmartDashboard.putBoolean("Thinks has coral", believesHasCoral);
+    SmartDashboard.putBoolean(
+        "Coral Secured and Gripped",
+        (gripper.get() && coralDetector1.get() && coralDetector2.get()));
   }
 
   public boolean getHasCoral() {
@@ -87,19 +98,6 @@ public class FlipperSubsystem extends SubsystemBase {
 
     Timer.delay(0.75);
     gripper.set(false);
-  }
-
-  @Override
-  public void periodic() {
-    Logger.recordOutput("Flipper/Gripper Is Closed", gripper.get());
-    Logger.recordOutput("Flipper/Robot Thinks Has Coral", believesHasCoral);
-    Logger.recordOutput(
-        "Flipper/Coral Secured", (gripper.get() && coralDetector1.get() && coralDetector2.get()));
-    SmartDashboard.putBoolean("Gripper Closed", gripper.get());
-    SmartDashboard.putBoolean("Thinks has coral", believesHasCoral);
-    SmartDashboard.putBoolean(
-        "Coral Secured and Gripped",
-        (gripper.get() && coralDetector1.get() && coralDetector2.get()));
   }
 
   @Override

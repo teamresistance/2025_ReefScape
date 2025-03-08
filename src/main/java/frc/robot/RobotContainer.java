@@ -63,8 +63,8 @@ public class RobotContainer {
   // Create the target Transform2d (Translation and Rotation)
   //   Translation2d targetTranslation = new Translation2d(13.8, 5.6); // X = 14, Y = 4
   //   Rotation2d targetRotation = new Rotation2d(Units.degreesToRadians(-121.0)); // No rotation
-  Translation2d targetTranslation = new Translation2d(12.225, 2.474); // X = 14, Y = 4
-  Rotation2d targetRotation = new Rotation2d(Units.degreesToRadians(60.0)); // No rotation
+  Translation2d targetTranslation = new Translation2d(14.82, 4.08); // X = 14, Y = 4
+  Rotation2d targetRotation = new Rotation2d(Units.degreesToRadians(180.0)); // No rotation
 
   // new Pose2d(13.714, 5.136, Rotation2d.fromDegrees(-120.000));
   //   Translation2d targetTranslation = new Translation2d(13.5, 5.5); // DO NOT TOUCH
