@@ -1,7 +1,9 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -19,6 +21,7 @@ public class InterfaceSubsystem extends SubsystemBase {
   private boolean executing = false;
 
   private Transform2d targetTransform;
+  private Transform2d leftRightOffset;
 
   private DriveSubsystem drive;
   private FlipperSubsystem flipper;
@@ -49,14 +52,21 @@ public class InterfaceSubsystem extends SubsystemBase {
         FieldConstants.getSetPoint(place).getRotation());
   }
 
-  private void executeDrive(Transform2d targetTransform) {
-    DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-        .andThen(DriveCommands.goToTransform(drive, targetTransform))
-        .beforeStarting(
-            () -> {
-              DriveCommands.goToTransform(drive, targetTransform).cancel();
-              DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
-            });
+  /** Actually drives the robot to the position. Only called from driveToLoc() !!!! */
+  private void executeDrive(Transform2d targetTransform, boolean isLeft, boolean useOffset) {
+    if (useOffset) {
+      if (isLeft){
+        leftRightOffset = new Transform2d(0.50, 0.11, new Rotation2d(Units.degreesToRadians(0.0)));
+      } else {
+        leftRightOffset = new Transform2d(-0.50, 0.11, new Rotation2d(Units.degreesToRadians(0.0)));
+      }
+    } else {
+      leftRightOffset = new Transform2d(0, 0, new Rotation2d(0));
+    }
+    DriveCommands.goToTransformWithPathFinderPlusOffset(
+      drive,
+      targetTransform,
+      leftRightOffset);
   }
 
   /**
@@ -64,6 +74,7 @@ public class InterfaceSubsystem extends SubsystemBase {
    * transform then pathfinder-ing to it.
    */
   public void driveToLoc(InterfaceExecuteMode loc) {
+    boolean isLeft = false;
     switch (loc) {
       case REEF:
         switch (pole) {
@@ -72,48 +83,54 @@ public class InterfaceSubsystem extends SubsystemBase {
             break;
           case "b":
             targetTransform = getTranslationFromPlace(Place.B_TREE);
+            isLeft = true;
             break;
           case "c":
             targetTransform = getTranslationFromPlace(Place.C_TREE);
             break;
           case "d":
             targetTransform = getTranslationFromPlace(Place.D_TREE);
+            isLeft = true;
             break;
           case "e":
             targetTransform = getTranslationFromPlace(Place.E_TREE);
             break;
           case "f":
             targetTransform = getTranslationFromPlace(Place.F_TREE);
+            isLeft = true;
             break;
           case "g":
             targetTransform = getTranslationFromPlace(Place.G_TREE);
             break;
           case "h":
             targetTransform = getTranslationFromPlace(Place.H_TREE);
+            isLeft = true;
             break;
           case "i":
             targetTransform = getTranslationFromPlace(Place.I_TREE);
             break;
           case "j":
             targetTransform = getTranslationFromPlace(Place.J_TREE);
+            isLeft = true;
             break;
           case "k":
             targetTransform = getTranslationFromPlace(Place.K_TREE);
             break;
           case "l":
             targetTransform = getTranslationFromPlace(Place.L_TREE);
+            isLeft = true;
             break;
         }
 
-        executeDrive(targetTransform);
+        executeDrive(targetTransform, isLeft, true);
         break;
       case CORAL:
         targetTransform = getTranslationFromPlace(Place.LEFT_CORAL_STATION);
-        executeDrive(targetTransform);
+        executeDrive(targetTransform, false, false);
         break;
       case CLIMBER:
         targetTransform = getTranslationFromPlace(Place.MIDDLE_CAGE);
-        executeDrive(targetTransform);
+        executeDrive(targetTransform, false, false);
         break;
       case EXECUTE:
         if (!executing) {
