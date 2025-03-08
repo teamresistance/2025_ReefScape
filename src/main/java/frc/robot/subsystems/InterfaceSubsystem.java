@@ -43,6 +43,24 @@ public class InterfaceSubsystem extends SubsystemBase {
    * <p>Example: Driver holding "A" button, robot auto-navigates to selected pole
    */
 
+  private Transform2d getTranslationFromPlace(Place place){
+    return new Transform2d(
+      new Translation2d(
+          FieldConstants.getSetPoint(Place.A_TREE).getX(),
+          FieldConstants.getSetPoint(Place.A_TREE).getY()),
+      FieldConstants.getSetPoint(Place.A_TREE).getRotation());
+  }
+
+  private void driveExecution(Transform2d targetTransform){
+    DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
+            .andThen(DriveCommands.goToTransform(drive, targetTransform))
+            .beforeStarting(
+                () -> {
+                  DriveCommands.goToTransform(drive, targetTransform).cancel();
+                  DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
+                });
+  }
+
   /**
    * Drives to the selected location Works by converting Pose2d of the branch selected to a
    * transform then pathfinder-ing to it.
@@ -52,140 +70,52 @@ public class InterfaceSubsystem extends SubsystemBase {
       case REEF:
         switch (pole) {
           case "a":
-            targetTransform =
-                new Transform2d(
-                    new Translation2d(
-                        FieldConstants.getSetPoint(Place.A_TREE).getX(),
-                        FieldConstants.getSetPoint(Place.A_TREE).getY()),
-                    FieldConstants.getSetPoint(Place.A_TREE).getRotation());
+            targetTransform = getTranslationFromPlace(Place.A_TREE);
             break;
           case "b":
-            targetTransform =
-                new Transform2d(
-                    new Translation2d(
-                        FieldConstants.getSetPoint(Place.B_TREE).getX(),
-                        FieldConstants.getSetPoint(Place.B_TREE).getY()),
-                    FieldConstants.getSetPoint(Place.B_TREE).getRotation());
+            targetTransform = getTranslationFromPlace(Place.A_TREE);
             break;
           case "c":
-            targetTransform =
-                new Transform2d(
-                    new Translation2d(
-                        FieldConstants.getSetPoint(Place.C_TREE).getX(),
-                        FieldConstants.getSetPoint(Place.C_TREE).getY()),
-                    FieldConstants.getSetPoint(Place.C_TREE).getRotation());
+            targetTransform = getTranslationFromPlace(Place.A_TREE);
             break;
           case "d":
-            targetTransform =
-                new Transform2d(
-                    new Translation2d(
-                        FieldConstants.getSetPoint(Place.D_TREE).getX(),
-                        FieldConstants.getSetPoint(Place.D_TREE).getY()),
-                    FieldConstants.getSetPoint(Place.D_TREE).getRotation());
+            targetTransform = getTranslationFromPlace(Place.A_TREE);
             break;
           case "e":
-            targetTransform =
-                new Transform2d(
-                    new Translation2d(
-                        FieldConstants.getSetPoint(Place.E_TREE).getX(),
-                        FieldConstants.getSetPoint(Place.E_TREE).getY()),
-                    FieldConstants.getSetPoint(Place.E_TREE).getRotation());
+            targetTransform = getTranslationFromPlace(Place.A_TREE);
             break;
           case "f":
-            targetTransform =
-                new Transform2d(
-                    new Translation2d(
-                        FieldConstants.getSetPoint(Place.F_TREE).getX(),
-                        FieldConstants.getSetPoint(Place.F_TREE).getY()),
-                    FieldConstants.getSetPoint(Place.F_TREE).getRotation());
+            targetTransform = getTranslationFromPlace(Place.A_TREE);
             break;
           case "g":
-            targetTransform =
-                new Transform2d(
-                    new Translation2d(
-                        FieldConstants.getSetPoint(Place.G_TREE).getX(),
-                        FieldConstants.getSetPoint(Place.G_TREE).getY()),
-                    FieldConstants.getSetPoint(Place.G_TREE).getRotation());
+            targetTransform = getTranslationFromPlace(Place.A_TREE);
             break;
           case "h":
-            targetTransform =
-                new Transform2d(
-                    new Translation2d(
-                        FieldConstants.getSetPoint(Place.H_TREE).getX(),
-                        FieldConstants.getSetPoint(Place.H_TREE).getY()),
-                    FieldConstants.getSetPoint(Place.H_TREE).getRotation());
+            targetTransform = getTranslationFromPlace(Place.A_TREE);
             break;
           case "i":
-            targetTransform =
-                new Transform2d(
-                    new Translation2d(
-                        FieldConstants.getSetPoint(Place.I_TREE).getX(),
-                        FieldConstants.getSetPoint(Place.I_TREE).getY()),
-                    FieldConstants.getSetPoint(Place.I_TREE).getRotation());
+            targetTransform = getTranslationFromPlace(Place.A_TREE);
             break;
           case "j":
-            targetTransform =
-                new Transform2d(
-                    new Translation2d(
-                        FieldConstants.getSetPoint(Place.J_TREE).getX(),
-                        FieldConstants.getSetPoint(Place.J_TREE).getY()),
-                    FieldConstants.getSetPoint(Place.J_TREE).getRotation());
+            targetTransform = getTranslationFromPlace(Place.A_TREE);
             break;
           case "k":
-            targetTransform =
-                new Transform2d(
-                    new Translation2d(
-                        FieldConstants.getSetPoint(Place.K_TREE).getX(),
-                        FieldConstants.getSetPoint(Place.K_TREE).getY()),
-                    FieldConstants.getSetPoint(Place.K_TREE).getRotation());
+            targetTransform = getTranslationFromPlace(Place.A_TREE);
             break;
           case "l":
-            targetTransform =
-                new Transform2d(
-                    new Translation2d(
-                        FieldConstants.getSetPoint(Place.L_TREE).getX(),
-                        FieldConstants.getSetPoint(Place.L_TREE).getY()),
-                    FieldConstants.getSetPoint(Place.L_TREE).getRotation());
+            targetTransform = getTranslationFromPlace(Place.A_TREE);
             break;
         }
-        DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-            .andThen(DriveCommands.goToTransform(drive, targetTransform))
-            .beforeStarting(
-                () -> {
-                  DriveCommands.goToTransform(drive, targetTransform).cancel();
-                  DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
-                });
+
+        driveExecution(targetTransform);
         break;
       case CORAL:
-        targetTransform =
-            new Transform2d(
-                new Translation2d(
-                    FieldConstants.getSetPoint(Place.LEFT_CORAL_STATION).getX(),
-                    FieldConstants.getSetPoint(Place.LEFT_CORAL_STATION).getY()),
-                FieldConstants.getSetPoint(Place.LEFT_CORAL_STATION).getRotation());
-        DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-            .andThen(DriveCommands.goToTransform(drive, targetTransform))
-            .beforeStarting(
-                () -> {
-                  DriveCommands.goToTransform(drive, targetTransform).cancel();
-                  DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
-                });
+        targetTransform = getTranslationFromPlace(Place.LEFT_CORAL_STATION);
+        driveExecution(targetTransform);
         break;
       case CLIMBER:
-        targetTransform =
-            new Transform2d(
-                new Translation2d(
-                    FieldConstants.getSetPoint(Place.MIDDLE_CAGE).getX(),
-                    FieldConstants.getSetPoint(Place.MIDDLE_CAGE).getY()),
-                FieldConstants.getSetPoint(Place.MIDDLE_CAGE).getRotation());
-
-        DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-            .andThen(DriveCommands.goToTransform(drive, targetTransform))
-            .beforeStarting(
-                () -> {
-                  DriveCommands.goToTransform(drive, targetTransform).cancel();
-                  DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
-                });
+        targetTransform = getTranslationFromPlace(Place.MIDDLE_CAGE);
+        driveExecution(targetTransform);
         break;
       case EXECUTE:
         if (!executing) {
