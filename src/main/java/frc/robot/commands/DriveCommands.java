@@ -307,7 +307,11 @@ public class DriveCommands {
             })
         .until(
             () ->
-                false); // Timeout to prevent infinite looping if the target is unreachable (adjust
+                Math.abs(targetTranslation.getX() - drive.getPose().getX()) < 0.02
+                    && Math.abs(targetTranslation.getY() - drive.getPose().getY()) < 0.02
+                    && Math.abs(targetRotation.minus(drive.getRotation()).getRadians())
+                        < Math.toRadians(5));
+    // Timeout to prevent infinite looping if the target is unreachable (adjust
     // as
     // needed)
   }

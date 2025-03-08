@@ -24,9 +24,12 @@ public class FlipperSubsystem extends SubsystemBase {
       new Solenoid(2, Constants.SOLENOID_MODULE_TYPE, Constants.CENTERER_SOLENOID_CHANNEL);
   private DigitalInput coralDetector1 = new DigitalInput(Constants.CORAL_SENSOR_CHANNEL1);
   private DigitalInput coralDetector2 = new DigitalInput(Constants.CORAL_SENSOR_CHANNEL2);
+  private int counter = 0;
 
   /** Subsystem handling coral intake and dropping onto branches/level1. */
-  public FlipperSubsystem() {}
+  public FlipperSubsystem() {
+    counter = 0;
+  }
 
   /**
    * If the flipper thinks it has/had coral (aka it dropped to the reef or tried gripping), it opens
@@ -39,12 +42,13 @@ public class FlipperSubsystem extends SubsystemBase {
 
       coralCenterMechanism.setPulseDuration(0.5);
       coralCenterMechanism.startPulse();
-
+      counter++;
       Timer.delay(0.7);
 
       flipperHoldingState(); // TODO: ADD COUNTER FOR ONLY RECURSION 3 TIMES
     } else {
       gripper.set(true);
+      counter = 0;
     }
 
     // if (coralDetector.get()) {
@@ -77,8 +81,8 @@ public class FlipperSubsystem extends SubsystemBase {
   }
 
   /** Flips the coral out. */
-  public void flipperScore() {
-    flipper.setPulseDuration(5);
+  public void flipperScore(double flipperDelay) {
+    flipper.setPulseDuration(flipperDelay);
     flipper.startPulse();
 
     Timer.delay(0.75);

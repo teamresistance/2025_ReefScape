@@ -61,13 +61,15 @@ public class RobotContainer {
   private final LoggedDashboardChooser<Command> autoChooser;
   public Vision aprilTagVision;
   // Create the target Transform2d (Translation and Rotation)
-  Translation2d targetTranslation = new Translation2d(14.82, 4.06); // X = 14, Y = 4
-  Rotation2d targetRotation = new Rotation2d(Units.degreesToRadians(180.0)); // No rotation
+  //   Translation2d targetTranslation = new Translation2d(13.8, 5.6); // X = 14, Y = 4
+  //   Rotation2d targetRotation = new Rotation2d(Units.degreesToRadians(-121.0)); // No rotation
+  Translation2d targetTranslation = new Translation2d(12.225, 2.474); // X = 14, Y = 4
+  Rotation2d targetRotation = new Rotation2d(Units.degreesToRadians(60.0)); // No rotation
 
   // new Pose2d(13.714, 5.136, Rotation2d.fromDegrees(-120.000));
   //   Translation2d targetTranslation = new Translation2d(13.5, 5.5); // DO NOT TOUCH
   //   Translation2d targetTranslation = new Translation2d(14.186, 5.136); // for later
-  //   Rotation2d targetRotation = new Rotation2d(Units.degreesToRadians(-120.0)); // 
+  //   Rotation2d targetRotation = new Rotation2d(Units.degreesToRadians(-120.0)); //
 
   Transform2d targetTransform = new Transform2d(targetTranslation, targetRotation);
 
@@ -208,9 +210,15 @@ public class RobotContainer {
             DriveCommands.goToTransformWithPathFinderPlusOffset(
                     drive,
                     targetTransform,
-                    new Transform2d(0.51, -0.05, new Rotation2d(Units.degreesToRadians(0.0))))
+                    new Transform2d(0.52, -0.05, new Rotation2d(Units.degreesToRadians(2.0))))
+                .andThen(new WaitForTimeCmd(0.5))
                 .andThen(new ElevatorCmd(elevator, 2, true))
-                .andThen(new FlipperScoreCmd(flipper)));
+                .andThen(new WaitForTimeCmd(0.5))
+                .andThen(new FlipperScoreCmd(flipper, 10.0))
+                .andThen(new WaitForTimeCmd(0.5))
+                .andThen(new ElevatorCmd(elevator, 2, false))
+                .andThen(new WaitForTimeCmd(1.1))
+                .andThen(DriveCommands.goToTransform(drive, targetTransform)));
     // DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
     //     .andThen(
     //         DriveCommands.goToTransform(
@@ -309,7 +317,7 @@ public class RobotContainer {
     driver.b().onFalse(new ElevatorCmd(elevator, 1, false));
 
     driver.y().onTrue(new FlipperGripperCmd(flipper));
-    driver.x().onTrue(new FlipperScoreCmd(flipper));
+    driver.x().onTrue(new FlipperScoreCmd(flipper, 2.0));
 
     // driver.rightTrigger().onTrue();
 

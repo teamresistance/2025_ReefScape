@@ -67,7 +67,7 @@ public class InterfaceSubsystem extends SubsystemBase {
     executing = true;
     elevator.raiseFromInterface(level);
     Timer.delay(Constants.SECONDS_TO_RAISE_ELEVATOR);
-    flipper.flipperScore();
+    // flipper.flipperScore();
     Timer.delay(Constants.SECONDS_TO_SCORE);
     elevator.raiseFromInterface(0);
     executing = false;
