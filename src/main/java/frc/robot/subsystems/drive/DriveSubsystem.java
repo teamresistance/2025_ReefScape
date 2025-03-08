@@ -393,7 +393,20 @@ public class DriveSubsystem extends SubsystemBase {
         visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
   }
 
+  private boolean camerasEnabled = true;
+
+  public void enableCameras() {
+    camerasEnabled = true;
+  }
+
+  public void disableCameras() {
+    camerasEnabled = false;
+  }
+
   public void addAutoVisionMeasurement(List<TimestampedVisionUpdate> timestampedVisionUpdates) {
+    if (!camerasEnabled) {
+      return;
+    }
     for (TimestampedVisionUpdate autoUpdate : timestampedVisionUpdates) {
       this.addVisionMeasurement(autoUpdate.pose(), autoUpdate.timestamp(), autoUpdate.stdDevs());
     }
