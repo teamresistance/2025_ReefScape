@@ -45,8 +45,7 @@ public class InterfaceSubsystem extends SubsystemBase {
   private Transform2d getTranslationFromPlace(Place place) {
     return new Transform2d(
         new Translation2d(
-            FieldConstants.getSetPoint(place).getX(),
-            FieldConstants.getSetPoint(place).getY()),
+            FieldConstants.getSetPoint(place).getX(), FieldConstants.getSetPoint(place).getY()),
         FieldConstants.getSetPoint(Place.A_TREE).getRotation());
   }
 
