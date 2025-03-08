@@ -120,6 +120,64 @@ public final class FieldConstants {
 
   // -------------------------------------------------
 
+  public enum AllianceTreePlace {
+    RED_A_TREE,
+    RED_B_TREE,
+    RED_C_TREE,
+    RED_D_TREE,
+    RED_E_TREE,
+    RED_F_TREE,
+    RED_G_TREE,
+    RED_H_TREE,
+    RED_I_TREE,
+    RED_J_TREE,
+    RED_K_TREE,
+    RED_L_TREE,
+    BLUE_A_TREE,
+    BLUE_B_TREE,
+    BLUE_C_TREE,
+    BLUE_D_TREE,
+    BLUE_E_TREE,
+    BLUE_F_TREE,
+    BLUE_G_TREE,
+    BLUE_H_TREE,
+    BLUE_I_TREE,
+    BLUE_J_TREE,
+    BLUE_K_TREE,
+    BLUE_L_TREE,
+  }
+
+  public static Pose2d getApriltagFromTree(AllianceTreePlace tree) {
+    return switch (tree) {
+      case RED_A_TREE -> APRILTAG_7;
+      case RED_B_TREE -> APRILTAG_7;
+      case RED_C_TREE -> APRILTAG_8;
+      case RED_D_TREE -> APRILTAG_8;
+      case RED_E_TREE -> APRILTAG_9;
+      case RED_F_TREE -> APRILTAG_9;
+      case RED_G_TREE -> APRILTAG_10;
+      case RED_H_TREE -> APRILTAG_10;
+      case RED_I_TREE -> APRILTAG_11;
+      case RED_J_TREE -> APRILTAG_11;
+      case RED_K_TREE -> APRILTAG_6;
+      case RED_L_TREE -> APRILTAG_6;
+      case BLUE_A_TREE -> APRILTAG_18;
+      case BLUE_B_TREE -> APRILTAG_18;
+      case BLUE_C_TREE -> APRILTAG_17;
+      case BLUE_D_TREE -> APRILTAG_17;
+      case BLUE_E_TREE -> APRILTAG_22;
+      case BLUE_F_TREE -> APRILTAG_22;
+      case BLUE_G_TREE -> APRILTAG_21;
+      case BLUE_H_TREE -> APRILTAG_21;
+      case BLUE_I_TREE -> APRILTAG_20;
+      case BLUE_J_TREE -> APRILTAG_20;
+      case BLUE_K_TREE -> APRILTAG_19;
+      case BLUE_L_TREE -> APRILTAG_19;
+    };
+  }
+
+  // -------------------------------------------------
+
   public enum Place {
     A_TREE,
     B_TREE,
