@@ -238,8 +238,14 @@ public class RobotContainer {
     new JoystickButton(codriverInterfaceOther, 6)
         .onTrue(new InterfaceVarsCmd(reef, "", 4, false, true));
 
-    driver.a().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.EXECUTE)); 
-    driver.rightTrigger().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.REEF)); // When right trigger is pressed, drive to the location selected
+    driver.a().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.EXECUTE));
+    driver
+        .rightTrigger()
+        .onTrue(
+            new InterfaceActionCmd(
+                reef,
+                InterfaceExecuteMode
+                    .REEF)); // When right trigger is pressed, drive to the location selected
     driver.x().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.CORAL));
     driver.y().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.CLIMBER));
   }
