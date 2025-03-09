@@ -232,6 +232,9 @@ public class RobotContainer {
 
     driver.y().onTrue(new FlipperGripperCmd(flipper));
 
+    driver.start().and(driver.back()).onTrue(new ActivateClimberCommand(climber));
+    ;
+
     driver
         .leftBumper()
         .whileTrue(
@@ -290,9 +293,9 @@ public class RobotContainer {
         .onTrue(new InterfaceVarsCmd(reef, "l", 0, true, false));
 
     // Climber toggle, elevator level selection
-    new JoystickButton(codriverInterfaceOther, 1)
-        .and(new JoystickButton(codriverInterfaceOther, 2))
-        .onTrue(new ActivateClimberCommand(climber));
+    //    new JoystickButton(codriverInterfaceOther, 1)
+    //        .and(new JoystickButton(codriverInterfaceOther, 2))
+    //        .onTrue(new ActivateClimberCommand(climber));
     new JoystickButton(codriverInterfaceOther, 3)
         .onTrue(new InterfaceVarsCmd(reef, "", 1, false, true));
     new JoystickButton(codriverInterfaceOther, 4)

@@ -76,7 +76,7 @@ public class DriveSubsystem extends SubsystemBase {
   // PathPlanner config constants
   private static final double ROBOT_MASS_KG = Units.lbsToKilograms(115.0);
   private static final double ROBOT_MOI =
-      1.0
+      0.35
           / 12.0
           * ROBOT_MASS_KG
           * (Math.pow(TunerConstants.FrontLeft.LocationX * 2, 2)
@@ -142,7 +142,7 @@ public class DriveSubsystem extends SubsystemBase {
         this::getChassisSpeeds,
         this::runVelocity,
         new PPHolonomicDriveController(
-            new PIDConstants(4.0, 0.1, 0.0), new PIDConstants(5.0, 0.0, 0.0)),
+            new PIDConstants(5.0, 0.0, 0.0), new PIDConstants(5.0, 0.0, 0.0)),
         PP_CONFIG,
         () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
         this);
