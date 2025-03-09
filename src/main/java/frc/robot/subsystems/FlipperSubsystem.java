@@ -4,6 +4,8 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.*;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import org.littletonrobotics.junction.Logger;
@@ -96,8 +98,13 @@ public class FlipperSubsystem extends SubsystemBase {
     flipper.setPulseDuration(flipperDelay);
     flipper.startPulse();
 
-    Timer.delay(0.75);
-    gripper.set(false);
+    CommandScheduler.getInstance()
+        .schedule(
+            Commands.waitSeconds(0.75)
+                .andThen(
+                    () -> {
+                      gripper.set(false);
+                    }));
   }
 
   @Override

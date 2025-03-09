@@ -1,5 +1,10 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static frc.robot.commands.DriveCommands.goToTransform;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -8,20 +13,22 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.InterfaceExecuteMode;
 import frc.robot.FieldConstants;
 import frc.robot.FieldConstants.AllianceTreePlace;
 import frc.robot.FieldConstants.Place;
-import frc.robot.commands.DriveCommands;
+import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.util.GeomUtil;
 import org.littletonrobotics.junction.Logger;
 
 public class InterfaceSubsystem extends SubsystemBase {
 
-  private String pole = "";
-  private int level = -1;
+  private String pole = "a";
+  private int level = 1;
   private boolean executing = false;
 
   private Transform2d targetTransform;
@@ -71,16 +78,52 @@ public class InterfaceSubsystem extends SubsystemBase {
         leftRightOffset = new Transform2d(0.50, 0.11, new Rotation2d(Units.degreesToRadians(0.0)));
       }
     } else {
-      leftRightOffset = new Transform2d(0, 0, new Rotation2d(0));
+      leftRightOffset = new Transform2d(0.52, -0.05, new Rotation2d(0));
     }
     Logger.recordOutput("now putting things up", false);
+    //    drive_command =
+    //        DriveCommands.goToTransformWithPathFinderPlusOffset(drive, targetTransform,
+    // leftRightOffset)
+    //            .andThen(
+    //                () -> {
+    //                  Logger.recordOutput("now putting things up", true);
+    //                  executeSelected();
+    //                });
+
     drive_command =
-        DriveCommands.goToTransformWithPathFinderPlusOffset(drive, targetTransform, leftRightOffset)
+        AutoBuilder.pathfindToPose(
+                GeomUtil.transformToPose(targetTransform),
+                new PathConstraints(
+                    TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.90, // TODO: CHANGE BACK
+                    1.25, // TODO: CHANGE BACK
+                    Units.degreesToRadians(440),
+                    Units.degreesToRadians(720)),
+                0.0 // Goal end velocity in meters/sec
+                )
             .andThen(
                 () -> {
-                  Logger.recordOutput("now putting things up", true);
-                  executeSelected();
-                });
+                  elevator.raiseFromInterface(level);
+                })
+            .andThen(goToTransform(drive, targetTransform.plus(leftRightOffset)))
+            .andThen(
+                Commands.waitSeconds(Constants.SECONDS_TO_RAISE_ELEVATOR.get())
+                    .andThen(
+                        () -> {
+                          flipper.flipperScore(
+                              useOffset
+                                  ? Constants.SECONDS_TO_SCORE.get()
+                                  : Constants.SECONDS_TO_SCORE.get() + 8);
+                        })
+                    //            .alongWith(DriveCommands.joystickDrive())
+                    .andThen(Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() + 0.1))
+                    .andThen(
+                        () -> {
+                          elevator.raiseFromInterface(0);
+                        })
+                    .andThen(Commands.waitSeconds(1.1))
+                    .andThen(goToTransform(drive, targetTransform)));
+
+    //    elevator.raiseFromInterface(level);
     CommandScheduler.getInstance().schedule(drive_command);
     Logger.recordOutput("offsetted pose", targetTransform.plus(leftRightOffset));
   }
@@ -140,6 +183,53 @@ public class InterfaceSubsystem extends SubsystemBase {
 
         executeDrive(targetTransform, isRight, true);
         break;
+      case ALGEE:
+        switch (pole) {
+          case "a":
+            targetTransform = getTranslationFromPlace(Place.A_TREE);
+            break;
+          case "b":
+            targetTransform = getTranslationFromPlace(Place.B_TREE);
+            isRight = true;
+            break;
+          case "c":
+            targetTransform = getTranslationFromPlace(Place.C_TREE);
+            break;
+          case "d":
+            targetTransform = getTranslationFromPlace(Place.D_TREE);
+            isRight = true;
+            break;
+          case "e":
+            targetTransform = getTranslationFromPlace(Place.E_TREE);
+            break;
+          case "f":
+            targetTransform = getTranslationFromPlace(Place.F_TREE);
+            isRight = true;
+            break;
+          case "g":
+            targetTransform = getTranslationFromPlace(Place.G_TREE);
+            break;
+          case "h":
+            targetTransform = getTranslationFromPlace(Place.H_TREE);
+            isRight = true;
+            break;
+          case "i":
+            targetTransform = getTranslationFromPlace(Place.I_TREE);
+            break;
+          case "j":
+            targetTransform = getTranslationFromPlace(Place.J_TREE);
+            isRight = true;
+            break;
+          case "k":
+            targetTransform = getTranslationFromPlace(Place.K_TREE);
+            break;
+          case "l":
+            targetTransform = getTranslationFromPlace(Place.L_TREE);
+            isRight = true;
+            break;
+        }
+        executeDrive(targetTransform, isRight, false);
+        break;
       case CORAL:
         targetTransform = getTranslationFromPlace(Place.LEFT_CORAL_STATION);
         executeDrive(targetTransform, false, false);
@@ -147,6 +237,7 @@ public class InterfaceSubsystem extends SubsystemBase {
       case DISABLE:
         //          forceStopExecution();
         drive_command.cancel();
+        elevator.raiseFromInterface(0);
         break;
       case CLIMBER:
         targetTransform = getTranslationFromPlace(Place.MIDDLE_CAGE);
@@ -173,13 +264,10 @@ public class InterfaceSubsystem extends SubsystemBase {
 
   /** Moves elevator to selected level and scores. */
   public void executeSelected() {
-    executing = true;
-    elevator.raiseFromInterface(level);
     Timer.delay(Constants.SECONDS_TO_RAISE_ELEVATOR.get());
     flipper.flipperScore(Constants.SECONDS_TO_SCORE.get());
     Timer.delay(Constants.SECONDS_TO_SCORE.get() + 0.1);
     elevator.raiseFromInterface(0);
-    executing = false;
   }
 
   /**

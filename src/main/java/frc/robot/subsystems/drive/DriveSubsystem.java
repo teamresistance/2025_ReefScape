@@ -191,7 +191,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     if (getPressurePSI() < 90) {
       compressorRelay.set(Relay.Value.kForward); // Turn ON compressor
-    } else if (getPressurePSI() > 120) {
+    } else if (getPressurePSI() > 118) {
       compressorRelay.set(Relay.Value.kOff); // Turn OFF compressor
     }
     // System.out.println("Compressor Enabled: " + pcm.isEnabled());

@@ -310,6 +310,15 @@ public class RobotContainer {
                 .andThen(
                     () -> {})); // When right trigger is pressed, drive to the location selected
     driver.rightTrigger().onFalse(new InterfaceActionCmd(reef, InterfaceExecuteMode.DISABLE));
+
+    driver
+        .rightBumper()
+        .whileTrue(
+            new InterfaceActionCmd(reef, InterfaceExecuteMode.ALGEE)
+                .andThen(
+                    () -> {})); // When right trigger is pressed, drive to the location selected
+    driver.rightBumper().onFalse(new InterfaceActionCmd(reef, InterfaceExecuteMode.DISABLE));
+
     //    driver.x().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.CORAL));
     //    driver.y().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.CLIMBER));
   }
