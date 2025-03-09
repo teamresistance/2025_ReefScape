@@ -5,81 +5,87 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "I Branch"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "4 Level"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "grip"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "part 1"
+            "pathName": "1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "autoScore"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "2"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 4.0
+            "waitTime": 5.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "C Branch"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "part 2 v2"
+            "pathName": "3"
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 1.5
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "part 3"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.0
+            "name": "autoScore"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "part 4"
+            "pathName": "4"
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 1.5
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "part5"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.0
+            "name": "D Branch"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "part 6"
+            "pathName": "3"
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 1.5
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "part7"
+            "name": "autoScore"
           }
         }
       ]
