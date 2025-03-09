@@ -29,8 +29,10 @@ public final class FieldConstants {
   public static final Pose2d OFFSET_TAG_11 = new Pose2d(12.225, 2.474, Rotation2d.fromDegrees(60));
   public static final Pose2d OFFSET_TAG_6 = new Pose2d(13.985, 2.528, Rotation2d.fromDegrees(120));
 
+  public static Optional<DriverStation.Alliance> ally;
+
   public static AllianceTreePlace getAllianceBranchFromBranch(Place place) {
-    Optional<DriverStation.Alliance> ally = DriverStation.getAlliance();
+    ally = DriverStation.getAlliance();
     if (ally.isPresent()) {
       if (ally.get() == DriverStation.Alliance.Red) {
         switch (place) {
