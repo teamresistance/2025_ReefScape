@@ -1,7 +1,12 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
+import com.pathplanner.lib.path.PathConstraints;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
+import frc.robot.generated.TunerConstants;
 import frc.robot.util.LoggedTunableNumber;
 
 /**
@@ -37,6 +42,13 @@ public final class Constants {
     DISABLE,
     ALGEE
   }
+
+  public static PathConstraints PATH_CONSTRAINTS =
+      new PathConstraints(
+          TunerConstants.kSpeedAt12Volts.in(MetersPerSecond), // TODO: CHANGE BACK
+          4.0, // TODO: CHANGE BACK
+          Units.degreesToRadians(540),
+          Units.degreesToRadians(4000));
 
   // Solenoids / Pressure
   public static final PneumaticsModuleType SOLENOID_MODULE_TYPE = PneumaticsModuleType.CTREPCM;

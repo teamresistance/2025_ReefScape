@@ -72,16 +72,17 @@ public class RobotContainer {
 
   Transform2d targetTransform = new Transform2d(targetTranslation, targetRotation);
 
-
-  private static Transform2d stationTargetTransform = new Transform2d(15.85, 0.82, new Rotation2d(Units.degreesToRadians(-54.4)));
-    private static Transform2d stationOffsetTransform = new Transform2d(0.15, 0.0, new Rotation2d(0.0));
+  private static Transform2d stationTargetTransform =
+      new Transform2d(15.85, 0.82, new Rotation2d(Units.degreesToRadians(-54.4)));
+  private static Transform2d stationOffsetTransform =
+      new Transform2d(0.15, 0.0, new Rotation2d(0.0));
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     drive = configureDrive();
     reef = configureInterface();
-    autoChooser = configureAutos();
     aprilTagVision = configureAprilTagVision();
+    autoChooser = configureAutos();
     configureButtonBindings();
     cameraFailureAlert = new Alert("Camera failure.", Alert.AlertType.kError);
   }
@@ -187,16 +188,16 @@ public class RobotContainer {
     driver.start().and(driver.back()).onTrue(new ActivateClimberCommand(climber));
 
     driver
-    .leftBumper()
-    .whileTrue(
-        DriveCommands.goToTransformWithPathFinderPlusOffset(drive, stationTargetTransform, stationOffsetTransform)
-            .beforeStarting(
-                () -> {
-                    DriveCommands.goToTransform(drive, stationTargetTransform).cancel();
-                    DriveCommands.goToTransformWithPathFinder(drive, stationTargetTransform).cancel();
-                }));
-
-    
+        .leftBumper()
+        .whileTrue(
+            DriveCommands.goToTransformWithPathFinderPlusOffset(
+                    drive, stationTargetTransform, stationOffsetTransform)
+                .beforeStarting(
+                    () -> {
+                      DriveCommands.goToTransform(drive, stationTargetTransform).cancel();
+                      DriveCommands.goToTransformWithPathFinder(drive, stationTargetTransform)
+                          .cancel();
+                    }));
 
     //    Codriver Bindings
     //
@@ -258,17 +259,17 @@ public class RobotContainer {
 
     //    driver.x().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.CORAL));
     //    driver.y().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.CLIMBER));
-    
+
   }
 
+  public static void setStationTargetTransform(Transform2d _targetTransform) {
+    stationOffsetTransform = _targetTransform;
+  }
 
-    public static void setStationTargetTransform(Transform2d _targetTransform) {
-        stationOffsetTransform = _targetTransform;
-    }
+  public static void setStationOffsetTransform(Transform2d _offsetTransform) {
+    stationOffsetTransform = _offsetTransform;
+  }
 
-    public static void setStationOffsetTransform(Transform2d _offsetTransform) {
-        stationOffsetTransform = _offsetTransform;
-    }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *

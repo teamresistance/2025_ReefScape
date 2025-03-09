@@ -1,10 +1,8 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
 import static frc.robot.commands.DriveCommands.goToTransform;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -20,7 +18,6 @@ import frc.robot.Constants.InterfaceExecuteMode;
 import frc.robot.FieldConstants;
 import frc.robot.FieldConstants.AllianceTreePlace;
 import frc.robot.FieldConstants.Place;
-import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.util.GeomUtil;
 import org.littletonrobotics.junction.Logger;
@@ -93,11 +90,7 @@ public class InterfaceSubsystem extends SubsystemBase {
     drive_command =
         AutoBuilder.pathfindToPose(
                 GeomUtil.transformToPose(targetTransform),
-                new PathConstraints(
-                    TunerConstants.kSpeedAt12Volts.in(MetersPerSecond), // TODO: CHANGE BACK
-                    4.0, // TODO: CHANGE BACK
-                    Units.degreesToRadians(440),
-                    Units.degreesToRadians(720)),
+                Constants.PATH_CONSTRAINTS,
                 0.0 // Goal end velocity in meters/sec
                 )
             .andThen(

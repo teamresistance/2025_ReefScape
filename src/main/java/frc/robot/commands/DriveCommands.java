@@ -1,9 +1,6 @@
 package frc.robot.commands;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
-
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -19,7 +16,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.generated.TunerConstants;
+import frc.robot.Constants;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.util.GeomUtil;
 import java.text.DecimalFormat;
@@ -307,8 +304,8 @@ public class DriveCommands {
             })
         .until(
             () ->
-                Math.abs(targetTranslation.getX() - drive.getPose().getX()) < 0.02
-                    && Math.abs(targetTranslation.getY() - drive.getPose().getY()) < 0.02
+                Math.abs(targetTranslation.getX() - drive.getPose().getX()) < 0.05
+                    && Math.abs(targetTranslation.getY() - drive.getPose().getY()) < 0.05
                     && Math.abs(targetRotation.minus(drive.getRotation()).getRadians())
                         < Math.toRadians(5));
     // Timeout to prevent infinite looping if the target is unreachable (adjust
@@ -320,11 +317,7 @@ public class DriveCommands {
       DriveSubsystem drive, Transform2d targetTransform) {
     return AutoBuilder.pathfindToPose(
         GeomUtil.transformToPose(targetTransform),
-        new PathConstraints(
-            TunerConstants.kSpeedAt12Volts.in(MetersPerSecond), // TODO: CHANGE BACK
-            4.0, // TODO: CHANGE BACK
-            Units.degreesToRadians(440),
-            Units.degreesToRadians(720)),
+        Constants.PATH_CONSTRAINTS,
         0.0 // Goal end velocity in meters/sec
         );
     // .andThen(
@@ -337,11 +330,7 @@ public class DriveCommands {
       DriveSubsystem drive, Transform2d targetTransform, Transform2d offset) {
     return AutoBuilder.pathfindToPose(
             GeomUtil.transformToPose(targetTransform),
-            new PathConstraints(
-                TunerConstants.kSpeedAt12Volts.in(MetersPerSecond), // TODO: CHANGE BACK
-                4.0, // TODO: CHANGE BACK
-                Units.degreesToRadians(440),
-                Units.degreesToRadians(720)),
+            Constants.PATH_CONSTRAINTS,
             0.0 // Goal end velocity in meters/sec
             )
         .andThen(goToTransform(drive, targetTransform.plus(offset)));
