@@ -36,7 +36,7 @@ import org.photonvision.PhotonCamera;
  */
 public class RobotContainer {
   private static final Transform2d stationTargetTransform =
-      new Transform2d(15.95, 0.90, new Rotation2d(Units.degreesToRadians(-54.4)));
+      new Transform2d(16.0, 1.0, new Rotation2d(Units.degreesToRadians(-54.4)));
   private static Transform2d stationOffsetTransform =
       new Transform2d(0.15, 0.0, new Rotation2d(0.0));
   public final PhotonCamera frontLeftCamera = new PhotonCamera("front-left");
@@ -115,8 +115,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("4 Level", new InterfaceVarsCmd(reef, "a", 4, false, true));
 
     NamedCommands.registerCommand(
-      "autoScore", new InterfaceActionCmd(reef, InterfaceExecuteMode.REEF));
-
+        "autoScore", new InterfaceActionCmd(reef, InterfaceExecuteMode.REEF));
   }
 
   private LoggedDashboardChooser<Command> configureAutos() {

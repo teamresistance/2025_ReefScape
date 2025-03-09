@@ -40,7 +40,7 @@ public class CameraPoses {
                 Units.inchesToMeters(6.5)), // Left camera translation (X, Y, Z)
             new Rotation3d(
                 Units.degreesToRadians(0.0),
-                Units.degreesToRadians(-14.5),
+                Units.degreesToRadians(-23.0),
                 Units.degreesToRadians(0.0))), // in radians btw
       };
 }

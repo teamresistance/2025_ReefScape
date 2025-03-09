@@ -9,13 +9,13 @@ import frc.robot.RobotContainer;
 public class PickupStationCmd extends Command {
 
   private static final Transform2d redUpperLeft =
-      new Transform2d(15.85, 0.82, new Rotation2d(Units.degreesToRadians(-54.4)));
+      new Transform2d(15.9, 0.75, new Rotation2d(Units.degreesToRadians(-54.4)));
   private static final Transform2d redLowerLeft =
-      new Transform2d(15.85, -0.82, new Rotation2d(Units.degreesToRadians(-54.4)));
+      new Transform2d(16.819, 1.391, new Rotation2d(Units.degreesToRadians(-54.4)));
   private static final Transform2d redUpperRight =
-      new Transform2d(17.0, 0.82, new Rotation2d(Units.degreesToRadians(54.4)));
+      new Transform2d(15.9, 7.3, new Rotation2d(Units.degreesToRadians(54.4)));
   private static final Transform2d redLowerRight =
-      new Transform2d(17.0, -0.82, new Rotation2d(Units.degreesToRadians(54.4)));
+      new Transform2d(16.819, 6.625, new Rotation2d(Units.degreesToRadians(54.4)));
 
   private static final Transform2d blueUpperLeft =
       new Transform2d(-15.85, 0.82, new Rotation2d(Units.degreesToRadians(54.4)));
