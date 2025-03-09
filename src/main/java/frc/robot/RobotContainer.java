@@ -99,15 +99,24 @@ public class RobotContainer {
     NamedCommands.registerCommand("A Branch", new InterfaceVarsCmd(reef, "a", 0, true, false));
     NamedCommands.registerCommand("B Branch", new InterfaceVarsCmd(reef, "b", 0, true, false));
     NamedCommands.registerCommand("C Branch", new InterfaceVarsCmd(reef, "c", 0, true, false));
+    NamedCommands.registerCommand("D Branch", new InterfaceVarsCmd(reef, "d", 0, true, false));
+    NamedCommands.registerCommand("E Branch", new InterfaceVarsCmd(reef, "e", 0, true, false));
+    NamedCommands.registerCommand("F Branch", new InterfaceVarsCmd(reef, "f", 0, true, false));
+    NamedCommands.registerCommand("G Branch", new InterfaceVarsCmd(reef, "g", 0, true, false));
+    NamedCommands.registerCommand("H Branch", new InterfaceVarsCmd(reef, "h", 0, true, false));
+    NamedCommands.registerCommand("I Branch", new InterfaceVarsCmd(reef, "i", 0, true, false));
+    NamedCommands.registerCommand("J Branch", new InterfaceVarsCmd(reef, "j", 0, true, false));
+    NamedCommands.registerCommand("K Branch", new InterfaceVarsCmd(reef, "k", 0, true, false));
+    NamedCommands.registerCommand("L Branch", new InterfaceVarsCmd(reef, "l", 0, true, false));
 
     NamedCommands.registerCommand("1 Level", new InterfaceVarsCmd(reef, "a", 1, false, true));
     NamedCommands.registerCommand("2 Level", new InterfaceVarsCmd(reef, "a", 2, false, true));
     NamedCommands.registerCommand("3 Level", new InterfaceVarsCmd(reef, "a", 3, false, true));
     NamedCommands.registerCommand("4 Level", new InterfaceVarsCmd(reef, "a", 4, false, true));
+
     NamedCommands.registerCommand(
-        "autoScore", new InterfaceActionCmd(reef, InterfaceExecuteMode.REEF));
-    NamedCommands.registerCommand(
-        "putupcoral", new FlipperGripperCmd(flipper).andThen(() -> {}).andThen(() -> {}));
+      "autoScore", new InterfaceActionCmd(reef, InterfaceExecuteMode.REEF));
+
   }
 
   private LoggedDashboardChooser<Command> configureAutos() {
