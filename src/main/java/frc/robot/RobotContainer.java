@@ -233,19 +233,14 @@ public class RobotContainer {
     driver.y().onTrue(new FlipperGripperCmd(flipper));
 
     driver.start().and(driver.back()).onTrue(new ActivateClimberCommand(climber));
-    ;
 
     driver
         .leftBumper()
         .whileTrue(
-            DriveCommands.goToTransformWithPathFinder(
+            DriveCommands.goToTransformWithPathFinderPlusOffset(
                     drive,
-                    new Transform2d(16.7, 1.2, new Rotation2d(Units.degreesToRadians(-45.0))))
-                .andThen(
-                    DriveCommands.goToTransform(
-                        drive,
-                        new Transform2d(16.7, 1.2, new Rotation2d(Units.degreesToRadians(-45.0)))
-                            .plus(new Transform2d(0.15, 0.15, new Rotation2d()))))
+                    new Transform2d(15.85, 0.82, new Rotation2d(Units.degreesToRadians(-54.4))),
+                    new Transform2d(0.15, 0.0, new Rotation2d(0.0)))
                 .beforeStarting(
                     () -> {
                       DriveCommands.goToTransform(drive, targetTransform).cancel();

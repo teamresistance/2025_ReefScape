@@ -95,7 +95,7 @@ public class InterfaceSubsystem extends SubsystemBase {
                 GeomUtil.transformToPose(targetTransform),
                 new PathConstraints(
                     TunerConstants.kSpeedAt12Volts.in(MetersPerSecond), // TODO: CHANGE BACK
-                    2.2, // TODO: CHANGE BACK
+                    6, // TODO: CHANGE BACK
                     Units.degreesToRadians(440),
                     Units.degreesToRadians(720)),
                 0.0 // Goal end velocity in meters/sec

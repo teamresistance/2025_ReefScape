@@ -17,7 +17,7 @@ public final class Constants {
   public static final int CORAL_SENSOR_CHANNEL1 = 0;
   public static final int CORAL_SENSOR_CHANNEL2 = 1;
   public static final LoggedTunableNumber SECONDS_TO_RAISE_ELEVATOR =
-      new LoggedTunableNumber("SECONDS_TO_RAISE_ELEVATOR", 0.5);
+      new LoggedTunableNumber("SECONDS_TO_RAISE_ELEVATOR", 0.0);
 
   public static final LoggedTunableNumber SECONDS_TO_SCORE =
       new LoggedTunableNumber("SECONDS_TO_SCORE", 1.0);
