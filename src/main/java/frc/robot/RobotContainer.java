@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -70,6 +71,10 @@ public class RobotContainer {
   //   Rotation2d targetRotation = new Rotation2d(Units.degreesToRadians(-120.0)); //
 
   Transform2d targetTransform = new Transform2d(targetTranslation, targetRotation);
+
+
+  private static Transform2d stationTargetTransform = new Transform2d(15.85, 0.82, new Rotation2d(Units.degreesToRadians(-54.4)));
+    private static Transform2d stationOffsetTransform = new Transform2d(0.15, 0.0, new Rotation2d(0.0));
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -175,90 +180,24 @@ public class RobotContainer {
     //         drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), Rotation2d::new));
 
     // Switch to X pattern when X button is pressed
-    // driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
-
-    // need both commands
-    // driver // Right reef facing red riverstation (temporary)
-    //     .rightTrigger()
-    //     .whileTrue(
-    //         DriveCommands.goToTransformWithPathFinderPlusOffset(
-    //             drive, targetTransform, new Transform2d(0.50, -0.24, new Rotation2d())));
-    // // DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-    // //     .andThen(
-    // //         DriveCommands.goToTransform(
-    // //             drive,
-    // //             targetTransform.plus(new Transform2d(0.50, -0.23, new Rotation2d()))))
-    // //     .beforeStarting(
-    // //         () -> {
-    // //           DriveCommands.goToTransform(drive, targetTransform).cancel();
-    // //           DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
-    // //         }));
-
-    // driver // Left reef facing red driverstatoin (temporary)
-    //     .leftTrigger()
-    //     .whileTrue(
-    //         DriveCommands.goToTransformWithPathFinderPlusOffset(
-    //             drive,
-    //             targetTransform,
-    //             new Transform2d(0.50, 0.11, new Rotation2d(Units.degreesToRadians(0.0)))));
-
-    // driver // Left reef facing red driverstatoin (temporary)
-    //     .rightBumper()
-    //     .whileTrue(
-    //         DriveCommands.goToTransformWithPathFinderPlusOffset(
-    //                 drive,
-    //                 targetTransform,
-    //                 new Transform2d(0.52, -0.05, new Rotation2d(Units.degreesToRadians(2.0))))
-    //             .andThen(new WaitForTimeCmd(0.5))
-    //             .andThen(new ElevatorCmd(elevator, 2, true))
-    //             .andThen(new WaitForTimeCmd(0.5))
-    //             .andThen(new FlipperScoreCmd(flipper, 10.0))
-    //             .andThen(new WaitForTimeCmd(0.5))
-    //             .andThen(new ElevatorCmd(elevator, 2, false))
-    //             .andThen(new WaitForTimeCmd(1.1))
-    //             .andThen(DriveCommands.goToTransform(drive, targetTransform)));
-    // DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
-    //     .andThen(
-    //         DriveCommands.goToTransform(
-    //             drive,
-    //             targetTransform.plus(
-    //                 new Transform2d(
-    //                     0.51, 0.14, new Rotation2d(Units.degreesToRadians(-2.0))))))
-    //     .beforeStarting(
-    //         () -> {
-    //           DriveCommands.goToTransform(drive, targetTransform).cancel();
-    //           DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
-    //         }));
+    driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     driver.y().onTrue(new FlipperGripperCmd(flipper));
 
     driver.start().and(driver.back()).onTrue(new ActivateClimberCommand(climber));
 
     driver
-        .leftBumper()
-        .whileTrue(
-            DriveCommands.goToTransformWithPathFinderPlusOffset(
-                    drive,
-                    new Transform2d(15.85, 0.82, new Rotation2d(Units.degreesToRadians(-54.4))),
-                    new Transform2d(0.15, 0.0, new Rotation2d(0.0)))
-                .beforeStarting(
-                    () -> {
-                      DriveCommands.goToTransform(drive, targetTransform).cancel();
-                      DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
-                    }));
+    .leftBumper()
+    .whileTrue(
+        DriveCommands.goToTransformWithPathFinderPlusOffset(drive, stationTargetTransform, stationOffsetTransform)
+            .beforeStarting(
+                () -> {
+                    DriveCommands.goToTransform(drive, stationTargetTransform).cancel();
+                    DriveCommands.goToTransformWithPathFinder(drive, stationTargetTransform).cancel();
+                }));
 
-    // Reset gyro to 0 when B button is pressed
-    // driver
-    //     .b()
-    //     .onTrue(
-    //         Commands.runOnce(
-    //                 () ->
-    //                     drive.setPose(
-    //                         new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
-    //                 drive)
-    //             .ignoringDisable(true));
+    
 
-    //
     //    Codriver Bindings
     //
     // Reef branch selection
@@ -319,8 +258,17 @@ public class RobotContainer {
 
     //    driver.x().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.CORAL));
     //    driver.y().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.CLIMBER));
+    
   }
 
+
+    public static void setStationTargetTransform(Transform2d _targetTransform) {
+        stationOffsetTransform = _targetTransform;
+    }
+
+    public static void setStationOffsetTransform(Transform2d _offsetTransform) {
+        stationOffsetTransform = _offsetTransform;
+    }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
