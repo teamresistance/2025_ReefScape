@@ -1,6 +1,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -17,7 +18,10 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.InterfaceExecuteMode;
 import frc.robot.commands.*;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.*;
+import frc.robot.subsystems.ClimberSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.FlipperSubsystem;
+import frc.robot.subsystems.InterfaceSubsystem;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.vision.Vision;
 import java.io.IOException;
@@ -31,60 +35,79 @@ import org.photonvision.PhotonCamera;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+  private static final Transform2d stationTargetTransform =
+      new Transform2d(15.95, 0.90, new Rotation2d(Units.degreesToRadians(-54.4)));
+  private static Transform2d stationOffsetTransform =
+      new Transform2d(0.15, 0.0, new Rotation2d(0.0));
   public final PhotonCamera frontLeftCamera = new PhotonCamera("front-left");
   public final PhotonCamera frontRightCamera = new PhotonCamera("front-right");
   public final PhotonCamera backLeftCamera = new PhotonCamera("back_left");
   public final PhotonCamera backRightCamera = new PhotonCamera("back_right");
   public final PhotonCamera frontCenterCamera = new PhotonCamera("front-center");
-
   private final Alert cameraFailureAlert;
-
   // Subsystems
   private final DriveSubsystem drive;
   private final InterfaceSubsystem reef;
   private final FlipperSubsystem flipper = new FlipperSubsystem();
+  //   private final PressureSubsystem pressure = new PressureSubsystem();
   private final ElevatorSubsystem elevator = new ElevatorSubsystem();
   private final ClimberSubsystem climber = new ClimberSubsystem();
-  //   private final PressureSubsystem pressure = new PressureSubsystem();
-
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
-
   private final Joystick cojoystick = new Joystick(1);
   // There are two codriver joystick ports because only 12 buttons can be detected, and just the
   // branch select is 12 buttons.
   private final Joystick codriverInterfaceBranch = new Joystick(2);
   private final Joystick codriverInterfaceOther = new Joystick(3);
-
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
   public Vision aprilTagVision;
-  // Create the target Transform2d (Translation and Rotation)
-  //   Translation2d targetTranslation = new Translation2d(13.8, 5.6); // X = 14, Y = 4
-  //   Rotation2d targetRotation = new Rotation2d(Units.degreesToRadians(-121.0)); // No rotation
-  Translation2d targetTranslation = new Translation2d(12.225, 2.474); // X = 14, Y = 4
-  Rotation2d targetRotation = new Rotation2d(Units.degreesToRadians(60.0)); // No rotation
 
   // new Pose2d(13.714, 5.136, Rotation2d.fromDegrees(-120.000));
   //   Translation2d targetTranslation = new Translation2d(13.5, 5.5); // DO NOT TOUCH
   //   Translation2d targetTranslation = new Translation2d(14.186, 5.136); // for later
   //   Rotation2d targetRotation = new Rotation2d(Units.degreesToRadians(-120.0)); //
-
+  // Create the target Transform2d (Translation and Rotation)
+  //   Translation2d targetTranslation = new Translation2d(13.8, 5.6); // X = 14, Y = 4
+  //   Rotation2d targetRotation = new Rotation2d(Units.degreesToRadians(-121.0)); // No rotation
+  Translation2d targetTranslation = new Translation2d(12.225, 2.474); // X = 14, Y = 4
+  Rotation2d targetRotation = new Rotation2d(Units.degreesToRadians(60.0)); // No rotation
   Transform2d targetTransform = new Transform2d(targetTranslation, targetRotation);
-
-  private static Transform2d stationTargetTransform =
-      new Transform2d(15.85, 0.82, new Rotation2d(Units.degreesToRadians(-54.4)));
-  private static Transform2d stationOffsetTransform =
-      new Transform2d(0.15, 0.0, new Rotation2d(0.0));
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     drive = configureDrive();
     reef = configureInterface();
     aprilTagVision = configureAprilTagVision();
+    configureNamedCommands();
+
     autoChooser = configureAutos();
     configureButtonBindings();
     cameraFailureAlert = new Alert("Camera failure.", Alert.AlertType.kError);
+  }
+
+  public static void setStationTargetTransform(Transform2d _targetTransform) {
+    stationOffsetTransform = _targetTransform;
+  }
+
+  public static void setStationOffsetTransform(Transform2d _offsetTransform) {
+    stationOffsetTransform = _offsetTransform;
+  }
+
+  private void configureNamedCommands() {
+    NamedCommands.registerCommand("grip", new FlipperGripperCmd(flipper));
+    NamedCommands.registerCommand("A Branch", new InterfaceVarsCmd(reef, "a", 0, true, false));
+    NamedCommands.registerCommand("B Branch", new InterfaceVarsCmd(reef, "b", 0, true, false));
+    NamedCommands.registerCommand("C Branch", new InterfaceVarsCmd(reef, "c", 0, true, false));
+
+    NamedCommands.registerCommand("1 Level", new InterfaceVarsCmd(reef, "a", 1, false, true));
+    NamedCommands.registerCommand("2 Level", new InterfaceVarsCmd(reef, "a", 2, false, true));
+    NamedCommands.registerCommand("3 Level", new InterfaceVarsCmd(reef, "a", 3, false, true));
+    NamedCommands.registerCommand("4 Level", new InterfaceVarsCmd(reef, "a", 4, false, true));
+    NamedCommands.registerCommand(
+        "autoScore", new InterfaceActionCmd(reef, InterfaceExecuteMode.REEF));
+    NamedCommands.registerCommand(
+        "putupcoral", new FlipperGripperCmd(flipper).andThen(() -> {}).andThen(() -> {}));
   }
 
   private LoggedDashboardChooser<Command> configureAutos() {
@@ -260,14 +283,6 @@ public class RobotContainer {
     //    driver.x().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.CORAL));
     //    driver.y().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.CLIMBER));
 
-  }
-
-  public static void setStationTargetTransform(Transform2d _targetTransform) {
-    stationOffsetTransform = _targetTransform;
-  }
-
-  public static void setStationOffsetTransform(Transform2d _offsetTransform) {
-    stationOffsetTransform = _offsetTransform;
   }
 
   /**

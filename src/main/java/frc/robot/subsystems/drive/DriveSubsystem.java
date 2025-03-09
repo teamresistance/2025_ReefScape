@@ -188,8 +188,8 @@ public class DriveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-
-    if (getPressurePSI() < 90) {
+    Logger.recordOutput("Air Pressure", getPressurePSI());
+    if (getPressurePSI() < 110) {
       compressorRelay.set(Relay.Value.kForward); // Turn ON compressor
     } else if (getPressurePSI() > 118) {
       compressorRelay.set(Relay.Value.kOff); // Turn OFF compressor
