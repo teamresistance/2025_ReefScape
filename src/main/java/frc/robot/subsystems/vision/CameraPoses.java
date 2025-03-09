@@ -19,11 +19,6 @@ public class CameraPoses {
                 0.0,
                 Units.degreesToRadians(-12.63),
                 Units.degreesToRadians(-45))), // in radians btw
-        // Back Left
-        //        new Pose3d(
-        //            new Translation3d(-0.235, 0.235, 0.267), // Right camera translation (X, Y, Z)
-        //            new Rotation3d(0.0, Units.degreesToRadians(-12.63), Units.degreesToRadians(45
-        // + 90))),
         //        // Back Right
         //        new Pose3d(
         //            new Translation3d(-0.235, -0.235, 0.267), // Left camera translation (X, Y, Z)
@@ -42,5 +37,11 @@ public class CameraPoses {
                 Units.degreesToRadians(0.0),
                 Units.degreesToRadians(-23.0),
                 Units.degreesToRadians(0.0))), // in radians btw
+
+        // Back Left
+        // new Pose3d(
+        //     new Translation3d(-0.235, 0.235, 0.267), // Right camera translation (X, Y, Z)
+        //     new Rotation3d(0.0, Units.degreesToRadians(-12.63), Units.degreesToRadians(45 +
+        // 90))),
       };
 }

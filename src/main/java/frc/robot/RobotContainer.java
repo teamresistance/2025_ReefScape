@@ -36,13 +36,13 @@ import org.photonvision.PhotonCamera;
  */
 public class RobotContainer {
   private static final Transform2d stationTargetTransform =
-      new Transform2d(16.0, 1.0, new Rotation2d(Units.degreesToRadians(-54.4)));
+      new Transform2d(15.86, 1.64, new Rotation2d(Units.degreesToRadians(-54.4)));
   private static Transform2d stationOffsetTransform =
       new Transform2d(0.15, 0.0, new Rotation2d(0.0));
   public final PhotonCamera frontLeftCamera = new PhotonCamera("front-left");
   public final PhotonCamera frontRightCamera = new PhotonCamera("front-right");
-  public final PhotonCamera backLeftCamera = new PhotonCamera("back_left");
-  public final PhotonCamera backRightCamera = new PhotonCamera("back_right");
+  public final PhotonCamera backLeftCamera = new PhotonCamera("back-left");
+  public final PhotonCamera backRightCamera = new PhotonCamera("back-right");
   public final PhotonCamera frontCenterCamera = new PhotonCamera("front-center");
   private final Alert cameraFailureAlert;
   // Subsystems
@@ -222,7 +222,9 @@ public class RobotContainer {
         .leftBumper()
         .whileTrue(
             DriveCommands.goToTransformWithPathFinderPlusOffset(
-                    drive, stationTargetTransform, stationOffsetTransform)
+                    drive,
+                    new Transform2d(16.5, 1.0, new Rotation2d(Units.degreesToRadians(-54.4))),
+                    new Transform2d(0.2, 0.0, new Rotation2d()))
                 .beforeStarting(
                     () -> {
                       DriveCommands.goToTransform(drive, stationTargetTransform).cancel();
@@ -271,7 +273,7 @@ public class RobotContainer {
     new JoystickButton(codriverInterfaceOther, 6)
         .onTrue(new InterfaceVarsCmd(reef, "", 4, false, true));
 
-    driver.a().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.EXECUTE));
+    // driver.a().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.EXECUTE));
     driver
         .rightTrigger()
         .whileTrue(
@@ -280,6 +282,7 @@ public class RobotContainer {
                     () -> {})); // When right trigger is pressed, drive to the location selected
     driver.rightTrigger().onFalse(new InterfaceActionCmd(reef, InterfaceExecuteMode.DISABLE));
 
+    // driver.rightTrigger().onTrue(new FlipperGripperCmd(flipper));
     driver
         .rightBumper()
         .whileTrue(
