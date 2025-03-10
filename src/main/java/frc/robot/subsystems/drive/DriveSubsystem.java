@@ -137,7 +137,8 @@ public class DriveSubsystem extends SubsystemBase {
         PP_CONFIG,
         () ->
             DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue)
-                == DriverStation.Alliance.Red, // this is correct, model all trajectories for blue side in path planner
+                == DriverStation.Alliance
+                    .Red, // this is correct, model all trajectories for blue side in path planner
         this);
     Pathfinding.setPathfinder(new LocalADStarAK());
     PathPlannerLogging.setLogActivePathCallback(
