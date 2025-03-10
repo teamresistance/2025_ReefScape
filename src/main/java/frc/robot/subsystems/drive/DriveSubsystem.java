@@ -28,13 +28,8 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.Alert.AlertType;
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -50,15 +45,6 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class DriveSubsystem extends SubsystemBase {
-
-  // PCM Air
-  private final Relay compressorRelay = new Relay(0); // Relay port 0
-  private static PneumaticsModuleType modType = PneumaticsModuleType.CTREPCM;
-  private static int modID = 2; // CAN adr, ID, of PDH
-
-  private final AnalogInput pressureSensor;
-
-  public static Compressor pcm = new Compressor(modID, modType);
 
   public static final double DRIVE_BASE_RADIUS =
       Math.max(
@@ -80,7 +66,7 @@ public class DriveSubsystem extends SubsystemBase {
           * ROBOT_MASS_KG
           * (Math.pow(TunerConstants.FrontLeft.LocationX * 2, 2)
               + Math.pow(TunerConstants.FrontLeft.LocationY * 2, 2));
-  private static final double WHEEL_COF = 1.2;
+	private static final double WHEEL_COF = 1.2;
   private static final RobotConfig PP_CONFIG =
       new RobotConfig(
           ROBOT_MASS_KG,
@@ -94,6 +80,12 @@ public class DriveSubsystem extends SubsystemBase {
               TunerConstants.FrontLeft.SlipCurrent,
               1),
           getModuleTranslations());
+  private static final PneumaticsModuleType modType = PneumaticsModuleType.CTREPCM;
+  private static final int modID = 2; // CAN adr, ID, of PDH
+  public static Compressor pcm = new Compressor(modID, modType);
+  // PCM Air
+  private final Relay compressorRelay = new Relay(0); // Relay port 0
+  private final AnalogInput pressureSensor;
   private final GyroIO gyroIO;
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
@@ -143,7 +135,9 @@ public class DriveSubsystem extends SubsystemBase {
         new PPHolonomicDriveController(
             new PIDConstants(5.0, 0.0, 0.0), new PIDConstants(5.0, 0.0, 0.0)),
         PP_CONFIG,
-        () -> false,
+        () ->
+            DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue)
+                == DriverStation.Alliance.Red,
         this);
     Pathfinding.setPathfinder(new LocalADStarAK());
     PathPlannerLogging.setLogActivePathCallback(
