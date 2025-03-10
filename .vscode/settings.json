@@ -67,7 +67,7 @@
     "editor.defaultFormatter": "richardwillis.vscode-spotless-gradle"
   },
   "[java]": {
-    "editor.defaultFormatter": "redhat.java"
+    "editor.defaultFormatter": "richardwillis.vscode-spotless-gradle"
   },
   "java.debug.settings.onBuildFailureProceed": true
 }
