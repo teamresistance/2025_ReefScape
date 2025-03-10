@@ -187,8 +187,6 @@ public class DriveSubsystem extends SubsystemBase {
     } else if (getPressurePSI() > 118) {
       compressorRelay.set(Relay.Value.kOff); // Turn OFF compressor
     }
-    // System.out.println("Compressor Enabled: " + pcm.isEnabled());
-    // System.out.println("Pressure Switch Value: " + pcm.getPressureSwitchValue());
 
     odometryLock.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);

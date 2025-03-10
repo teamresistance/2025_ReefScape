@@ -77,15 +77,6 @@ public class InterfaceSubsystem extends SubsystemBase {
     } else {
       leftRightOffset = new Transform2d(0.52, -0.05, new Rotation2d(0));
     }
-    Logger.recordOutput("now putting things up", false);
-    //    drive_command =
-    //        DriveCommands.goToTransformWithPathFinderPlusOffset(drive, targetTransform,
-    // leftRightOffset)
-    //            .andThen(
-    //                () -> {
-    //                  Logger.recordOutput("now putting things up", true);
-    //                  executeSelected();
-    //                });
 
     drive_command =
         AutoBuilder.pathfindToPose(
@@ -118,7 +109,6 @@ public class InterfaceSubsystem extends SubsystemBase {
 
     //    elevator.raiseFromInterface(level);
     CommandScheduler.getInstance().schedule(drive_command);
-    Logger.recordOutput("offsetted pose", targetTransform.plus(leftRightOffset));
   }
 
   /**
