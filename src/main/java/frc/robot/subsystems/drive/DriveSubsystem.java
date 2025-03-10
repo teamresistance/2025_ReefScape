@@ -66,7 +66,7 @@ public class DriveSubsystem extends SubsystemBase {
           * ROBOT_MASS_KG
           * (Math.pow(TunerConstants.FrontLeft.LocationX * 2, 2)
               + Math.pow(TunerConstants.FrontLeft.LocationY * 2, 2));
-	private static final double WHEEL_COF = 1.2;
+  private static final double WHEEL_COF = 1.2;
   private static final RobotConfig PP_CONFIG =
       new RobotConfig(
           ROBOT_MASS_KG,
