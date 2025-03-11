@@ -2,6 +2,8 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.util.GeometryUtil;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -24,6 +26,8 @@ import frc.robot.subsystems.FlipperSubsystem;
 import frc.robot.subsystems.InterfaceSubsystem;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.vision.Vision;
+import frc.robot.util.GeomUtil;
+
 import java.io.IOException;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.photonvision.PhotonCamera;
@@ -217,7 +221,20 @@ public class RobotContainer {
 
     driver.y().onTrue(new FlipperGripperCmd(flipper));
 
-    driver.start().and(driver.back()).onTrue(new ActivateClimberCommand(climber));
+    // driver.start().and(driver.back()).onTrue(new ActivateClimberCommand(climber));
+
+    driver.start().whileTrue(DriveCommands.goToTransformWithPathFinderPlusOffset
+    (drive, GeomUtil.poseToTransform(FieldConstants.OUTER_CAGE_BLUE), 
+    new Transform2d(1.0, 0, new Rotation2d(0.0)))
+    .andThen(DriveCommands.goToTransform(drive, GeomUtil.poseToTransform(FieldConstants.OUTER_CAGE_BLUE)
+    .plus(new Transform2d(0.5, 0.0, new Rotation2d(0.0)))))
+    .beforeStarting(
+        () -> {
+          DriveCommands.goToTransform(drive, stationTargetTransform).cancel();
+          DriveCommands.goToTransformWithPathFinder(drive, stationTargetTransform)
+              .cancel();
+        })
+    );
 
     driver
         .leftBumper()
