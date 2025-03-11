@@ -37,7 +37,7 @@ public class FlipperSubsystem extends SubsystemBase {
   private boolean isFlipperActive = false; // Flag to manage repeated calls
 
   public void flipperHoldingState() {
-    if (flipperCallCount > 3) {
+    if (flipperCallCount > 1) {
       // Reset everything if it exceeds the limit
       flipperCallCount = 0;
       waitingForDelay = false;
@@ -49,7 +49,7 @@ public class FlipperSubsystem extends SubsystemBase {
       if (!waitingForDelay) {
         gripper.set(false);
 
-        coralCenterMechanism.setPulseDuration(0.5);
+        coralCenterMechanism.setPulseDuration(1.0);
         coralCenterMechanism.startPulse();
 
         flipperTimer.reset();
@@ -68,7 +68,7 @@ public class FlipperSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // Handle flipperHoldingState retries with a non-blocking delay
-    if (isFlipperActive && waitingForDelay && flipperTimer.hasElapsed(0.7)) {
+    if (isFlipperActive && waitingForDelay && flipperTimer.hasElapsed(0.48)) {
       flipperCallCount++; // Increment count after delay
       waitingForDelay = false; // Reset delay flag
       flipperHoldingState(); // Retry if needed

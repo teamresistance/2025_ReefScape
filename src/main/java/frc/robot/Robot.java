@@ -24,6 +24,10 @@ public class Robot extends LoggedRobot {
   private final RobotContainer robotContainer;
   private Command autonomousCommand;
 
+  // added cameras
+  // UsbCamera camera1;
+  // UsbCamera camera2;
+
   public Robot() {
     // Record metadata
     Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
@@ -74,6 +78,12 @@ public class Robot extends LoggedRobot {
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
+
+    // USB cameras added
+    // camera1 = CameraServer.startAutomaticCapture(0);
+    // camera2 = CameraServer.startAutomaticCapture(1);
+    // camera1.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
+    // camera2.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
   }
 
   /** This function is called periodically during all modes. */
