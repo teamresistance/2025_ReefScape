@@ -46,9 +46,9 @@ public final class Constants {
   public static PathConstraints PATH_CONSTRAINTS =
       new PathConstraints(
           TunerConstants.kSpeedAt12Volts.in(MetersPerSecond), // TODO: CHANGE BACK
-          2.0, // TODO: CHANGE BACK
+          4.2, // TODO: CHANGE BACK
           Units.degreesToRadians(540),
-          Units.degreesToRadians(4000));
+          Units.degreesToRadians(400));
 
   // Solenoids / Pressure
   public static final PneumaticsModuleType SOLENOID_MODULE_TYPE = PneumaticsModuleType.CTREPCM;
