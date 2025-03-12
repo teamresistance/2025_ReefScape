@@ -2,8 +2,6 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.util.GeometryUtil;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -27,7 +25,6 @@ import frc.robot.subsystems.InterfaceSubsystem;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.GeomUtil;
-
 import java.io.IOException;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.photonvision.PhotonCamera;
@@ -45,8 +42,8 @@ public class RobotContainer {
       new Transform2d(0.15, 0.0, new Rotation2d(0.0));
   public final PhotonCamera frontLeftCamera = new PhotonCamera("front-left");
   public final PhotonCamera frontRightCamera = new PhotonCamera("front-right");
-  public final PhotonCamera backLeftCamera = new PhotonCamera("back-left");
-  public final PhotonCamera backRightCamera = new PhotonCamera("back-right");
+  public final PhotonCamera backLeftCamera = new PhotonCamera("back_left");
+  public final PhotonCamera backRightCamera = new PhotonCamera("back_right");
   public final PhotonCamera frontCenterCamera = new PhotonCamera("front-center");
   private final Alert cameraFailureAlert;
   // Subsystems
@@ -149,7 +146,13 @@ public class RobotContainer {
 
   private Vision configureAprilTagVision() {
     try {
-      aprilTagVision = new Vision(frontLeftCamera, frontRightCamera, frontCenterCamera);
+      aprilTagVision =
+          new Vision(
+              frontLeftCamera,
+              frontRightCamera,
+              backRightCamera,
+              frontCenterCamera,
+              backLeftCamera);
 
       //   backLeftCamera,
       //   backRightCamera,
@@ -221,20 +224,30 @@ public class RobotContainer {
 
     driver.y().onTrue(new FlipperGripperCmd(flipper));
 
-    // driver.start().and(driver.back()).onTrue(new ActivateClimberCommand(climber));
+    //    driver.start().and(driver.back()).onTrue(new ActivateClimberCommand(climber));
 
-    driver.start().whileTrue(DriveCommands.goToTransformWithPathFinderPlusOffset
-    (drive, GeomUtil.poseToTransform(FieldConstants.OUTER_CAGE_BLUE), 
-    new Transform2d(1.0, 0, new Rotation2d(0.0)))
-    .andThen(DriveCommands.goToTransform(drive, GeomUtil.poseToTransform(FieldConstants.OUTER_CAGE_BLUE)
-    .plus(new Transform2d(0.5, 0.0, new Rotation2d(0.0)))))
-    .beforeStarting(
-        () -> {
-          DriveCommands.goToTransform(drive, stationTargetTransform).cancel();
-          DriveCommands.goToTransformWithPathFinder(drive, stationTargetTransform)
-              .cancel();
-        })
-    );
+    driver
+        .start()
+        .and(driver.back())
+        .whileTrue(
+            DriveCommands.goToTransformWithPathFinderPlusOffset(
+                    drive,
+                    GeomUtil.poseToTransform(FieldConstants.OUTER_CAGE_BLUE),
+                    new Transform2d(0.0, 0.8, new Rotation2d(0.0)))
+                .andThen(Commands.waitSeconds(2.0))
+                .andThen(
+                    DriveCommands.goToTransform(
+                        drive,
+                        GeomUtil.poseToTransform(FieldConstants.OUTER_CAGE_BLUE)
+                            .plus(new Transform2d(0.0, 0.6, new Rotation2d(0.0)))))
+                .andThen(Commands.waitSeconds(3.0))
+                .andThen(new ActivateClimberCommand(climber))
+                .beforeStarting(
+                    () -> {
+                      DriveCommands.goToTransform(drive, stationTargetTransform).cancel();
+                      DriveCommands.goToTransformWithPathFinder(drive, stationTargetTransform)
+                          .cancel();
+                    }));
 
     driver
         .leftBumper()

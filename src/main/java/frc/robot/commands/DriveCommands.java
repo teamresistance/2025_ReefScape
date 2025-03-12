@@ -221,7 +221,7 @@ public class DriveCommands {
             0.0, // KI for X (no integral term)
             0.0, // KD for X (no derivative term)
             new TrapezoidProfile.Constraints(
-                drive.getMaxLinearSpeedMetersPerSec(),
+                drive.getMaxLinearSpeedMetersPerSec() * 0.15,
                 3.0) // Constraints on X speed (tune as needed)
             );
 
@@ -231,7 +231,7 @@ public class DriveCommands {
             0.0, // KI for Y (no integral term)
             0.0, // KD for Y (no derivative term)
             new TrapezoidProfile.Constraints(
-                drive.getMaxLinearSpeedMetersPerSec(),
+                drive.getMaxLinearSpeedMetersPerSec() * 0.15,
                 3.0) // Constraints on Y speed (tune as needed)
             );
 

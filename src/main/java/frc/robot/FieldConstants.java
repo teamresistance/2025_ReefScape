@@ -29,7 +29,8 @@ public final class FieldConstants {
   public static final Pose2d OFFSET_TAG_11 = new Pose2d(12.225, 2.474, Rotation2d.fromDegrees(60));
   public static final Pose2d OFFSET_TAG_6 = new Pose2d(13.985, 2.528, Rotation2d.fromDegrees(120));
 
-  public static final Pose2d OUTER_CAGE_BLUE = new Pose2d(7.745, 6.135, Rotation2d. fromDegrees(-90.0));
+  public static final Pose2d OUTER_CAGE_BLUE =
+      new Pose2d(9.786, 3.05, Rotation2d.fromDegrees(90.0));
 
   public static Optional<DriverStation.Alliance> ally;
 

@@ -105,10 +105,12 @@ public class InterfaceSubsystem extends SubsystemBase {
                           elevator.raiseFromInterface(0);
                         })
                     .andThen(Commands.waitSeconds(1.1))
-                    .andThen(goToTransform(drive, targetTransform)));
+                    .andThen(
+                        goToTransform(drive, targetTransform).raceWith(Commands.waitSeconds(2))));
 
     //    elevator.raiseFromInterface(level);
     CommandScheduler.getInstance().schedule(drive_command);
+    return;
   }
 
   /**
