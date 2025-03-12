@@ -3,7 +3,16 @@
   "robotLength": 0.9144,
   "holonomicMode": true,
   "pathFolders": [
-    "Red Right !!BAD!!"
+    "Bottom CS to Reef Paths",
+    "Reef To Top CS Paths",
+    "Red Right !!BAD!!",
+    "Reef to Bottom CS Paths",
+    "Start To A Paths",
+    "Start To B Paths",
+    "Start To C Paths",
+    "Start To D Paths",
+    "Start To E Paths",
+    "Top CS to Reef Paths"
   ],
   "autoFolders": [
     "OLD"
