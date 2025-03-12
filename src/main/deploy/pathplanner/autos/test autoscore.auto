@@ -7,7 +7,7 @@
         {
           "type": "named",
           "data": {
-            "name": "I Branch"
+            "name": "H Branch"
           }
         },
         {
@@ -32,25 +32,6 @@
           "type": "path",
           "data": {
             "pathName": "first part"
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "autoScore"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 3.0
-                }
-              }
-            ]
           }
         },
         {

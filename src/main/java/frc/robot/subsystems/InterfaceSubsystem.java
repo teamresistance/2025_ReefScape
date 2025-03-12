@@ -18,6 +18,7 @@ import frc.robot.Constants.InterfaceExecuteMode;
 import frc.robot.FieldConstants;
 import frc.robot.FieldConstants.AllianceTreePlace;
 import frc.robot.FieldConstants.Place;
+import frc.robot.commands.InterfaceActionCmd;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.util.GeomUtil;
 import org.littletonrobotics.junction.Logger;
@@ -66,7 +67,8 @@ public class InterfaceSubsystem extends SubsystemBase {
   public Command drive_command;
 
   /** Actually drives the robot to the position. Only called from driveToLoc() !!!! */
-  private void executeDrive(Transform2d targetTransform, boolean isRight, boolean useOffset) {
+  private void executeDrive(
+      Transform2d targetTransform, boolean isRight, boolean useOffset, InterfaceActionCmd stuff) {
     Logger.recordOutput("running work", true);
     if (useOffset) {
       if (isRight) {
@@ -105,8 +107,15 @@ public class InterfaceSubsystem extends SubsystemBase {
                           elevator.raiseFromInterface(0);
                         })
                     .andThen(Commands.waitSeconds(1.1))
+                    .andThen(goToTransform(drive, targetTransform))
                     .andThen(
-                        goToTransform(drive, targetTransform).raceWith(Commands.waitSeconds(2))));
+                        () -> {
+                          System.out.println("drive command executed and ended");
+
+                          stuff.finishparentCommand();
+                          stuff.end(true);
+                          drive.stop();
+                        }));
 
     //    elevator.raiseFromInterface(level);
     CommandScheduler.getInstance().schedule(drive_command);
@@ -117,7 +126,7 @@ public class InterfaceSubsystem extends SubsystemBase {
    * Drives to the selected location Works by converting Pose2d of the branch selected to a
    * transform then pathfinder-ing to it.
    */
-  public void driveToLoc(InterfaceExecuteMode loc) {
+  public void driveToLoc(InterfaceExecuteMode loc, InterfaceActionCmd stuff) {
     boolean isRight = false;
     switch (loc) {
       case REEF:
@@ -166,7 +175,7 @@ public class InterfaceSubsystem extends SubsystemBase {
             break;
         }
 
-        executeDrive(targetTransform, isRight, true);
+        executeDrive(targetTransform, isRight, true, stuff);
         break;
       case ALGEE:
         switch (pole) {
@@ -213,11 +222,11 @@ public class InterfaceSubsystem extends SubsystemBase {
             isRight = true;
             break;
         }
-        executeDrive(targetTransform, isRight, false);
+        executeDrive(targetTransform, isRight, false, stuff);
         break;
       case CORAL:
         targetTransform = getTranslationFromPlace(Place.LEFT_CORAL_STATION);
-        executeDrive(targetTransform, false, false);
+        executeDrive(targetTransform, false, false, stuff);
         break;
       case DISABLE:
         //          forceStopExecution();
@@ -226,7 +235,7 @@ public class InterfaceSubsystem extends SubsystemBase {
         break;
       case CLIMBER:
         targetTransform = getTranslationFromPlace(Place.MIDDLE_CAGE);
-        executeDrive(targetTransform, false, false);
+        executeDrive(targetTransform, false, false, stuff);
         break;
       case EXECUTE:
         if (!executing) {
@@ -243,7 +252,7 @@ public class InterfaceSubsystem extends SubsystemBase {
   public void forceStopExecution() {
     executing = false;
     elevator.raiseFromInterface(0);
-    // CommandScheduler.getInstance().cancel(drive_command);
+    CommandScheduler.getInstance().cancel(drive_command);
     // drive_command.cancel();
   }
 
