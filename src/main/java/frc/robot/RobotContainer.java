@@ -233,14 +233,16 @@ public class RobotContainer {
             DriveCommands.goToTransformWithPathFinderPlusOffset(
                     drive,
                     GeomUtil.poseToTransform(FieldConstants.OUTER_CAGE_BLUE),
-                    new Transform2d(0.0, 0.8, new Rotation2d(0.0)))
-                .andThen(Commands.waitSeconds(2.0))
+                    new Transform2d(0.0, 1.0, new Rotation2d(0.0)))
+                .andThen(Commands.runOnce(drive::stop, drive))
+                .andThen(Commands.waitSeconds(1.0))
                 .andThen(
                     DriveCommands.goToTransform(
                         drive,
                         GeomUtil.poseToTransform(FieldConstants.OUTER_CAGE_BLUE)
-                            .plus(new Transform2d(0.0, 0.6, new Rotation2d(0.0)))))
-                .andThen(Commands.waitSeconds(3.0))
+                            .plus(new Transform2d(0.0, 0.8, new Rotation2d(0.0)))))
+                .andThen(Commands.runOnce(drive::stop, drive))
+                .andThen(Commands.waitSeconds(2.0))
                 .andThen(new ActivateClimberCommand(climber))
                 .beforeStarting(
                     () -> {

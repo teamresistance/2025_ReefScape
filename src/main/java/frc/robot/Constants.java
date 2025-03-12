@@ -16,7 +16,7 @@ import frc.robot.util.LoggedTunableNumber;
  */
 public final class Constants {
   public static final Mode CURRENT_MODE = RobotBase.isReal() ? Mode.REAL : Mode.SIM;
-  public static final boolean TUNING_MODE = true;
+  public static final boolean TUNING_MODE = false;
 
   // Misc
   public static final int CORAL_SENSOR_CHANNEL1 = 0;
