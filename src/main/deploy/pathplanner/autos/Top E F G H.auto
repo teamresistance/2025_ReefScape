@@ -5,27 +5,9 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "grip"
-          }
-        },
-        {
           "type": "path",
           "data": {
-            "pathName": "Top To C"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "4 Level"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.5
+            "pathName": "Top To E"
           }
         },
         {
@@ -33,11 +15,29 @@
           "data": {
             "name": "autoScore"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "E To TCS"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "grip"
+          }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Top Autos",
   "choreoAuto": false
 }

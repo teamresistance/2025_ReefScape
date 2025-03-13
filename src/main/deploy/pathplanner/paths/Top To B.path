@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.766027641296387,
-        "y": 7.279622949872698
+        "x": 7.75,
+        "y": 7.25
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.40517117406903,
-        "y": 6.261603973103982
+        "x": 6.949365656519026,
+        "y": 5.774774385644982
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.350958919525146,
-        "y": 5.486123980794634
+        "x": 6.195,
+        "y": 4.37
       },
       "prevControl": {
-        "x": 7.023332621994001,
-        "y": 6.887702409176017
+        "x": 7.314114803379633,
+        "y": 6.462928681466881
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -119.99999999999999
+    "rotation": 180.0
   },
   "reversed": false,
   "folder": "Start To B Paths",

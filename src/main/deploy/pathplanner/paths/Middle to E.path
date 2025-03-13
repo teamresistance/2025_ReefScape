@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.737208148411342,
-        "y": 6.158195192473275
+        "x": 7.75,
+        "y": 6.15
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.199874441964286,
-        "y": 3.353557620729718
+        "x": 5.545513513422168,
+        "y": 6.326683158750253
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.5535064356667654,
-        "y": 2.481049864632743
+        "x": 3.6596472625235394,
+        "y": 5.45
       },
       "prevControl": {
-        "x": 4.668181616919381,
-        "y": 0.8555356230054589
+        "x": 4.477620041440288,
+        "y": 6.164560692007456
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 59.99999999999999
+    "rotation": -59.99999999999999
   },
   "reversed": false,
   "folder": "Start To E Paths",

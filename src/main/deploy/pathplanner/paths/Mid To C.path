@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.758006640842982,
-        "y": 6.1649071216583256
+        "x": 7.75,
+        "y": 6.15
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.9875497170857015,
-        "y": 6.222615047863551
+        "x": 6.0264390028877255,
+        "y": 5.721652893619913
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.623556692259652,
-        "y": 5.451635432243347
+        "x": 5.345,
+        "y": 5.452
       },
       "prevControl": {
-        "x": 5.856611108779907,
-        "y": 6.580513140133449
+        "x": 7.368095144406087,
+        "y": 5.974974667056939
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -59.819105561818745
+    "rotation": -119.99999999999999
   },
   "reversed": false,
   "folder": "Start To C Paths",

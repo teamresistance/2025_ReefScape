@@ -4,18 +4,23 @@
   "holonomicMode": true,
   "pathFolders": [
     "Bottom CS to Reef Paths",
-    "Reef To Top CS Paths",
+    "Start To I Paths",
     "Red Right !!BAD!!",
+    "Reef To Top CS Paths",
     "Reef to Bottom CS Paths",
     "Start To A Paths",
     "Start To B Paths",
     "Start To C Paths",
     "Start To D Paths",
     "Start To E Paths",
+    "Start To F Paths",
+    "Start To K Paths",
+    "Start to L Paths",
     "Top CS to Reef Paths"
   ],
   "autoFolders": [
-    "OLD"
+    "OLD",
+    "Top Autos"
   ],
   "defaultMaxVel": 4.68,
   "defaultMaxAccel": 4.2,
