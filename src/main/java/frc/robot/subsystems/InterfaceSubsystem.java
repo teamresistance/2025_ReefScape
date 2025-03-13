@@ -1,17 +1,36 @@
 package frc.robot.subsystems;
 
+import static frc.robot.commands.DriveCommands.goToTransform;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.InterfaceExecuteMode;
+import frc.robot.FieldConstants;
+import frc.robot.FieldConstants.AllianceTreePlace;
+import frc.robot.FieldConstants.Place;
+import frc.robot.commands.InterfaceActionCmd;
 import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.util.GeomUtil;
+import org.littletonrobotics.junction.Logger;
 
 public class InterfaceSubsystem extends SubsystemBase {
 
-  private String pole = "";
-  private int level = -1;
+  private String pole = "a";
+  private int level = 1;
   private boolean executing = false;
+
+  private Transform2d targetTransform;
+  private Transform2d leftRightOffset;
 
   private DriveSubsystem drive;
   private FlipperSubsystem flipper;
@@ -35,20 +54,189 @@ public class InterfaceSubsystem extends SubsystemBase {
    *
    * <p>Example: Driver holding "A" button, robot auto-navigates to selected pole
    */
-  public void driveToLoc(InterfaceExecuteMode loc) {
+  private Transform2d getTranslationFromPlace(Place place) {
+
+    AllianceTreePlace allianceplace = FieldConstants.getAllianceBranchFromBranch(place);
+    return new Transform2d(
+        new Translation2d(
+            FieldConstants.getOffsetApriltagFromTree(allianceplace).getX(),
+            FieldConstants.getOffsetApriltagFromTree(allianceplace).getY()),
+        FieldConstants.getOffsetApriltagFromTree(allianceplace).getRotation());
+  }
+
+  public Command drive_command;
+
+  /** Actually drives the robot to the position. Only called from driveToLoc() !!!! */
+  private void executeDrive(
+      Transform2d targetTransform, boolean isRight, boolean useOffset, InterfaceActionCmd stuff) {
+    Logger.recordOutput("running work", true);
+    if (useOffset) {
+      if (isRight) {
+        leftRightOffset = new Transform2d(0.50, -0.24, new Rotation2d(Units.degreesToRadians(0.0)));
+      } else {
+        leftRightOffset = new Transform2d(0.50, 0.11, new Rotation2d(Units.degreesToRadians(0.0)));
+      }
+    } else {
+      leftRightOffset = new Transform2d(0.52, -0.05, new Rotation2d(0));
+    }
+
+    drive_command =
+        AutoBuilder.pathfindToPose(
+                GeomUtil.transformToPose(targetTransform),
+                Constants.PATH_CONSTRAINTS,
+                0.0 // Goal end velocity in meters/sec
+                )
+            .andThen(
+                () -> {
+                  elevator.raiseFromInterface(level);
+                })
+            .andThen(goToTransform(drive, targetTransform.plus(leftRightOffset)))
+            .andThen(
+                Commands.waitSeconds(Constants.SECONDS_TO_RAISE_ELEVATOR.get())
+                    .andThen(
+                        () -> {
+                          flipper.flipperScore(
+                              useOffset
+                                  ? Constants.SECONDS_TO_SCORE.get()
+                                  : Constants.SECONDS_TO_SCORE.get() + 8);
+                        })
+                    //            .alongWith(DriveCommands.joystickDrive())
+                    .andThen(Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() + 0.1))
+                    .andThen(
+                        () -> {
+                          elevator.raiseFromInterface(0);
+                        })
+                    .andThen(Commands.waitSeconds(1.1))
+                    .andThen(goToTransform(drive, targetTransform))
+                    .andThen(
+                        () -> {
+                          //                          System.out.println("drive command executed and
+                          // ended");
+                          //
+                          stuff.finishparentCommand();
+                          //                          stuff.end(true);
+                          //                          drive.stop();
+                        }));
+
+    //    elevator.raiseFromInterface(level);
+    CommandScheduler.getInstance().schedule(drive_command);
+    return;
+  }
+
+  /**
+   * Drives to the selected location Works by converting Pose2d of the branch selected to a
+   * transform then pathfinder-ing to it.
+   */
+  public void driveToLoc(InterfaceExecuteMode loc, InterfaceActionCmd stuff) {
+    boolean isRight = false;
     switch (loc) {
       case REEF:
         switch (pole) {
           case "a":
-            // Drive to pole A and align once nearby
-            // TODO: Add the rest of the branch positions to align to
+            targetTransform = getTranslationFromPlace(Place.A_TREE);
+            break;
+          case "b":
+            targetTransform = getTranslationFromPlace(Place.B_TREE);
+            isRight = true;
+            break;
+          case "c":
+            targetTransform = getTranslationFromPlace(Place.C_TREE);
+            break;
+          case "d":
+            targetTransform = getTranslationFromPlace(Place.D_TREE);
+            isRight = true;
+            break;
+          case "e":
+            targetTransform = getTranslationFromPlace(Place.E_TREE);
+            break;
+          case "f":
+            targetTransform = getTranslationFromPlace(Place.F_TREE);
+            isRight = true;
+            break;
+          case "g":
+            targetTransform = getTranslationFromPlace(Place.G_TREE);
+            break;
+          case "h":
+            targetTransform = getTranslationFromPlace(Place.H_TREE);
+            isRight = true;
+            break;
+          case "i":
+            targetTransform = getTranslationFromPlace(Place.I_TREE);
+            break;
+          case "j":
+            targetTransform = getTranslationFromPlace(Place.J_TREE);
+            isRight = true;
+            break;
+          case "k":
+            targetTransform = getTranslationFromPlace(Place.K_TREE);
+            break;
+          case "l":
+            targetTransform = getTranslationFromPlace(Place.L_TREE);
+            isRight = true;
+            break;
         }
+
+        executeDrive(targetTransform, isRight, true, stuff);
+        break;
+      case ALGEE:
+        switch (pole) {
+          case "a":
+            targetTransform = getTranslationFromPlace(Place.A_TREE);
+            break;
+          case "b":
+            targetTransform = getTranslationFromPlace(Place.B_TREE);
+            isRight = true;
+            break;
+          case "c":
+            targetTransform = getTranslationFromPlace(Place.C_TREE);
+            break;
+          case "d":
+            targetTransform = getTranslationFromPlace(Place.D_TREE);
+            isRight = true;
+            break;
+          case "e":
+            targetTransform = getTranslationFromPlace(Place.E_TREE);
+            break;
+          case "f":
+            targetTransform = getTranslationFromPlace(Place.F_TREE);
+            isRight = true;
+            break;
+          case "g":
+            targetTransform = getTranslationFromPlace(Place.G_TREE);
+            break;
+          case "h":
+            targetTransform = getTranslationFromPlace(Place.H_TREE);
+            isRight = true;
+            break;
+          case "i":
+            targetTransform = getTranslationFromPlace(Place.I_TREE);
+            break;
+          case "j":
+            targetTransform = getTranslationFromPlace(Place.J_TREE);
+            isRight = true;
+            break;
+          case "k":
+            targetTransform = getTranslationFromPlace(Place.K_TREE);
+            break;
+          case "l":
+            targetTransform = getTranslationFromPlace(Place.L_TREE);
+            isRight = true;
+            break;
+        }
+        executeDrive(targetTransform, isRight, false, stuff);
         break;
       case CORAL:
-        // Drive commands to drive to coral station
+        targetTransform = getTranslationFromPlace(Place.LEFT_CORAL_STATION);
+        executeDrive(targetTransform, false, false, stuff);
+        break;
+      case DISABLE:
+        //          forceStopExecution();
+        drive_command.cancel();
+        elevator.raiseFromInterface(0);
         break;
       case CLIMBER:
-        // Drive commands to drive to climber
+        targetTransform = getTranslationFromPlace(Place.MIDDLE_CAGE);
+        executeDrive(targetTransform, false, false, stuff);
         break;
       case EXECUTE:
         if (!executing) {
@@ -65,17 +253,16 @@ public class InterfaceSubsystem extends SubsystemBase {
   public void forceStopExecution() {
     executing = false;
     elevator.raiseFromInterface(0);
+    CommandScheduler.getInstance().cancel(drive_command);
+    // drive_command.cancel();
   }
 
   /** Moves elevator to selected level and scores. */
   public void executeSelected() {
-    executing = true;
-    elevator.raiseFromInterface(level);
-    Timer.delay(Constants.SECONDS_TO_RAISE_ELEVATOR);
-    flipper.flipperScore();
-    Timer.delay(Constants.SECONDS_TO_SCORE);
+    Timer.delay(Constants.SECONDS_TO_RAISE_ELEVATOR.get());
+    flipper.flipperScore(Constants.SECONDS_TO_SCORE.get());
+    Timer.delay(Constants.SECONDS_TO_SCORE.get() + 0.1);
     elevator.raiseFromInterface(0);
-    executing = false;
   }
 
   /**
@@ -96,5 +283,8 @@ public class InterfaceSubsystem extends SubsystemBase {
     // Logger / SmartDashboard info
     SmartDashboard.putString("Selected Pole", pole);
     SmartDashboard.putNumber("Selected Level", level);
+
+    Logger.recordOutput("Selected Pole", pole);
+    Logger.recordOutput("Selected Level", level);
   }
 }
