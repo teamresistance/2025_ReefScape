@@ -1,7 +1,13 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
+import com.pathplanner.lib.path.PathConstraints;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
+import frc.robot.generated.TunerConstants;
+import frc.robot.util.LoggedTunableNumber;
 
 /**
  * This class defines the runtime mode used by AdvantageKit. The mode is always "real" when running
@@ -12,9 +18,15 @@ public final class Constants {
   public static final Mode CURRENT_MODE = RobotBase.isReal() ? Mode.REAL : Mode.SIM;
   public static final boolean TUNING_MODE = false;
 
-  // Elevator / Flipper / Gripper
-  public static final double SECONDS_TO_RAISE_ELEVATOR = 0;
-  public static final double SECONDS_TO_SCORE = 0;
+  // Misc
+  public static final int CORAL_SENSOR_CHANNEL1 = 0;
+  public static final int CORAL_SENSOR_CHANNEL2 = 1;
+  public static final LoggedTunableNumber SECONDS_TO_RAISE_ELEVATOR =
+      new LoggedTunableNumber("SECONDS_TO_RAISE_ELEVATOR", 0.5);
+
+  public static final LoggedTunableNumber SECONDS_TO_SCORE =
+      new LoggedTunableNumber("SECONDS_TO_SCORE", 1.0);
+
   public static final double SECONDS_GRIPPER_DELAY = 0;
   public static final int CORAL_SENSOR_CHANNEL_1 = 0;
   public static final int CORAL_SENSOR_CHANNEL_2 = 1;
@@ -26,8 +38,17 @@ public final class Constants {
     REEF,
     CORAL,
     CLIMBER,
-    EXECUTE
+    EXECUTE,
+    DISABLE,
+    ALGEE
   }
+
+  public static PathConstraints PATH_CONSTRAINTS =
+      new PathConstraints(
+          TunerConstants.kSpeedAt12Volts.in(MetersPerSecond), // TODO: CHANGE BACK
+          4.2, // TODO: CHANGE BACK
+          Units.degreesToRadians(540),
+          Units.degreesToRadians(400));
 
   // Solenoids / Pressure
   public static final PneumaticsModuleType SOLENOID_MODULE_TYPE = PneumaticsModuleType.CTREPCM;

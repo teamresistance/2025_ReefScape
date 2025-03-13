@@ -1,9 +1,6 @@
 package frc.robot.commands;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
-
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -19,7 +16,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.generated.TunerConstants;
+import frc.robot.Constants;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.util.GeomUtil;
 import java.text.DecimalFormat;
@@ -224,7 +221,7 @@ public class DriveCommands {
             0.0, // KI for X (no integral term)
             0.0, // KD for X (no derivative term)
             new TrapezoidProfile.Constraints(
-                drive.getMaxLinearSpeedMetersPerSec(),
+                drive.getMaxLinearSpeedMetersPerSec() * 0.15,
                 3.0) // Constraints on X speed (tune as needed)
             );
 
@@ -234,7 +231,7 @@ public class DriveCommands {
             0.0, // KI for Y (no integral term)
             0.0, // KD for Y (no derivative term)
             new TrapezoidProfile.Constraints(
-                drive.getMaxLinearSpeedMetersPerSec(),
+                drive.getMaxLinearSpeedMetersPerSec() * 0.15,
                 3.0) // Constraints on Y speed (tune as needed)
             );
 
@@ -307,7 +304,11 @@ public class DriveCommands {
             })
         .until(
             () ->
-                false); // Timeout to prevent infinite looping if the target is unreachable (adjust
+                Math.abs(targetTranslation.getX() - drive.getPose().getX()) < 0.05
+                    && Math.abs(targetTranslation.getY() - drive.getPose().getY()) < 0.05
+                    && Math.abs(targetRotation.minus(drive.getRotation()).getRadians())
+                        < Math.toRadians(5));
+    // Timeout to prevent infinite looping if the target is unreachable (adjust
     // as
     // needed)
   }
@@ -315,15 +316,24 @@ public class DriveCommands {
   public static Command goToTransformWithPathFinder(
       DriveSubsystem drive, Transform2d targetTransform) {
     return AutoBuilder.pathfindToPose(
+        GeomUtil.transformToPose(targetTransform),
+        Constants.PATH_CONSTRAINTS,
+        0.0 // Goal end velocity in meters/sec
+        );
+    // .andThen(
+    //     goToTransform(
+    //         drive, targetTransform.plus(new Transform2d(0.50, -0.23, new Rotation2d()))));
+  }
+
+  public static Command
+      goToTransformWithPathFinderPlusOffset( // Go to transform, then move to another offset
+      DriveSubsystem drive, Transform2d targetTransform, Transform2d offset) {
+    return AutoBuilder.pathfindToPose(
             GeomUtil.transformToPose(targetTransform),
-            new PathConstraints(
-                TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.8,
-                4.0,
-                ANGLE_MAX_VELOCITY,
-                ANGLE_MAX_ACCELERATION),
+            Constants.PATH_CONSTRAINTS,
             0.0 // Goal end velocity in meters/sec
             )
-        .andThen(goToTransform(drive, targetTransform));
+        .andThen(goToTransform(drive, targetTransform.plus(offset)));
   }
 
   /** Measures the robot's wheel radius by spinning in a circle. */
