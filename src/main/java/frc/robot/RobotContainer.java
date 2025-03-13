@@ -2,6 +2,8 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -36,10 +38,12 @@ import org.photonvision.PhotonCamera;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  private static final Transform2d stationTargetTransform =
+    private static Pose2d climbTargetTransform = new Pose2d();
+  private static Transform2d stationTargetTransform =
       new Transform2d(15.86, 1.64, new Rotation2d(Units.degreesToRadians(-54.4)));
   private static Transform2d stationOffsetTransform =
       new Transform2d(0.15, 0.0, new Rotation2d(0.0));
+
   public final PhotonCamera frontLeftCamera = new PhotonCamera("front-left");
   public final PhotonCamera frontRightCamera = new PhotonCamera("front-right");
   public final PhotonCamera backLeftCamera = new PhotonCamera("back_left");
@@ -65,13 +69,6 @@ public class RobotContainer {
   private final LoggedDashboardChooser<Command> autoChooser;
   public Vision aprilTagVision;
 
-  // new Pose2d(13.714, 5.136, Rotation2d.fromDegrees(-120.000));
-  //   Translation2d targetTranslation = new Translation2d(13.5, 5.5); // DO NOT TOUCH
-  //   Translation2d targetTranslation = new Translation2d(14.186, 5.136); // for later
-  //   Rotation2d targetRotation = new Rotation2d(Units.degreesToRadians(-120.0)); //
-  // Create the target Transform2d (Translation and Rotation)
-  //   Translation2d targetTranslation = new Translation2d(13.8, 5.6); // X = 14, Y = 4
-  //   Rotation2d targetRotation = new Rotation2d(Units.degreesToRadians(-121.0)); // No rotation
   Translation2d targetTranslation = new Translation2d(12.225, 2.474); // X = 14, Y = 4
   Rotation2d targetRotation = new Rotation2d(Units.degreesToRadians(60.0)); // No rotation
   Transform2d targetTransform = new Transform2d(targetTranslation, targetRotation);
@@ -95,6 +92,11 @@ public class RobotContainer {
   public static void setStationOffsetTransform(Transform2d _offsetTransform) {
     stationOffsetTransform = _offsetTransform;
   }
+
+  public static void setCageClimb(Pose2d _targetTransform) {
+    climbTargetTransform = _targetTransform;
+  }
+
 
   private void configureNamedCommands() {
     NamedCommands.registerCommand("grip", new FlipperGripperCmd(flipper));
@@ -207,43 +209,52 @@ public class RobotContainer {
    * XboxController}), and then passing it to a {@link JoystickButton}.
    */
   private void configureButtonBindings() {
-    // Default command, normal field-relative drive
+    // Normal field-relative drive
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> -driver.getRightX()));
 
-    // Lock to 0° when A button is held
-    // driver
-    // .a()
-    // .whileTrue(
-    //     DriveCommands.joystickDriveAtAngle(
-    //         drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), Rotation2d::new));
-
     // Switch to X pattern when X button is pressed
     driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
-    driver.y().onTrue(new FlipperGripperCmd(flipper));
+    //Squeeze + grip
+    driver.leftBumper().onTrue(new FlipperGripperCmd(flipper));
 
-    //    driver.start().and(driver.back()).onTrue(new ActivateClimberCommand(climber));
+    driver.b().onTrue(new CageSelectCmd.CycleCageCmd()); //cycles location of cage
 
+    //Climbing sequence
     driver
         .start()
         .and(driver.back())
         .whileTrue(
             DriveCommands.goToTransformWithPathFinderPlusOffset(
                     drive,
-                    GeomUtil.poseToTransform(FieldConstants.OUTER_CAGE_BLUE),
+                    GeomUtil.poseToTransform(climbTargetTransform),
                     new Transform2d(0.0, 1.0, new Rotation2d(0.0)))
                 .andThen(Commands.runOnce(drive::stop, drive))
                 .andThen(Commands.waitSeconds(1.0))
                 .andThen(
                     DriveCommands.goToTransform(
                         drive,
-                        GeomUtil.poseToTransform(FieldConstants.OUTER_CAGE_BLUE)
+                        GeomUtil.poseToTransform(climbTargetTransform)
                             .plus(new Transform2d(0.0, 0.8, new Rotation2d(0.0)))))
                 .andThen(Commands.runOnce(drive::stop, drive))
                 .andThen(Commands.waitSeconds(2.0))
                 .andThen(new ActivateClimberCommand(climber))
+                .beforeStarting(
+                    () -> {
+                      DriveCommands.goToTransform(drive, GeomUtil.poseToTransform(climbTargetTransform)).cancel();
+                      DriveCommands.goToTransformWithPathFinder(drive, GeomUtil.poseToTransform(climbTargetTransform))
+                          .cancel();
+                    }));
+
+    driver
+        .leftTrigger()
+        .whileTrue(
+            DriveCommands.goToTransformWithPathFinderPlusOffset(
+                    drive,
+                    stationTargetTransform,
+                    stationOffsetTransform)
                 .beforeStarting(
                     () -> {
                       DriveCommands.goToTransform(drive, stationTargetTransform).cancel();
@@ -251,19 +262,34 @@ public class RobotContainer {
                           .cancel();
                     }));
 
+
+    driver.povUp().onTrue(new PickupStationCmd(0));   // Change to upper
+    driver.povDown().onTrue(new PickupStationCmd(1)); // Change to lower
+    driver.povLeft().onTrue(new PickupStationCmd(2)); // Change to left
+    driver.povRight().onTrue(new PickupStationCmd(3)); // Change to right
+                    
+
     driver
-        .leftBumper()
+        .rightTrigger()
         .whileTrue(
-            DriveCommands.goToTransformWithPathFinderPlusOffset(
-                    drive,
-                    new Transform2d(16.5, 1.0, new Rotation2d(Units.degreesToRadians(-54.4))),
-                    new Transform2d(0.2, 0.0, new Rotation2d()))
-                .beforeStarting(
-                    () -> {
-                      DriveCommands.goToTransform(drive, stationTargetTransform).cancel();
-                      DriveCommands.goToTransformWithPathFinder(drive, stationTargetTransform)
-                          .cancel();
-                    }));
+            new InterfaceActionCmd(reef, InterfaceExecuteMode.REEF)
+                .andThen(
+                    () -> {})); // When right trigger is pressed, drive to the location selected
+    driver.rightTrigger().onFalse(new InterfaceActionCmd(reef, InterfaceExecuteMode.DISABLE));
+
+    driver
+        .rightBumper()
+        .whileTrue(
+            new InterfaceActionCmd(reef, InterfaceExecuteMode.ALGEE)
+                .andThen(
+                    () -> {})); // When right trigger is pressed, drive to the location selected
+    driver.rightBumper().onFalse(new InterfaceActionCmd(reef, InterfaceExecuteMode.DISABLE));
+
+    driver.y().whileTrue(
+        new ElevatorCmd(elevator, 2, true)
+        .andThen(new FlipperScoreCmd(flipper, 1.0))
+        .andThen(new ElevatorCmd(elevator, 0, false))
+    ); //TODO: CLEAN UP INTO INTERFACE COMMAND, this is meant to raise elevator to selected level and actuate flipper
 
     //    Codriver Bindings
     //
@@ -293,10 +319,8 @@ public class RobotContainer {
     new JoystickButton(codriverInterfaceBranch, 12)
         .onTrue(new InterfaceVarsCmd(reef, "l", 0, true, false));
 
-    // Climber toggle, elevator level selection
-    //    new JoystickButton(codriverInterfaceOther, 1)
-    //        .and(new JoystickButton(codriverInterfaceOther, 2))
-    //        .onTrue(new ActivateClimberCommand(climber));
+
+    // Elevator level selection
     new JoystickButton(codriverInterfaceOther, 3)
         .onTrue(new InterfaceVarsCmd(reef, "", 1, false, true));
     new JoystickButton(codriverInterfaceOther, 4)
@@ -305,28 +329,6 @@ public class RobotContainer {
         .onTrue(new InterfaceVarsCmd(reef, "", 3, false, true));
     new JoystickButton(codriverInterfaceOther, 6)
         .onTrue(new InterfaceVarsCmd(reef, "", 4, false, true));
-
-    // driver.a().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.EXECUTE));
-    driver
-        .rightTrigger()
-        .whileTrue(
-            new InterfaceActionCmd(reef, InterfaceExecuteMode.REEF)
-                .andThen(
-                    () -> {})); // When right trigger is pressed, drive to the location selected
-    driver.rightTrigger().onFalse(new InterfaceActionCmd(reef, InterfaceExecuteMode.DISABLE));
-
-    // driver.rightTrigger().onTrue(new FlipperGripperCmd(flipper));
-    driver
-        .rightBumper()
-        .whileTrue(
-            new InterfaceActionCmd(reef, InterfaceExecuteMode.ALGEE)
-                .andThen(
-                    () -> {})); // When right trigger is pressed, drive to the location selected
-    driver.rightBumper().onFalse(new InterfaceActionCmd(reef, InterfaceExecuteMode.DISABLE));
-
-    //    driver.x().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.CORAL));
-    //    driver.y().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.CLIMBER));
-
   }
 
   /**

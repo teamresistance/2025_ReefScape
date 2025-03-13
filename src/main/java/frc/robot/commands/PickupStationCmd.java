@@ -3,13 +3,17 @@ package frc.robot.commands;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
+import java.util.Optional;
 
 public class PickupStationCmd extends Command {
 
+  public static Optional<DriverStation.Alliance> ally;
+  private final int id;
+
   private static final Transform2d redUpperLeft =
-      // 0.75
       new Transform2d(15.9, 1.64, new Rotation2d(Units.degreesToRadians(-54.4)));
   private static final Transform2d redLowerLeft =
       new Transform2d(16.819, 1.391, new Rotation2d(Units.degreesToRadians(-54.4)));
@@ -19,42 +23,33 @@ public class PickupStationCmd extends Command {
       new Transform2d(16.819, 6.625, new Rotation2d(Units.degreesToRadians(54.4)));
 
   private static final Transform2d blueUpperLeft =
-      new Transform2d(-15.85, 0.82, new Rotation2d(Units.degreesToRadians(54.4)));
+      new Transform2d(1.645, 7.360, new Rotation2d(Units.degreesToRadians(125.600)));
   private static final Transform2d blueLowerLeft =
-      new Transform2d(-15.85, -0.82, new Rotation2d(Units.degreesToRadians(54.4)));
+      new Transform2d(0.698, 6.625, new Rotation2d(Units.degreesToRadians(125.600)));
   private static final Transform2d blueUpperRight =
-      new Transform2d(-17.0, 0.82, new Rotation2d(Units.degreesToRadians(-54.4)));
+      new Transform2d(0.698, 1.391, new Rotation2d(Units.degreesToRadians(-125.600)));
   private static final Transform2d blueLowerRight =
-      new Transform2d(-17.0, -0.82, new Rotation2d(Units.degreesToRadians(-54.4)));
+      new Transform2d(1.645, 0.698, new Rotation2d(Units.degreesToRadians(-125.000)));
 
   public PickupStationCmd(int id) {
-    Transform2d selectedTransform;
-
-    switch (id) {
-      case 0 -> selectedTransform = redUpperLeft;
-      case 1 -> selectedTransform = redLowerLeft;
-      case 2 -> selectedTransform = redUpperRight;
-      case 3 -> selectedTransform = redLowerRight;
-      case 4 -> selectedTransform = blueUpperLeft;
-      case 5 -> selectedTransform = blueLowerLeft;
-      case 6 -> selectedTransform = blueUpperRight;
-      case 7 -> selectedTransform = blueLowerRight;
-      default -> throw new IllegalArgumentException("Invalid station ID: " + id);
-    }
-
-    RobotContainer.setStationTargetTransform(selectedTransform);
-    RobotContainer.setStationOffsetTransform(
-        new Transform2d(0.15, 0.0, new Rotation2d(0.0))); // Default offset
+    this.id = id;
   }
 
   @Override
-  public void initialize() {}
-
-  @Override
-  public void execute() {}
-
-  @Override
-  public void end(boolean interrupted) {}
+  public void initialize() {
+    if (ally.isPresent()) {
+      DriverStation.Alliance team = ally.get();
+      Transform2d newTransform;
+      switch (id) {
+        case 0 -> newTransform = (team == DriverStation.Alliance.Red) ? redUpperLeft : blueUpperLeft;
+        case 1 -> newTransform = (team == DriverStation.Alliance.Red) ? redLowerLeft : blueLowerLeft;
+        case 2 -> newTransform = (team == DriverStation.Alliance.Red) ? redUpperRight : blueUpperRight;
+        case 3 -> newTransform = (team == DriverStation.Alliance.Red) ? redLowerRight : blueLowerRight;
+        default -> throw new IllegalArgumentException("Invalid station ID: " + id);
+      }
+      RobotContainer.setStationTargetTransform(newTransform);
+    }
+  }
 
   @Override
   public boolean isFinished() {
