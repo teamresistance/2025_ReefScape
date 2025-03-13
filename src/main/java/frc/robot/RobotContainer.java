@@ -2,7 +2,6 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -38,7 +37,7 @@ import org.photonvision.PhotonCamera;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-    private static Pose2d climbTargetTransform = new Pose2d();
+  private static Pose2d climbTargetTransform = new Pose2d();
   private static Transform2d stationTargetTransform =
       new Transform2d(15.86, 1.64, new Rotation2d(Units.degreesToRadians(-54.4)));
   private static Transform2d stationOffsetTransform =
@@ -96,7 +95,6 @@ public class RobotContainer {
   public static void setCageClimb(Pose2d _targetTransform) {
     climbTargetTransform = _targetTransform;
   }
-
 
   private void configureNamedCommands() {
     NamedCommands.registerCommand("grip", new FlipperGripperCmd(flipper));
@@ -217,12 +215,12 @@ public class RobotContainer {
     // Switch to X pattern when X button is pressed
     driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
-    //Squeeze + grip
+    // Squeeze + grip
     driver.leftBumper().onTrue(new FlipperGripperCmd(flipper));
 
-    driver.b().onTrue(new CageSelectCmd.CycleCageCmd()); //cycles location of cage
+    driver.b().onTrue(new CageSelectCmd.CycleCageCmd()); // cycles location of cage
 
-    //Climbing sequence
+    // Climbing sequence
     driver
         .start()
         .and(driver.back())
@@ -243,8 +241,11 @@ public class RobotContainer {
                 .andThen(new ActivateClimberCommand(climber))
                 .beforeStarting(
                     () -> {
-                      DriveCommands.goToTransform(drive, GeomUtil.poseToTransform(climbTargetTransform)).cancel();
-                      DriveCommands.goToTransformWithPathFinder(drive, GeomUtil.poseToTransform(climbTargetTransform))
+                      DriveCommands.goToTransform(
+                              drive, GeomUtil.poseToTransform(climbTargetTransform))
+                          .cancel();
+                      DriveCommands.goToTransformWithPathFinder(
+                              drive, GeomUtil.poseToTransform(climbTargetTransform))
                           .cancel();
                     }));
 
@@ -252,9 +253,7 @@ public class RobotContainer {
         .leftTrigger()
         .whileTrue(
             DriveCommands.goToTransformWithPathFinderPlusOffset(
-                    drive,
-                    stationTargetTransform,
-                    stationOffsetTransform)
+                    drive, stationTargetTransform, stationOffsetTransform)
                 .beforeStarting(
                     () -> {
                       DriveCommands.goToTransform(drive, stationTargetTransform).cancel();
@@ -262,12 +261,10 @@ public class RobotContainer {
                           .cancel();
                     }));
 
-
-    driver.povUp().onTrue(new PickupStationCmd(0));   // Change to upper
+    driver.povUp().onTrue(new PickupStationCmd(0)); // Change to upper
     driver.povDown().onTrue(new PickupStationCmd(1)); // Change to lower
     driver.povLeft().onTrue(new PickupStationCmd(2)); // Change to left
     driver.povRight().onTrue(new PickupStationCmd(3)); // Change to right
-                    
 
     driver
         .rightTrigger()
@@ -285,11 +282,16 @@ public class RobotContainer {
                     () -> {})); // When right trigger is pressed, drive to the location selected
     driver.rightBumper().onFalse(new InterfaceActionCmd(reef, InterfaceExecuteMode.DISABLE));
 
-    driver.y().whileTrue(
-        new ElevatorCmd(elevator, 2, true)
-        .andThen(new FlipperScoreCmd(flipper, 1.0))
-        .andThen(new ElevatorCmd(elevator, 0, false))
-    ); //TODO: CLEAN UP INTO INTERFACE COMMAND, this is meant to raise elevator to selected level and actuate flipper
+    driver
+        .y()
+        .whileTrue(
+            new ElevatorCmd(elevator, 2, true)
+                .andThen(new FlipperScoreCmd(flipper, 1.0))
+                .andThen(
+                    new ElevatorCmd(
+                        elevator, 0,
+                        false))); // TODO: CLEAN UP INTO INTERFACE COMMAND, this is meant to raise
+    // elevator to selected level and actuate flipper
 
     //    Codriver Bindings
     //
@@ -318,7 +320,6 @@ public class RobotContainer {
         .onTrue(new InterfaceVarsCmd(reef, "k", 0, true, false));
     new JoystickButton(codriverInterfaceBranch, 12)
         .onTrue(new InterfaceVarsCmd(reef, "l", 0, true, false));
-
 
     // Elevator level selection
     new JoystickButton(codriverInterfaceOther, 3)

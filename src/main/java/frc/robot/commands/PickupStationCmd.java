@@ -41,10 +41,14 @@ public class PickupStationCmd extends Command {
       DriverStation.Alliance team = ally.get();
       Transform2d newTransform;
       switch (id) {
-        case 0 -> newTransform = (team == DriverStation.Alliance.Red) ? redUpperLeft : blueUpperLeft;
-        case 1 -> newTransform = (team == DriverStation.Alliance.Red) ? redLowerLeft : blueLowerLeft;
-        case 2 -> newTransform = (team == DriverStation.Alliance.Red) ? redUpperRight : blueUpperRight;
-        case 3 -> newTransform = (team == DriverStation.Alliance.Red) ? redLowerRight : blueLowerRight;
+        case 0 ->
+            newTransform = (team == DriverStation.Alliance.Red) ? redUpperLeft : blueUpperLeft;
+        case 1 ->
+            newTransform = (team == DriverStation.Alliance.Red) ? redLowerLeft : blueLowerLeft;
+        case 2 ->
+            newTransform = (team == DriverStation.Alliance.Red) ? redUpperRight : blueUpperRight;
+        case 3 ->
+            newTransform = (team == DriverStation.Alliance.Red) ? redLowerRight : blueLowerRight;
         default -> throw new IllegalArgumentException("Invalid station ID: " + id);
       }
       RobotContainer.setStationTargetTransform(newTransform);

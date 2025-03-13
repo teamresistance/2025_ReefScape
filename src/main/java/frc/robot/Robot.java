@@ -26,7 +26,8 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 public class Robot extends LoggedRobot {
   private final RobotContainer robotContainer;
   private Command autonomousCommand;
-
+  private UsbCamera camera1;
+  private UsbCamera camera2;
 
   public Robot() {
     // Record metadata
