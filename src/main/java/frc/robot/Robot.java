@@ -3,6 +3,9 @@ package frc.robot;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.DriveMotorArrangement;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerMotorArrangement;
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.cscore.VideoSource.ConnectionStrategy;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -24,9 +27,6 @@ public class Robot extends LoggedRobot {
   private final RobotContainer robotContainer;
   private Command autonomousCommand;
 
-  // added cameras
-  // UsbCamera camera1;
-  // UsbCamera camera2;
 
   public Robot() {
     // Record metadata
@@ -74,6 +74,12 @@ public class Robot extends LoggedRobot {
             "You are using an unsupported swerve configuration, which this template does not support without manual customization. The 2025 release of Phoenix supports some swerve configurations which were not available during 2025 beta testing, preventing any development and support from the AdvantageKit developers.");
       }
     }
+
+    // Added USB Cams - JCH
+    camera1 = CameraServer.startAutomaticCapture(0);
+    camera2 = CameraServer.startAutomaticCapture(1);
+    camera1.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
+    camera2.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
 
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.
