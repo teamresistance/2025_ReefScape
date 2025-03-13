@@ -117,7 +117,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("4 Level", new InterfaceVarsCmd(reef, "a", 4, false, true));
 
     NamedCommands.registerCommand(
-        "autoScore", new InterfaceActionCmd(reef, InterfaceExecuteMode.REEF));
+        "autoScore",
+        new DeferredCommand(() -> new AutoScoreCommand(reef, drive, elevator, flipper)));
   }
 
   private LoggedDashboardChooser<Command> configureAutos() {

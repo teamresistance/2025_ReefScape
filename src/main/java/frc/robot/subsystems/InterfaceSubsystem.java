@@ -25,9 +25,17 @@ import org.littletonrobotics.junction.Logger;
 
 public class InterfaceSubsystem extends SubsystemBase {
 
+  public String getPole() {
+    return pole;
+  }
+
   private String pole = "a";
   private int level = 1;
   private boolean executing = false;
+
+  public int getLevel() {
+    return level;
+  }
 
   private Transform2d targetTransform;
   private Transform2d leftRightOffset;
@@ -54,7 +62,7 @@ public class InterfaceSubsystem extends SubsystemBase {
    *
    * <p>Example: Driver holding "A" button, robot auto-navigates to selected pole
    */
-  private Transform2d getTranslationFromPlace(Place place) {
+  public Transform2d getTranslationFromPlace(Place place) {
 
     AllianceTreePlace allianceplace = FieldConstants.getAllianceBranchFromBranch(place);
     return new Transform2d(
