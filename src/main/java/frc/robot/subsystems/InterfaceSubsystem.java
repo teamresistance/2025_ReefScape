@@ -110,11 +110,12 @@ public class InterfaceSubsystem extends SubsystemBase {
                     .andThen(goToTransform(drive, targetTransform))
                     .andThen(
                         () -> {
-                          System.out.println("drive command executed and ended");
-
+                          //                          System.out.println("drive command executed and
+                          // ended");
+                          //
                           stuff.finishparentCommand();
-                          stuff.end(true);
-                          drive.stop();
+                          //                          stuff.end(true);
+                          //                          drive.stop();
                         }));
 
     //    elevator.raiseFromInterface(level);

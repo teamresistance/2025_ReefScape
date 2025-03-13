@@ -35,6 +35,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "autoScore"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "New Path"
