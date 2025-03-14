@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -38,7 +39,7 @@ import org.photonvision.PhotonCamera;
  */
 public class RobotContainer {
   private static Pose2d climbTargetTransform = new Pose2d();
-  private static Transform2d stationTargetTransform =
+  private static final Transform2d stationTargetTransform =
       new Transform2d(15.86, 1.64, new Rotation2d(Units.degreesToRadians(-54.4)));
   private static Transform2d stationOffsetTransform =
       new Transform2d(0.15, 0.0, new Rotation2d(0.0));
@@ -48,6 +49,7 @@ public class RobotContainer {
   public final PhotonCamera backLeftCamera = new PhotonCamera("back_left");
   public final PhotonCamera backRightCamera = new PhotonCamera("back_right");
   public final PhotonCamera frontCenterCamera = new PhotonCamera("front-center");
+  public final ClimberSubsystem climber = new ClimberSubsystem();
   private final Alert cameraFailureAlert;
   // Subsystems
   private final DriveSubsystem drive;
@@ -55,8 +57,6 @@ public class RobotContainer {
   private final FlipperSubsystem flipper = new FlipperSubsystem();
   //   private final PressureSubsystem pressure = new PressureSubsystem();
   private final ElevatorSubsystem elevator = new ElevatorSubsystem();
-  private final ClimberSubsystem climber = new ClimberSubsystem();
-
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
   private final Joystick cojoystick = new Joystick(1);
@@ -67,7 +67,7 @@ public class RobotContainer {
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
   public Vision aprilTagVision;
-
+  public boolean ForceClimberUp = false;
   Translation2d targetTranslation = new Translation2d(12.225, 2.474); // X = 14, Y = 4
   Rotation2d targetRotation = new Rotation2d(Units.degreesToRadians(60.0)); // No rotation
   Transform2d targetTransform = new Transform2d(targetTranslation, targetRotation);
@@ -226,10 +226,12 @@ public class RobotContainer {
         .start()
         .and(driver.back())
         .whileTrue(
-            DriveCommands.goToTransformWithPathFinderPlusOffset(
-                    drive,
-                    GeomUtil.poseToTransform(climbTargetTransform),
-                    new Transform2d(0.0, 1.0, new Rotation2d(0.0)))
+            new InstantCommand(() -> ForceClimberUp = true)
+                .andThen(
+                    DriveCommands.goToTransformWithPathFinderPlusOffset(
+                        drive,
+                        GeomUtil.poseToTransform(climbTargetTransform),
+                        new Transform2d(0.0, 1.0, new Rotation2d(0.0))))
                 .andThen(Commands.runOnce(drive::stop, drive))
                 .andThen(Commands.waitSeconds(1.0))
                 .andThen(
