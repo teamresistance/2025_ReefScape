@@ -250,6 +250,7 @@ public class DriveCommands {
 
     return Commands.run(
             () -> {
+              //              if (drive.testingmode) return;
               // Get current robot position
               Pose2d currentPose = drive.getPose();
 
@@ -359,6 +360,7 @@ public class DriveCommands {
 
     return Commands.run(
             () -> {
+              //              if (drive.testingmode) return;
               // Get current robot position
               Pose2d currentPose = drive.getPose();
 
@@ -429,6 +431,7 @@ public class DriveCommands {
 
   public static Command goToTransformWithPathFinder(
       DriveSubsystem drive, Transform2d targetTransform) {
+    //    if (drive.testingmode) return new InstantCommand(() -> {});
     return AutoBuilder.pathfindToPose(
         GeomUtil.transformToPose(targetTransform),
         Constants.PATH_CONSTRAINTS,
@@ -442,6 +445,8 @@ public class DriveCommands {
   public static Command
       goToTransformWithPathFinderPlusOffset( // Go to transform, then move to another offset
       DriveSubsystem drive, Transform2d targetTransform, Transform2d offset) {
+
+    //    if (drive.testingmode) return new InstantCommand(() -> {});
     return AutoBuilder.pathfindToPose(
             GeomUtil.transformToPose(targetTransform),
             Constants.PATH_CONSTRAINTS,

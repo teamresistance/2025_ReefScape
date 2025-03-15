@@ -113,7 +113,10 @@ public class InterfaceSubsystem extends SubsystemBase {
                                   : Constants.SECONDS_TO_SCORE.get() + 8);
                         })
                     //            .alongWith(DriveCommands.joystickDrive())
-                    .andThen(Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() + 0.1))
+                    .andThen(
+                        useOffset
+                            ? Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() + 0.1)
+                            : Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() - 0.5))
                     .andThen(
                         () -> {
                           elevator.raiseFromInterface(0);

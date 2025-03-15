@@ -39,6 +39,7 @@ import org.photonvision.PhotonCamera;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+//  public boolean testingmode = false;
   private static Pose2d climbTargetTransform = new Pose2d();
   private static Transform2d stationTargetTransform =
       new Transform2d(15.9, 0.72, new Rotation2d(Units.degreesToRadians(-54.4)));
@@ -362,4 +363,9 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     return autoChooser.get();
   }
+//
+//  public void setTestingModetrue() {
+//    //    testingmode = true;
+//    //    drive.testingmode = true;
+//  }
 }

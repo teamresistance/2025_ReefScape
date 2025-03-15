@@ -91,7 +91,7 @@ public class AutoScoreCommand extends SequentialCommandGroup {
         flipper.getFlipperCommand(Constants.SECONDS_TO_SCORE.get() + 8),
 
         // 6. Wait a short time after scoring
-        Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() + 0.1),
+        Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() - 0.2),
 
         // 7. Lower the elevator back down
         new InstantCommand(() -> elevator.raiseFromInterface(0)));
