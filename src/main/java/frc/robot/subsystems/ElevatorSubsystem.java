@@ -12,10 +12,15 @@ public class ElevatorSubsystem extends SubsystemBase {
   static Solenoid elevatorPusher2 =
       new Solenoid(2, Constants.SOLENOID_MODULE_TYPE, Constants.ELEVATOR_SOLENOID2_CHANNEL);
 
-  public ElevatorSubsystem() {}
+  FlipperSubsystem flipper;
+
+  public ElevatorSubsystem(FlipperSubsystem flipper) {
+    this.flipper = flipper;
+  }
 
   /** Raises lower stage of elevator */
   public static void raiseFirstStage() {
+    //    this.flipper.coralCenterMechanism.set(false);
     elevatorPusher1.set(true);
   }
 
@@ -38,6 +43,11 @@ public class ElevatorSubsystem extends SubsystemBase {
    * Method used in the elevator command. Raises elevator levels according to the level parameter.
    */
   public void raiseFromInterface(int level) {
+    //    if (level != 0) {
+    //      this.flipper.coralCenterMechanism.set(false);
+    //      Timer.delay(0.1);
+    //    }
+
     if (level <= 2) {
       lowerFirstStage();
       lowerSecondStage();

@@ -11,7 +11,7 @@ import org.littletonrobotics.junction.Logger;
 public class CageSelectCmd extends Command {
 
   public static Optional<DriverStation.Alliance> ally;
-  private static int currentCageId = 0;
+  private static int currentCageId = 2;
   private final int cageId;
 
   public static final Pose2d INNER_CAGE_RED =

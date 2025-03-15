@@ -8,9 +8,13 @@ public class ElevatorCmd extends Command {
   private boolean state;
   private int level;
 
+  private ElevatorSubsystem elevator;
+
   public ElevatorCmd(ElevatorSubsystem subsystem, int level, boolean state) {
     this.level = level;
     this.state = state;
+    this.elevator = subsystem;
+
     addRequirements(subsystem);
   }
 

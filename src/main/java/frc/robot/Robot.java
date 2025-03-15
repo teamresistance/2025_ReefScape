@@ -164,7 +164,7 @@ public class Robot extends LoggedRobot {
     // Solenoid sol = new Solenoid(Constants.SOLENOID_MODULE_TYPE,
     // Constants.ELEVATOR_SOLENOID1_CHANNEL);
     // sol.set(true); // Force ON for testing
-    //    robotContainer.setTestingModetrue();
+    robotContainer.setTestingModetrue();
   }
 
   /** This function is called once when the robot is first started up. */

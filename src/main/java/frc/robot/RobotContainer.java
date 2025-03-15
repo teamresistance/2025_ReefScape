@@ -39,7 +39,7 @@ import org.photonvision.PhotonCamera;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-//  public boolean testingmode = false;
+  public boolean testingmode = false;
   private static Pose2d climbTargetTransform = new Pose2d();
   private static Transform2d stationTargetTransform =
       new Transform2d(15.9, 0.72, new Rotation2d(Units.degreesToRadians(-54.4)));
@@ -58,7 +58,7 @@ public class RobotContainer {
   private final InterfaceSubsystem reef;
   private final FlipperSubsystem flipper = new FlipperSubsystem();
   //   private final PressureSubsystem pressure = new PressureSubsystem();
-  final ElevatorSubsystem elevator = new ElevatorSubsystem();
+  final ElevatorSubsystem elevator = new ElevatorSubsystem(flipper);
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
   private final Joystick cojoystick = new Joystick(1);
@@ -363,9 +363,9 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     return autoChooser.get();
   }
-//
-//  public void setTestingModetrue() {
-//    //    testingmode = true;
-//    //    drive.testingmode = true;
-//  }
+
+  public void setTestingModetrue() {
+    testingmode = true;
+    drive.testingmode = true;
+  }
 }

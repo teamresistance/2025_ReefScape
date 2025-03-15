@@ -92,11 +92,13 @@ public class InterfaceSubsystem extends SubsystemBase {
     }
 
     drive_command =
-        AutoBuilder.pathfindToPose(
-                GeomUtil.transformToPose(targetTransform),
-                Constants.PATH_CONSTRAINTS,
-                0.0 // Goal end velocity in meters/sec
-                )
+        (drive.testingmode
+                ? AutoBuilder.pathfindToPose(
+                    GeomUtil.transformToPose(targetTransform),
+                    Constants.PATH_CONSTRAINTS,
+                    0.0 // Goal end velocity in meters/sec
+                    )
+                : new InstantCommand(() -> {}))
             .andThen(
                 () -> {
                   elevator.raiseFromInterface(level);
@@ -284,11 +286,13 @@ public class InterfaceSubsystem extends SubsystemBase {
     }
 
     drive_command =
-        AutoBuilder.pathfindToPose(
-                GeomUtil.transformToPose(targetTransform),
-                Constants.PATH_CONSTRAINTS,
-                0.0 // Goal end velocity in meters/sec
-                )
+        (drive.testingmode
+                ? AutoBuilder.pathfindToPose(
+                    GeomUtil.transformToPose(targetTransform),
+                    Constants.PATH_CONSTRAINTS,
+                    0.0 // Goal end velocity in meters/sec
+                    )
+                : new InstantCommand(() -> {}))
             .andThen(
                 () -> {
                   elevator.raiseFromInterface(level);

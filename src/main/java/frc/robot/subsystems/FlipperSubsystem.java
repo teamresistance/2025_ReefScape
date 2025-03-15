@@ -20,7 +20,7 @@ public class FlipperSubsystem extends SubsystemBase {
   // and 5
   private Solenoid flipper =
       new Solenoid(2, Constants.SOLENOID_MODULE_TYPE, Constants.FLIPPER_SOLENOID_CHANNEL);
-  private Solenoid coralCenterMechanism =
+  public Solenoid coralCenterMechanism =
       new Solenoid(2, Constants.SOLENOID_MODULE_TYPE, Constants.CENTERER_SOLENOID_CHANNEL);
   private DigitalInput coralDetector1 = new DigitalInput(Constants.CORAL_SENSOR_CHANNEL1);
   private DigitalInput coralDetector2 = new DigitalInput(Constants.CORAL_SENSOR_CHANNEL2);
@@ -56,6 +56,7 @@ public class FlipperSubsystem extends SubsystemBase {
       }
     } else {
       gripper.set(true);
+      //      coralCenterMechanism.set(true);
       flipperCallCount = 0; // Reset count after gripping
       waitingForDelay = false;
       isFlipperActive = false;
@@ -92,6 +93,7 @@ public class FlipperSubsystem extends SubsystemBase {
 
   /** Flips the coral out. */
   public void flipperScore(double flipperDelay) {
+    //    coralCenterMechanism.set(false);
     flipper.setPulseDuration(flipperDelay);
     flipper.startPulse();
 
@@ -103,6 +105,8 @@ public class FlipperSubsystem extends SubsystemBase {
                       gripper.set(false);
                     }));
   }
+
+  public void flipperClamp() {}
 
   public Command getFlipperCommand(double flipperDelay) {
     return new InstantCommand(
