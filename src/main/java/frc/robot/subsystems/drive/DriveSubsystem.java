@@ -189,7 +189,7 @@ public class DriveSubsystem extends SubsystemBase {
     Logger.recordOutput("Air Pressure", getPressurePSI());
     if (getPressurePSI() < 110) {
       compressorRelay.set(Relay.Value.kForward); // Turn ON compressor
-    } else if (getPressurePSI() > 118) {
+    } else if (getPressurePSI() > 121) {
       compressorRelay.set(Relay.Value.kOff); // Turn OFF compressor
     }
 

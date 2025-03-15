@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
 import java.util.Optional;
+import org.littletonrobotics.junction.Logger;
 
 public class PickupStationCmd extends Command {
 
@@ -14,7 +15,7 @@ public class PickupStationCmd extends Command {
   private final int id;
 
   private static final Transform2d redUpperLeft =
-      new Transform2d(15.9, 1.64, new Rotation2d(Units.degreesToRadians(-54.4)));
+      new Transform2d(15.9, 0.72, new Rotation2d(Units.degreesToRadians(-54.4)));
   private static final Transform2d redLowerLeft =
       new Transform2d(16.819, 1.391, new Rotation2d(Units.degreesToRadians(-54.4)));
   private static final Transform2d redUpperRight =
@@ -27,9 +28,9 @@ public class PickupStationCmd extends Command {
   private static final Transform2d blueLowerLeft =
       new Transform2d(0.698, 6.625, new Rotation2d(Units.degreesToRadians(125.600)));
   private static final Transform2d blueUpperRight =
-      new Transform2d(0.698, 1.391, new Rotation2d(Units.degreesToRadians(-125.600)));
+      new Transform2d(1.645, 0.698, new Rotation2d(Units.degreesToRadians(-125.600)));
   private static final Transform2d blueLowerRight =
-      new Transform2d(1.645, 0.698, new Rotation2d(Units.degreesToRadians(-125.000)));
+      new Transform2d(0.698, 1.391, new Rotation2d(Units.degreesToRadians(-125.600)));
 
   public PickupStationCmd(int id) {
     this.id = id;
@@ -37,18 +38,21 @@ public class PickupStationCmd extends Command {
 
   @Override
   public void initialize() {
+    ally = DriverStation.getAlliance();
+    Logger.recordOutput("SelectedStage", id);
     if (ally.isPresent()) {
       DriverStation.Alliance team = ally.get();
       Transform2d newTransform;
       switch (id) {
-        case 0 ->
-            newTransform = (team == DriverStation.Alliance.Red) ? redUpperLeft : blueUpperLeft;
-        case 1 ->
-            newTransform = (team == DriverStation.Alliance.Red) ? redLowerLeft : blueLowerLeft;
+        // TODO: CHANGE BACK TO 0 1 2 3
         case 2 ->
-            newTransform = (team == DriverStation.Alliance.Red) ? redUpperRight : blueUpperRight;
+            newTransform = (team == DriverStation.Alliance.Red) ? redUpperLeft : blueUpperLeft;
+        // case 1 ->
+        //     newTransform = (team == DriverStation.Alliance.Red) ? redLowerLeft : blueLowerLeft;
         case 3 ->
-            newTransform = (team == DriverStation.Alliance.Red) ? redLowerRight : blueLowerRight;
+            newTransform = (team == DriverStation.Alliance.Red) ? redUpperRight : blueUpperRight;
+        // case 3 ->
+        //     newTransform = (team == DriverStation.Alliance.Red) ? redLowerRight : blueLowerRight;
         default -> throw new IllegalArgumentException("Invalid station ID: " + id);
       }
       RobotContainer.setStationTargetTransform(newTransform);

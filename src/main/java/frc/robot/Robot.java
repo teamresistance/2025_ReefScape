@@ -110,14 +110,14 @@ public class Robot extends LoggedRobot {
 
   /** This function is called once when the robot is disabled. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    //    if (robotContainer.ForceClimberUp) robotContainer.climber.activateClimber();
+  }
 
   /** This function is called periodically when disabled. */
   @Override
   public void disabledPeriodic() {
-    if (robotContainer.ForceClimberUp) {
-      robotContainer.climber.activateClimber();
-    }
+    //    if (robotContainer.ForceClimberUp) robotContainer.climber.activateClimber();
   }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
@@ -126,9 +126,7 @@ public class Robot extends LoggedRobot {
     autonomousCommand = robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
-    if (autonomousCommand != null) {
-      autonomousCommand.schedule();
-    }
+    if (autonomousCommand != null) autonomousCommand.schedule();
   }
 
   /** This function is called periodically during autonomous. */
@@ -145,6 +143,8 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
+
+    robotContainer.elevator.raiseFromInterface(0);
   }
 
   /** This function is called periodically during operator control. */

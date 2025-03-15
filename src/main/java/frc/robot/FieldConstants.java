@@ -11,12 +11,12 @@ public final class FieldConstants {
   // Blue Alliance Offset Positions
   // -------------------------------------------------
 
-  public static final Pose2d OFFSET_TAG_17 = new Pose2d(3.655, 2.474, Rotation2d.fromDegrees(-60));
+  public static final Pose2d OFFSET_TAG_17 = new Pose2d(3.655, 2.474, Rotation2d.fromDegrees(60));
   public static final Pose2d OFFSET_TAG_18 = new Pose2d(2.728, 3.971, Rotation2d.fromDegrees(0));
-  public static final Pose2d OFFSET_TAG_19 = new Pose2d(3.562, 5.523, Rotation2d.fromDegrees(60));
-  public static final Pose2d OFFSET_TAG_20 = new Pose2d(5.322, 5.577, Rotation2d.fromDegrees(120));
-  public static final Pose2d OFFSET_TAG_21 = new Pose2d(4.391, 3.971, Rotation2d.fromDegrees(180));
-  public static final Pose2d OFFSET_TAG_22 = new Pose2d(5.415, 2.528, Rotation2d.fromDegrees(-120));
+  public static final Pose2d OFFSET_TAG_19 = new Pose2d(3.562, 5.523, Rotation2d.fromDegrees(-60));
+  public static final Pose2d OFFSET_TAG_20 = new Pose2d(5.322, 5.577, Rotation2d.fromDegrees(-120));
+  public static final Pose2d OFFSET_TAG_21 = new Pose2d(6.21, 4.051, Rotation2d.fromDegrees(180));
+  public static final Pose2d OFFSET_TAG_22 = new Pose2d(5.415, 2.528, Rotation2d.fromDegrees(120));
 
   // -------------------------------------------------
   // Red Alliance Offset Positions

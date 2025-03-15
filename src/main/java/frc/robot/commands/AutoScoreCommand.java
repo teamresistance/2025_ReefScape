@@ -82,7 +82,7 @@ public class AutoScoreCommand extends SequentialCommandGroup {
 
         // 3. Drive to a pose adjusted by the left/right offset
         DriveCommands.goToTransform(drive, targetTransform.plus(leftRightOffset)),
-
+        Commands.runOnce(drive::stop),
         // 4. Wait for the elevator to raise (nonblocking wait)
         Commands.waitSeconds(Constants.SECONDS_TO_RAISE_ELEVATOR.get()),
 
@@ -94,12 +94,6 @@ public class AutoScoreCommand extends SequentialCommandGroup {
         Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() + 0.1),
 
         // 7. Lower the elevator back down
-        new InstantCommand(() -> elevator.raiseFromInterface(0)),
-
-        // 8. Wait a moment for the elevator to retract
-        Commands.waitSeconds(1.1),
-
-        // 9. Return to the target transform (for example, backing away)
-        DriveCommands.goToTransform(drive, targetTransform));
+        new InstantCommand(() -> elevator.raiseFromInterface(0)));
   }
 }

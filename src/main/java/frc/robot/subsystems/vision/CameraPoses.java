@@ -30,13 +30,13 @@ public class CameraPoses {
         // front_center
         new Pose3d(
             new Translation3d(
-                Units.inchesToMeters(12.5),
+                Units.inchesToMeters(12.5 - 0.9375),
                 Units.inchesToMeters(3.0),
                 Units.inchesToMeters(6.5)), // Left camera translation (X, Y, Z)
             new Rotation3d(
                 Units.degreesToRadians(0.0),
                 Units.degreesToRadians(-23.0),
-                Units.degreesToRadians(0.0))), // in radians btw
+                Units.degreesToRadians(-1.0))), // in radians btw
 
         //         Back Left
         new Pose3d(
