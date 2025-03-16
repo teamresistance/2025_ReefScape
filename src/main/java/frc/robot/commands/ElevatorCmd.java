@@ -21,18 +21,14 @@ public class ElevatorCmd extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    // System.out.println("Execute");
     if (level == 1 && state) {
-      // System.out.println("state 1");
       ElevatorSubsystem.raiseFirstStage();
     } else if (level == 1 && !state) {
       ElevatorSubsystem.lowerFirstStage();
     } else if (level == 2 && state) {
       ElevatorSubsystem.raiseSecondStage();
-      ElevatorSubsystem.raiseFirstStage();
     } else if (level == 2 && !state) {
       ElevatorSubsystem.lowerSecondStage();
-      ElevatorSubsystem.lowerFirstStage();
     }
   }
 

@@ -5,93 +5,87 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "I Branch"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "4 Level"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "grip"
-          }
-        },
-        {
           "type": "path",
           "data": {
-            "pathName": "1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "autoScore"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "2"
+            "pathName": "part 1"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 5.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "C Branch"
+            "waitTime": 4.0
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "3"
+            "pathName": "part 2 v2"
           }
         },
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "autoScore"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "4"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "D Branch"
+            "waitTime": 1.5
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "3"
+            "pathName": "part 3"
           }
         },
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "autoScore"
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "part 4"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.5
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "part5"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "part 6"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.5
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "part7"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "OLD",
+  "folder": null,
   "choreoAuto": false
 }

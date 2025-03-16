@@ -4,8 +4,6 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.*;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import org.littletonrobotics.junction.Logger;
@@ -13,102 +11,107 @@ import org.littletonrobotics.junction.Logger;
 public class FlipperSubsystem extends SubsystemBase {
 
   private static boolean believesHasCoral = false;
+  private int recursions;
+  private boolean detectorState1;
+  private boolean detectorState2;
+  private boolean gripperState;
+  private boolean stopTryingGripper = false;
   private static Solenoid gripper =
       new Solenoid(
-          2,
           Constants.SOLENOID_MODULE_TYPE,
           Constants
               .GRIPPER_SOLENOID_CHANNEL); // The pneumatics hub channels that we are using are 0, 2,
   // and 5
   private Solenoid flipper =
-      new Solenoid(2, Constants.SOLENOID_MODULE_TYPE, Constants.FLIPPER_SOLENOID_CHANNEL);
+      new Solenoid(
+          Constants.PRESSURE_HUB_ID,
+          Constants.SOLENOID_MODULE_TYPE,
+          Constants.FLIPPER_SOLENOID_CHANNEL);
   private Solenoid coralCenterMechanism =
-      new Solenoid(2, Constants.SOLENOID_MODULE_TYPE, Constants.CENTERER_SOLENOID_CHANNEL);
-  private DigitalInput coralDetector1 = new DigitalInput(Constants.CORAL_SENSOR_CHANNEL1);
-  private DigitalInput coralDetector2 = new DigitalInput(Constants.CORAL_SENSOR_CHANNEL2);
+      new Solenoid(
+          Constants.PRESSURE_HUB_ID,
+          Constants.SOLENOID_MODULE_TYPE,
+          Constants.CENTERER_SOLENOID_CHANNEL);
+  private DigitalInput coralDetector1 = new DigitalInput(Constants.CORAL_SENSOR_CHANNEL_1);
+  private DigitalInput coralDetector2 = new DigitalInput(Constants.CORAL_SENSOR_CHANNEL_2);
 
-  /** Subsystem handling coral intake and dropping onto branches/level1. */
   public FlipperSubsystem() {}
 
-  // Variables to control flipperHoldingState execution
-  private int flipperCallCount = 0; // Counter for function calls
-  private Timer flipperTimer = new Timer(); // Timer instance for non-blocking delay
-  private boolean waitingForDelay = false; // Flag to track delay state
-  private boolean isFlipperActive = false; // Flag to manage repeated calls
-
+  /**
+   * Activates the centerer, then checks if the banner sensors detect coral.
+   *
+   * <p>If not: Tries again, maximum of 3 reattempts before it gives up
+   *
+   * <p>If coral detected: Grip the coral and reset recursions counter
+   */
   public void flipperHoldingState() {
-    if (flipperCallCount > 1) {
-      // Reset everything if it exceeds the limit
-      flipperCallCount = 0;
-      waitingForDelay = false;
-      isFlipperActive = false;
-      return;
-    }
-
-    if (!(coralDetector1.get() && coralDetector2.get())) { // If one sees something
-      if (!waitingForDelay) {
+    if (!(detectorState1 && detectorState2) && !stopTryingGripper) { // If one sees something
+      if (!stopTryingGripper) {
+        // Check for recursions, if >3 stop
+        if (recursions >= 3) {
+          stopTryingGripper = true;
+        }
         gripper.set(false);
 
-        coralCenterMechanism.setPulseDuration(1.0);
+        // Center croal
+        coralCenterMechanism.setPulseDuration(Constants.SECONDS_OF_CENTERING_PULSE);
         coralCenterMechanism.startPulse();
 
-        flipperTimer.reset();
-        flipperTimer.start(); // Start non-blocking timer
-        waitingForDelay = true;
-        isFlipperActive = true; // Start tracking execution
+        recursions++;
+        Timer.delay(Constants.SECONDS_PER_CENTERING_ATTEMPT);
+
+        // If it will stop trying to grip, do not continue, if it won't stop, ensure it won't stop
+        if (!stopTryingGripper) {
+          flipperHoldingState();
+        } else {
+          stopTryingGripper = false;
+          recursions = 0;
+        }
       }
     } else {
       gripper.set(true);
-      flipperCallCount = 0; // Reset count after gripping
-      waitingForDelay = false;
-      isFlipperActive = false;
+      stopTryingGripper = false;
+      recursions = 0;
     }
+  }
+
+  public boolean getIsGripped() {
+    return gripperState;
+  }
+
+  public boolean getIsntGripped() {
+    return !gripperState;
+  }
+
+  /** Flips the coral out. */
+  public void flipperScore() {
+    flipper.setPulseDuration(1);
+    flipper.startPulse();
   }
 
   @Override
   public void periodic() {
-    // Handle flipperHoldingState retries with a non-blocking delay
-    if (isFlipperActive && waitingForDelay && flipperTimer.hasElapsed(0.48)) {
-      flipperCallCount++; // Increment count after delay
-      waitingForDelay = false; // Reset delay flag
-      flipperHoldingState(); // Retry if needed
+    // Variable updates
+    detectorState1 = coralDetector1.get();
+    detectorState2 = coralDetector2.get();
+    gripperState = gripper.get();
+
+    // Automatic trigger if one detects a coral
+    if (detectorState1 || detectorState2) {
+      flipperHoldingState();
     }
 
-    Logger.recordOutput("Flipper/Gripper Is Closed", gripper.get());
+    // Logging / SmartDashboard
+    Logger.recordOutput("Flipper/Gripper Is Closed", gripperState);
     Logger.recordOutput("Flipper/Robot Thinks Has Coral", believesHasCoral);
     Logger.recordOutput(
-        "Flipper/Coral Secured", (gripper.get() && coralDetector1.get() && coralDetector2.get()));
-    SmartDashboard.putBoolean("Gripper Closed", gripper.get());
+        "Flipper/Coral Secured", (gripperState && (detectorState1 && detectorState2)));
+    SmartDashboard.putBoolean("Gripper Closed", gripperState);
     SmartDashboard.putBoolean("Thinks has coral", believesHasCoral);
     SmartDashboard.putBoolean(
-        "Coral Secured and Gripped",
-        (gripper.get() && coralDetector1.get() && coralDetector2.get()));
-  }
-
-  public boolean getHasCoral() {
-    return believesHasCoral;
-  }
-
-  public boolean getIsntGripped() {
-    return !gripper.get();
-  }
-
-  /** Flips the coral out. */
-  public void flipperScore(double flipperDelay) {
-    flipper.setPulseDuration(flipperDelay);
-    flipper.startPulse();
-
-    CommandScheduler.getInstance()
-        .schedule(
-            Commands.waitSeconds(0.75)
-                .andThen(
-                    () -> {
-                      gripper.set(false);
-                    }));
+        "Coral Secured and Gripped", (gripperState && (detectorState1 && detectorState2)));
   }
 
   @Override
-  public void simulationPeriodic() {
-    // This method will be called once per scheduler run during simulation
-  }
+  public void simulationPeriodic() {}
 }

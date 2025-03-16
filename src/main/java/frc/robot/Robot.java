@@ -26,8 +26,10 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 public class Robot extends LoggedRobot {
   private final RobotContainer robotContainer;
   private Command autonomousCommand;
-  private UsbCamera camera1;
-  private UsbCamera camera2;
+
+  // Added USG Cams - JCH
+  UsbCamera camera1;
+  UsbCamera camera2;
 
   public Robot() {
     // Record metadata
@@ -85,12 +87,6 @@ public class Robot extends LoggedRobot {
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
-
-    // USB cameras added
-    // camera1 = CameraServer.startAutomaticCapture(0);
-    // camera2 = CameraServer.startAutomaticCapture(1);
-    // camera1.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
-    // camera2.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
   }
 
   /** This function is called periodically during all modes. */
@@ -158,12 +154,7 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {
-    // Solenoid sol = new Solenoid(Constants.SOLENOID_MODULE_TYPE,
-    // Constants.ELEVATOR_SOLENOID1_CHANNEL);
-    // sol.set(true); // Force ON for testing
-
-  }
+  public void testPeriodic() {}
 
   /** This function is called once when the robot is first started up. */
   @Override
