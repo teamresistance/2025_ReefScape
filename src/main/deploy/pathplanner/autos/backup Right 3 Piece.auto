@@ -13,13 +13,7 @@
         {
           "type": "named",
           "data": {
-            "name": "D Branch"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.25
+            "name": "E Branch"
           }
         },
         {
@@ -29,9 +23,15 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "Right Push"
+            "pathName": "Copy of Right - 22"
           }
         },
         {
@@ -43,7 +43,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "17-Source"
+            "pathName": "Copy of 22 - Source"
           }
         },
         {
@@ -59,21 +59,21 @@
           }
         },
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "C Branch"
+            "waitTime": 0.7
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 0.25
+            "name": "D Branch"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Source - 17"
+            "pathName": "Copy of Source - 17"
           }
         },
         {
@@ -85,7 +85,43 @@
         {
           "type": "path",
           "data": {
-            "pathName": "17-Source"
+            "pathName": "Copy of 17-Source"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "grip"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.7
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "C Branch"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Copy of Source - 17"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "autoScore"
           }
         }
       ]

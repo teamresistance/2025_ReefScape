@@ -22,10 +22,10 @@ public final class Constants {
   public static final int CORAL_SENSOR_CHANNEL1 = 0;
   public static final int CORAL_SENSOR_CHANNEL2 = 1;
   public static final LoggedTunableNumber SECONDS_TO_RAISE_ELEVATOR =
-      new LoggedTunableNumber("SECONDS_TO_RAISE_ELEVATORnewww", 0.4);
+      new LoggedTunableNumber("SECONDS_TO_RAISE_ELEVATORnewwww", 0.5);
 
   public static final LoggedTunableNumber SECONDS_TO_SCORE =
-      new LoggedTunableNumber("SECONDS_TO_SCOREnewww", 1.2);
+      new LoggedTunableNumber("SECONDS_TO_SCOREnewwww", 1.2);
 
   public static final double SECONDS_GRIPPER_DELAY = 0;
   public static final int CORAL_SENSOR_CHANNEL_1 = 0;

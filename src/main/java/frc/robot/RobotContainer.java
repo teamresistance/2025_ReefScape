@@ -40,7 +40,8 @@ import org.photonvision.PhotonCamera;
  */
 public class RobotContainer {
   public boolean testingmode = false;
-  private static Pose2d climbTargetTransform = new Pose2d();
+  private static Pose2d climbTargetTransform =
+      new Pose2d(7.736 + 0.15, 7.254, Rotation2d.fromDegrees(-90.0));
   private static Transform2d stationTargetTransform =
       new Transform2d(15.9, 0.72, new Rotation2d(Units.degreesToRadians(-54.4)));
   private static Transform2d stationOffsetTransform =

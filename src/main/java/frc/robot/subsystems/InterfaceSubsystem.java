@@ -117,7 +117,7 @@ public class InterfaceSubsystem extends SubsystemBase {
                     //            .alongWith(DriveCommands.joystickDrive())
                     .andThen(
                         useOffset
-                            ? Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() + 0.1)
+                            ? Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() + 0.3)
                             : Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() - 0.5))
                     .andThen(
                         () -> {
