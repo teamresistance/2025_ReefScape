@@ -7,10 +7,10 @@ import frc.robot.subsystems.FlipEleSubsystem;
 
 public class ElevatorCmd extends Command {
 
-  private boolean state;
-  private int level;
+  private final boolean state;
+  private final int level;
 
-  private FlipEleSubsystem elevator;
+  private final FlipEleSubsystem elevator;
 
   public ElevatorCmd(FlipEleSubsystem subsystem, int level, boolean state) {
     this.level = level;

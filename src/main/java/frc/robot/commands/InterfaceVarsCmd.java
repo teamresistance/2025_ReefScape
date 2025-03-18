@@ -5,11 +5,11 @@ import frc.robot.subsystems.InterfaceSubsystem;
 
 public class InterfaceVarsCmd extends Command {
 
-  private InterfaceSubsystem subsystem;
-  private String pole;
-  private int level;
-  private boolean updatepole;
-  private boolean updatelevel;
+  private final InterfaceSubsystem subsystem;
+  private final String pole;
+  private final int level;
+  private final boolean updatepole;
+  private final boolean updatelevel;
 
   public InterfaceVarsCmd(
       InterfaceSubsystem subsystem,

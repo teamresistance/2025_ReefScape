@@ -10,8 +10,8 @@ import frc.robot.subsystems.FlipEleSubsystem;
  */
 public class FlipperGripperCmd extends Command {
 
-  private FlipEleSubsystem subsystem;
-  private boolean isOneShot;
+  private final FlipEleSubsystem subsystem;
+  private final boolean isOneShot;
 
   /**
    * Creates a FlipperGripperCmd that runs once when triggered.

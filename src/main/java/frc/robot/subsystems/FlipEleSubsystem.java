@@ -3,8 +3,11 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.*;
-import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import org.littletonrobotics.junction.Logger;
 
@@ -14,45 +17,45 @@ public class FlipEleSubsystem extends SubsystemBase {
   static Solenoid elevatorPusher2 =
       new Solenoid(2, Constants.SOLENOID_MODULE_TYPE, Constants.ELEVATOR_SOLENOID2_CHANNEL);
 
-  private static boolean believesHasCoral = false;
-  private static Solenoid gripper =
+  private static final boolean believesHasCoral = false;
+  private static final Solenoid gripper =
       new Solenoid(
           2,
           Constants.SOLENOID_MODULE_TYPE,
           Constants
               .GRIPPER_SOLENOID_CHANNEL); // The pneumatics hub channels that we are using are 0, 2,
-  // and 5
-  private Solenoid flipper =
-      new Solenoid(2, Constants.SOLENOID_MODULE_TYPE, Constants.FLIPPER_SOLENOID_CHANNEL);
-
   public Solenoid centerer =
       new Solenoid(2, Constants.SOLENOID_MODULE_TYPE, Constants.CENTERER_SOLENOID_CHANNEL);
-  private DigitalInput coralDetector1 = new DigitalInput(Constants.CORAL_SENSOR_CHANNEL1);
-  private DigitalInput coralDetector2 = new DigitalInput(Constants.CORAL_SENSOR_CHANNEL2);
+  // and 5
+  private final Solenoid flipper =
+      new Solenoid(2, Constants.SOLENOID_MODULE_TYPE, Constants.FLIPPER_SOLENOID_CHANNEL);
+  private final DigitalInput coralDetector1 = new DigitalInput(Constants.CORAL_SENSOR_CHANNEL1);
+  private final DigitalInput coralDetector2 = new DigitalInput(Constants.CORAL_SENSOR_CHANNEL2);
 
   // Variables to control flipperHoldingState execution
-  private int flipperCallCount = 0; // Counter for function calls
-  private Timer flipperTimer = new Timer(); // Timer instance for non-blocking delay
+  private final int flipperCallCount = 0; // Counter for function calls
+  private final Timer flipperTimer = new Timer(); // Timer instance for non-blocking delay
   private boolean waitingForDelay = false; // Flag to track delay state
   private boolean isFlipperActive = false; // Flag to manage repeated calls
 
   // State machine variables
   private boolean inHoldingState = false; // Tracks if we are in the coral holding state
   private boolean inScoringMode = false; // Tracks if we are in scoring mode (elevator up)
-  private Timer centererTimer = new Timer(); // Timer for centerer delays
+  private final Timer centererTimer = new Timer(); // Timer for centerer delays
   private boolean centererDelayActive = false; // Flag for tracking centerer delay
-  private Timer elevatorTimer = new Timer(); // Timer for elevator raising delay
+  private final Timer elevatorTimer = new Timer(); // Timer for elevator raising delay
   private boolean elevatorDelayActive = false; // Flag for tracking elevator delay
-  private Timer elevatorLoweringTimer = new Timer(); // Timer for post-elevator lowering delay
+  private final Timer elevatorLoweringTimer = new Timer(); // Timer for post-elevator lowering delay
   private boolean elevatorLoweringDelayActive = false; // Flag for tracking post-lowering delay
-  private Timer resetButtonTimer = new Timer(); // Timer for post-reset button delay
+  private final Timer resetButtonTimer = new Timer(); // Timer for post-reset button delay
   private boolean resetButtonDelayActive = false; // Flag for tracking post-reset button delay
-  private Timer flipperActuationTimer = new Timer(); // Timer for post-flipper actuation delay
+  private final Timer flipperActuationTimer = new Timer(); // Timer for post-flipper actuation delay
   private boolean flipperActuationDelayActive = false; // Flag for tracking post-flipper delay
-  private Timer gripperReleaseTimer =
+  private final Timer gripperReleaseTimer =
       new Timer(); // Timer for delayed gripper release after scoring
   private boolean gripperReleaseDelayActive = false; // Flag for tracking gripper release delay
-  private Timer gripperDelayTimer = new Timer(); // Timer for delayed gripper close after centerer
+  private final Timer gripperDelayTimer =
+      new Timer(); // Timer for delayed gripper close after centerer
   private boolean gripperDelayActive = false; // Flag for tracking gripper delay
   private boolean centererClosePending = false; // Flag to indicate centerer needs to close
   private boolean gripperClosePending = false; // Flag to indicate gripper needs to close
@@ -61,6 +64,30 @@ public class FlipEleSubsystem extends SubsystemBase {
   public FlipEleSubsystem() {
     // Initialize centerer to be open
     centerer.set(false);
+  }
+
+  /** Raises lower stage of elevator without safety checks (use raiseFirstStageSafely instead) */
+  public static void raiseFirstStage() {
+    // Static method now just sets the solenoid directly
+    // This is not ideal but preserved for backward compatibility
+    // Should be managed through the instance method requestElevatorRaise() instead
+    elevatorPusher1.set(true);
+  }
+
+  /** Raises upper stage of elevator */
+  public static void raiseSecondStage() {
+    elevatorPusher2.set(true);
+  }
+
+  /** Lowers lower stage of elevator */
+  public static void lowerFirstStage() {
+    elevatorPusher1.set(false);
+    // Exit scoring mode and starting the post-lowering delay are handled in periodic
+  }
+
+  /** Lowers upper stage of elevator */
+  public static void lowerSecondStage() {
+    elevatorPusher2.set(false);
   }
 
   /**
@@ -137,14 +164,6 @@ public class FlipEleSubsystem extends SubsystemBase {
     }
   }
 
-  /** Raises lower stage of elevator without safety checks (use raiseFirstStageSafely instead) */
-  public static void raiseFirstStage() {
-    // Static method now just sets the solenoid directly
-    // This is not ideal but preserved for backward compatibility
-    // Should be managed through the instance method requestElevatorRaise() instead
-    elevatorPusher1.set(true);
-  }
-
   /**
    * Simple method to raise the elevator with an enforced delay between opening the centerer and
    * raising the elevator
@@ -178,22 +197,6 @@ public class FlipEleSubsystem extends SubsystemBase {
     Logger.recordOutput("Elevator/Waiting For Delay", true);
 
     // The actual elevator raising happens in periodic after the 1.5 second delay
-  }
-
-  /** Raises upper stage of elevator */
-  public static void raiseSecondStage() {
-    elevatorPusher2.set(true);
-  }
-
-  /** Lowers lower stage of elevator */
-  public static void lowerFirstStage() {
-    elevatorPusher1.set(false);
-    // Exit scoring mode and starting the post-lowering delay are handled in periodic
-  }
-
-  /** Lowers upper stage of elevator */
-  public static void lowerSecondStage() {
-    elevatorPusher2.set(false);
   }
 
   /** Exit scoring mode when elevator is lowered */

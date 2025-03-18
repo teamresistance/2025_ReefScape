@@ -10,10 +10,6 @@ import org.littletonrobotics.junction.Logger;
 
 public class CageSelectCmd extends Command {
 
-  public static Optional<DriverStation.Alliance> ally;
-  private static int currentCageId = 2;
-  private final int cageId;
-
   public static final Pose2d INNER_CAGE_RED =
       new Pose2d(9.786 - 0.15, 3.02, Rotation2d.fromDegrees(90.0));
   public static final Pose2d MIDDLE_CAGE_RED =
@@ -26,6 +22,9 @@ public class CageSelectCmd extends Command {
       new Pose2d(7.736 + 0.15, 6.170, Rotation2d.fromDegrees(-90.0));
   public static final Pose2d OUTER_CAGE_BLUE =
       new Pose2d(7.736 + 0.15, 7.254, Rotation2d.fromDegrees(-90.0));
+  public static Optional<DriverStation.Alliance> ally;
+  private static int currentCageId = 2;
+  private final int cageId;
 
   public CageSelectCmd(int cageId) {
     if (cageId < 0 || cageId > 2) {
@@ -33,20 +32,6 @@ public class CageSelectCmd extends Command {
     }
     this.cageId = cageId;
     currentCageId = cageId;
-  }
-
-  public static class CycleCageCmd extends Command {
-    @Override
-    public void initialize() {
-      currentCageId = (currentCageId + 1) % 3; // Cycle through 0, 1, 2
-      Logger.recordOutput("Climber/CurrentCage", currentCageId);
-      new CageSelectCmd(currentCageId).schedule();
-    }
-
-    @Override
-    public boolean isFinished() {
-      return true;
-    }
   }
 
   @Override
@@ -72,5 +57,19 @@ public class CageSelectCmd extends Command {
   @Override
   public boolean isFinished() {
     return true;
+  }
+
+  public static class CycleCageCmd extends Command {
+    @Override
+    public void initialize() {
+      currentCageId = (currentCageId + 1) % 3; // Cycle through 0, 1, 2
+      Logger.recordOutput("Climber/CurrentCage", currentCageId);
+      new CageSelectCmd(currentCageId).schedule();
+    }
+
+    @Override
+    public boolean isFinished() {
+      return true;
+    }
   }
 }

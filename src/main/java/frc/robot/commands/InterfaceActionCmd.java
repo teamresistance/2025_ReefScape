@@ -7,8 +7,9 @@ import frc.robot.subsystems.InterfaceSubsystem;
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class InterfaceActionCmd extends Command {
 
-  private InterfaceSubsystem subsystem;
-  private InterfaceExecuteMode loc;
+  private final InterfaceSubsystem subsystem;
+  private final InterfaceExecuteMode loc;
+  private boolean finished = true;
 
   public InterfaceActionCmd(InterfaceSubsystem subsystem, InterfaceExecuteMode loc) {
     addRequirements(subsystem);
@@ -36,8 +37,6 @@ public class InterfaceActionCmd extends Command {
     //    subsystem.drive_command.cancel();
     //    finished = true;
   }
-
-  private boolean finished = true;
 
   public void finishparentCommand() {
     finished = true;

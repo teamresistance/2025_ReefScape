@@ -19,8 +19,6 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.InterfaceExecuteMode;
 import frc.robot.commands.*;
-import frc.robot.commands.ElevatorToggleCmd;
-import frc.robot.commands.GripperToggleCmd;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.FlipEleSubsystem;
@@ -40,26 +38,24 @@ import org.photonvision.PhotonCamera;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  public boolean testingmode = false;
   private static Pose2d climbTargetTransform =
       new Pose2d(7.736 + 0.15, 7.254, Rotation2d.fromDegrees(-90.0));
   private static Transform2d stationTargetTransform =
       new Transform2d(15.9, 0.72, new Rotation2d(Units.degreesToRadians(-54.4)));
   private static Transform2d stationOffsetTransform =
       new Transform2d(0.2, 0.0, new Rotation2d(0.0));
-
   public final PhotonCamera frontLeftCamera = new PhotonCamera("front-left");
   public final PhotonCamera frontRightCamera = new PhotonCamera("front-right");
   public final PhotonCamera backLeftCamera = new PhotonCamera("back_left");
   public final PhotonCamera backRightCamera = new PhotonCamera("back_right");
   public final PhotonCamera frontCenterCamera = new PhotonCamera("front-center");
   public final ClimberSubsystem climber = new ClimberSubsystem();
+  //   private final PressureSubsystem pressure = new PressureSubsystem();
+  final FlipEleSubsystem elevator = new FlipEleSubsystem();
   private final Alert cameraFailureAlert;
   // Subsystems
   private final DriveSubsystem drive;
   private final InterfaceSubsystem reef;
-  //   private final PressureSubsystem pressure = new PressureSubsystem();
-  final FlipEleSubsystem elevator = new FlipEleSubsystem();
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
   private final Joystick cojoystick = new Joystick(1);
@@ -69,6 +65,7 @@ public class RobotContainer {
   private final Joystick codriverInterfaceOther = new Joystick(3);
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
+  public boolean testingmode = false;
   public Vision aprilTagVision;
   public boolean ForceClimberUp = false;
   Translation2d targetTranslation = new Translation2d(12.225, 2.474); // X = 14, Y = 4

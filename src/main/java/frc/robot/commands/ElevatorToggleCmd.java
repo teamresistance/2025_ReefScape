@@ -11,8 +11,8 @@ import frc.robot.subsystems.FlipEleSubsystem;
  */
 public class ElevatorToggleCmd extends Command {
 
-  private final FlipEleSubsystem elevator;
   private static boolean elevated = false; // Static to remember state between commands
+  private final FlipEleSubsystem elevator;
 
   /**
    * Creates a new ElevatorToggleCmd.

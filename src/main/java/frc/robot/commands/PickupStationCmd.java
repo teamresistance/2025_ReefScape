@@ -11,9 +11,6 @@ import org.littletonrobotics.junction.Logger;
 
 public class PickupStationCmd extends Command {
 
-  public static Optional<DriverStation.Alliance> ally;
-  private final int id;
-
   private static final Transform2d redUpperLeft =
       new Transform2d(15.9, 0.72, new Rotation2d(Units.degreesToRadians(-54.4)));
   private static final Transform2d redLowerLeft =
@@ -22,7 +19,6 @@ public class PickupStationCmd extends Command {
       new Transform2d(15.9, 7.3, new Rotation2d(Units.degreesToRadians(54.4)));
   private static final Transform2d redLowerRight =
       new Transform2d(16.819, 6.625, new Rotation2d(Units.degreesToRadians(54.4)));
-
   private static final Transform2d blueUpperLeft =
       new Transform2d(1.645, 7.360, new Rotation2d(Units.degreesToRadians(125.600)));
   private static final Transform2d blueLowerLeft =
@@ -31,6 +27,8 @@ public class PickupStationCmd extends Command {
       new Transform2d(1.645, 0.698, new Rotation2d(Units.degreesToRadians(-125.600)));
   private static final Transform2d blueLowerRight =
       new Transform2d(0.698, 1.391, new Rotation2d(Units.degreesToRadians(-125.600)));
+  public static Optional<DriverStation.Alliance> ally;
+  private final int id;
 
   public PickupStationCmd(int id) {
     this.id = id;

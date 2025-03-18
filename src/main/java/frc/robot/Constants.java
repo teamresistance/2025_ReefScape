@@ -32,24 +32,6 @@ public final class Constants {
   public static final int CORAL_SENSOR_CHANNEL_2 = 1;
   public static final double SECONDS_PER_CENTERING_ATTEMPT = 0.7;
   public static final double SECONDS_OF_CENTERING_PULSE = 0.5;
-
-  // Interface
-  public enum InterfaceExecuteMode {
-    REEF,
-    CORAL,
-    CLIMBER,
-    EXECUTE,
-    DISABLE,
-    ALGEE
-  }
-
-  public static PathConstraints PATH_CONSTRAINTS =
-      new PathConstraints(
-          TunerConstants.kSpeedAt12Volts.in(MetersPerSecond), // TODO: CHANGE BACK
-          5.0, // TODO: CHANGE BACK
-          Units.degreesToRadians(540),
-          Units.degreesToRadians(400));
-
   // Solenoids / Pressure
   public static final PneumaticsModuleType SOLENOID_MODULE_TYPE = PneumaticsModuleType.CTREPCM;
   public static final int PRESSURE_HUB_ID = 2;
@@ -61,6 +43,22 @@ public final class Constants {
   public static final int GRIPPER_SOLENOID_CHANNEL = 3;
   public static final int FLIPPER_SOLENOID_CHANNEL = 4;
   public static final int CLIMBER_SOLENOID_CHANNEL = 5;
+  public static PathConstraints PATH_CONSTRAINTS =
+      new PathConstraints(
+          TunerConstants.kSpeedAt12Volts.in(MetersPerSecond), // TODO: CHANGE BACK
+          5.0, // TODO: CHANGE BACK
+          Units.degreesToRadians(540),
+          Units.degreesToRadians(400));
+
+  // Interface
+  public enum InterfaceExecuteMode {
+    REEF,
+    CORAL,
+    CLIMBER,
+    EXECUTE,
+    DISABLE,
+    ALGEE
+  }
 
   public enum Mode {
     /** Running on a real robot. */

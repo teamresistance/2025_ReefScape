@@ -23,23 +23,14 @@ import org.littletonrobotics.junction.Logger;
 
 public class InterfaceSubsystem extends SubsystemBase {
 
-  public String getPole() {
-    return pole;
-  }
-
+  public Command drive_command = new InstantCommand();
   private String pole = "a";
   private int level = 1;
   private boolean executing = false;
-
-  public int getLevel() {
-    return level;
-  }
-
   private Transform2d targetTransform;
   private Transform2d leftRightOffset;
-
-  private DriveSubsystem drive;
-  private FlipEleSubsystem elevator;
+  private final DriveSubsystem drive;
+  private final FlipEleSubsystem elevator;
 
   /**
    * Interface subsystem constructor - drive, flipper, elevator, subsystems are params from
@@ -49,6 +40,14 @@ public class InterfaceSubsystem extends SubsystemBase {
   public InterfaceSubsystem(DriveSubsystem drive, FlipEleSubsystem elevator) {
     this.drive = drive;
     this.elevator = elevator;
+  }
+
+  public String getPole() {
+    return pole;
+  }
+
+  public int getLevel() {
+    return level;
   }
 
   /**
@@ -75,8 +74,6 @@ public class InterfaceSubsystem extends SubsystemBase {
             FieldConstants.getOffsetApriltagFromTree(allianceplace).getY()),
         FieldConstants.getOffsetApriltagFromTree(allianceplace).getRotation());
   }
-
-  public Command drive_command = new InstantCommand();
 
   /** Actually drives the robot to the position. Only called from driveToLoc() !!!! */
   private void executeDrive(
@@ -143,7 +140,6 @@ public class InterfaceSubsystem extends SubsystemBase {
 
     //    elevator.raiseFromInterface(level);
     CommandScheduler.getInstance().schedule(drive_command);
-    return;
   }
 
   /**
@@ -383,7 +379,6 @@ public class InterfaceSubsystem extends SubsystemBase {
 
     //    elevator.raiseFromInterface(level);
     CommandScheduler.getInstance().schedule(drive_command);
-    return;
   }
 
   /**

@@ -5,8 +5,8 @@ import frc.robot.subsystems.FlipEleSubsystem;
 
 public class FlipperScoreCmd extends Command {
 
-  private FlipEleSubsystem subsystem;
-  private double flipperDelay;
+  private final FlipEleSubsystem subsystem;
+  private final double flipperDelay;
 
   public FlipperScoreCmd(FlipEleSubsystem subsystem, double flipperDelay) {
     this.subsystem = subsystem;
