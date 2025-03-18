@@ -19,6 +19,8 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.InterfaceExecuteMode;
 import frc.robot.commands.*;
+import frc.robot.commands.ElevatorToggleCmd;
+import frc.robot.commands.GripperToggleCmd;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.FlipEleSubsystem;
@@ -79,6 +81,9 @@ public class RobotContainer {
     reef = configureInterface();
     aprilTagVision = configureAprilTagVision();
     configureNamedCommands();
+
+    // Set up continuous banner detection for the elevator/flipper subsystem
+    elevator.setDefaultCommand(new FlipperGripperCmd(elevator, false));
 
     autoChooser = configureAutos();
     configureButtonBindings();
@@ -214,10 +219,10 @@ public class RobotContainer {
             drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> -driver.getRightX()));
 
     // Switch to X pattern when X button is pressed
-    driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    //    driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     // Squeeze + grip
-    driver.leftBumper().onTrue(new FlipperGripperCmd(elevator));
+    //    driver.leftBumper().onTrue(new FlipperGripperCmd(elevator));
 
     driver.y().onTrue(new CageSelectCmd.CycleCageCmd()); // cycles location of cage
 
@@ -280,21 +285,22 @@ public class RobotContainer {
     driver.povLeft().onTrue(new PickupStationCmd(2)); // Change to left
     driver.povRight().onTrue(new PickupStationCmd(3)); // Change to right
 
-    driver
-        .rightTrigger()
-        .whileTrue(
-            new InterfaceActionCmd(reef, InterfaceExecuteMode.REEF)
-                .andThen(
-                    () -> {})); // When right trigger is pressed, drive to the location selected
-    driver.rightTrigger().onFalse(new InterfaceActionCmd(reef, InterfaceExecuteMode.DISABLE));
+    //    driver
+    //        .rightTrigger()
+    //        .whileTrue(
+    //            new InterfaceActionCmd(reef, InterfaceExecuteMode.REEF)
+    //                .andThen(
+    //                    () -> {})); // When right trigger is pressed, drive to the location
+    // selected
+    //    driver.rightTrigger().onFalse(new InterfaceActionCmd(reef, InterfaceExecuteMode.DISABLE));
 
     driver
-        .a()
+        .rightTrigger()
         .whileTrue(
             new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF)
                 .andThen(
                     () -> {})); // When right trigger is pressed, drive to the location selected
-    driver.a().onFalse(new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE));
+    driver.rightTrigger().onFalse(new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE));
 
     driver
         .rightBumper()
@@ -305,6 +311,22 @@ public class RobotContainer {
     driver.rightBumper().onFalse(new InterfaceActionCmd(reef, InterfaceExecuteMode.DISABLE));
 
     driver.b().onTrue(new FlipperScoreCmd(elevator, 1.0));
+
+    // We need to find an available button for the gripper toggle command
+    // Since X is already used for X pattern and we want to keep B for scoring
+    // The D-pad is used for pickup station selection
+    // Let's use a button chord (simultaneous button press) combination
+    driver
+        .leftBumper()
+        .onTrue(
+            new GripperToggleCmd(
+                elevator, true)); // Use B+LB to toggle gripper and reset holding state
+
+    // Add elevator toggle button for testing
+    driver
+        .x()
+        .onTrue(
+            new ElevatorToggleCmd(elevator)); // Press left stick to toggle elevator between 0 and 2
     //            new ElevatorCmd(elevator, 2, true)
     //                .andThen(new FlipperScoreCmd(flipper, 1.0))
     //                .andThen(

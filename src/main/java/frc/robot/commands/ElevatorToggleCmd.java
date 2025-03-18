@@ -5,19 +5,23 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.FlipEleSubsystem;
 
-public class ElevatorCmd extends Command {
+/**
+ * Command to toggle the elevator between stage 0 (lowered) and stage 2 (fully raised). Used for
+ * testing the elevator and centerer mechanism.
+ */
+public class ElevatorToggleCmd extends Command {
 
-  private boolean state;
-  private int level;
+  private final FlipEleSubsystem elevator;
+  private static boolean elevated = false; // Static to remember state between commands
 
-  private FlipEleSubsystem elevator;
-
-  public ElevatorCmd(FlipEleSubsystem subsystem, int level, boolean state) {
-    this.level = level;
-    this.state = state;
-    this.elevator = subsystem;
-
-    addRequirements(subsystem);
+  /**
+   * Creates a new ElevatorToggleCmd.
+   *
+   * @param elevator The FlipEleSubsystem to control
+   */
+  public ElevatorToggleCmd(FlipEleSubsystem elevator) {
+    this.elevator = elevator;
+    addRequirements(elevator);
   }
 
   // Called when the command is initially scheduled.
@@ -27,13 +31,12 @@ public class ElevatorCmd extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (level == 1 && state) {
-      // Use the DIRECT sequence command that forces proper sequence and timing
-      new DirectElevatorSequenceCmd(elevator).schedule();
-    } else if (level == 1 && !state) {
-      // Lower elevator and handle post-lowering in the subsystem
+    if (elevated) {
+      // Lower both stages
       FlipEleSubsystem.lowerFirstStage();
-    } else if (level == 2 && state) {
+      FlipEleSubsystem.lowerSecondStage();
+      elevated = false;
+    } else {
       // Use the DIRECT sequence command that forces proper sequence and timing
       new DirectElevatorSequenceCmd(elevator).schedule();
       // Second stage will be scheduled after the sequence completes
@@ -44,10 +47,7 @@ public class ElevatorCmd extends Command {
                       () -> {
                         FlipEleSubsystem.raiseSecondStage();
                       }));
-    } else if (level == 2 && !state) {
-      // Lower both stages
-      FlipEleSubsystem.lowerSecondStage();
-      FlipEleSubsystem.lowerFirstStage();
+      elevated = true;
     }
   }
 

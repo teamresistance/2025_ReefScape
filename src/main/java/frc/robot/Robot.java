@@ -144,7 +144,7 @@ public class Robot extends LoggedRobot {
       autonomousCommand.cancel();
     }
 
-    robotContainer.elevator.raiseFromInterface(0);
+    robotContainer.elevator.raiseElevator(0);
   }
 
   /** This function is called periodically during operator control. */

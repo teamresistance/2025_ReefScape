@@ -52,6 +52,15 @@ public class InterfaceSubsystem extends SubsystemBase {
   }
 
   /**
+   * Get the elevator subsystem (used by commands to access elevator methods)
+   *
+   * @return The elevator subsystem
+   */
+  public FlipEleSubsystem getElevator() {
+    return elevator;
+  }
+
+  /**
    * Drives to the location that is being pressed on the driver controller. Includes coral station,
    * climber, a specific reef pole
    *
@@ -98,7 +107,7 @@ public class InterfaceSubsystem extends SubsystemBase {
                 : new InstantCommand(() -> {}))
             .andThen(
                 () -> {
-                  elevator.raiseFromInterface(level);
+                  elevator.raiseElevator(level);
                 })
             .andThen(goToTransform(drive, targetTransform.plus(leftRightOffset)))
             .andThen(Commands.runOnce(drive::stop))
@@ -118,7 +127,7 @@ public class InterfaceSubsystem extends SubsystemBase {
                             : Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() - 0.5))
                     .andThen(
                         () -> {
-                          elevator.raiseFromInterface(0);
+                          elevator.raiseElevator(0);
                         })
                     .andThen(Commands.waitSeconds(1.1))
                     .andThen(goToTransform(drive, targetTransform))
@@ -246,7 +255,7 @@ public class InterfaceSubsystem extends SubsystemBase {
       case DISABLE:
         //          forceStopExecution();
         drive_command.cancel();
-        elevator.raiseFromInterface(0);
+        elevator.raiseElevator(0);
         break;
       case CLIMBER:
         targetTransform = getTranslationFromPlace(Place.MIDDLE_CAGE);
@@ -278,6 +287,19 @@ public class InterfaceSubsystem extends SubsystemBase {
       leftRightOffset = new Transform2d(0.52, -0.05, new Rotation2d(0));
     }
 
+    // Determine if this is a CDGHKL button press which needs longer delay
+    boolean needsLongerDelay =
+        "c".equals(pole)
+            || "d".equals(pole)
+            || "g".equals(pole)
+            || "h".equals(pole)
+            || "k".equals(pole)
+            || "l".equals(pole);
+
+    // Log the delay decision
+    Logger.recordOutput("Scoring/Using Extended Delay", needsLongerDelay);
+    SmartDashboard.putBoolean("Using Extended Delay", needsLongerDelay);
+
     if (drive_command != null) {
       drive_command.cancel();
     }
@@ -292,7 +314,27 @@ public class InterfaceSubsystem extends SubsystemBase {
                 : new InstantCommand(() -> {}))
             .andThen(
                 () -> {
-                  elevator.raiseFromInterface(level);
+                  // Use requestElevatorRaise for first stage when level is 3 or 4
+                  // This ensures proper delay between centerer opening and elevator rising
+                  if (level >= 3) {
+                    // Open centerer first, the elevator will raise after the delay in periodic
+                    elevator.requestElevatorRaise();
+
+                    // For level 4, also raise second stage after a small delay
+                    if (level == 4) {
+                      // Second stage will be raised in a separate command
+                      CommandScheduler.getInstance()
+                          .schedule(
+                              Commands.waitSeconds(0.8)
+                                  .andThen(() -> FlipEleSubsystem.raiseSecondStage()));
+                    }
+
+                    Logger.recordOutput("Interface/Using Safe Elevator Raise", true);
+                    SmartDashboard.putString("Elevator Action", "Using delayed elevator raise");
+                  } else {
+                    // For lower levels, just lower the elevator
+                    elevator.raiseElevator(level);
+                  }
                 })
             .andThen(goToTransform(drive, targetTransform.plus(leftRightOffset)))
             .andThen(Commands.runOnce(drive::stop))
@@ -317,9 +359,16 @@ public class InterfaceSubsystem extends SubsystemBase {
                                 })
                             .andThen(
                                 () -> {
-                                  elevator.raiseFromInterface(0);
+                                  elevator.raiseElevator(0);
                                 })
-                            .andThen(Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get()))
+                            // Add conditional delay based on which button was pressed
+                            .andThen(
+                                Commands.waitSeconds(
+                                    needsLongerDelay
+                                        ? Constants.SECONDS_TO_SCORE.get() + 0.5
+                                        : // 0.5s longer for CDGHKL
+                                        Constants.SECONDS_TO_SCORE
+                                            .get())) // Standard delay for others
                             .andThen(goToTransform(drive, targetTransform))
                             .andThen(
                                 () -> {
@@ -446,7 +495,10 @@ public class InterfaceSubsystem extends SubsystemBase {
       case DISABLE:
         //          forceStopExecution();
         drive_command.cancel();
-        elevator.raiseFromInterface(0);
+        elevator.raiseElevator(0);
+
+        // Reset any state flags related to flipper timing when right trigger is released
+        elevator.resetAutoscoreState();
         break;
       case CLIMBER:
         targetTransform = getTranslationFromPlace(Place.MIDDLE_CAGE);
@@ -466,7 +518,7 @@ public class InterfaceSubsystem extends SubsystemBase {
   // ** Force-ends the execution and immediately retracts the elevator. */
   public void forceStopExecution() {
     executing = false;
-    elevator.raiseFromInterface(0);
+    elevator.raiseElevator(0);
     CommandScheduler.getInstance().cancel(drive_command);
     // drive_command.cancel();
   }
@@ -476,7 +528,7 @@ public class InterfaceSubsystem extends SubsystemBase {
     Timer.delay(Constants.SECONDS_TO_RAISE_ELEVATOR.get());
     elevator.flipperScore(Constants.SECONDS_TO_SCORE.get());
     Timer.delay(Constants.SECONDS_TO_SCORE.get() + 0.1);
-    elevator.raiseFromInterface(0);
+    elevator.raiseElevator(0);
   }
 
   /**

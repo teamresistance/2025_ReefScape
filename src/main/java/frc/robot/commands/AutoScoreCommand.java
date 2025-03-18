@@ -74,7 +74,7 @@ public class AutoScoreCommand extends SequentialCommandGroup {
             GeomUtil.transformToPose(targetTransform), Constants.PATH_CONSTRAINTS, 0.0),
 
         // 2. Raise the elevator to the selected level
-        new InstantCommand(() -> elevator.raiseFromInterface(reef.getLevel())),
+        new InstantCommand(() -> elevator.raiseElevator(reef.getLevel())),
 
         // 3. Drive to a pose adjusted by the left/right offset
         DriveCommands.goToTransform(drive, targetTransform.plus(leftRightOffset)),
@@ -90,6 +90,6 @@ public class AutoScoreCommand extends SequentialCommandGroup {
         Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() - 0.2),
 
         // 7. Lower the elevator back down
-        new InstantCommand(() -> elevator.raiseFromInterface(0)));
+        new InstantCommand(() -> elevator.raiseElevator(0)));
   }
 }
