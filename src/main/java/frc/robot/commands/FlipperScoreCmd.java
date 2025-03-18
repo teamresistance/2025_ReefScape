@@ -1,14 +1,14 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.FlipperSubsystem;
+import frc.robot.subsystems.FlipEleSubsystem;
 
 public class FlipperScoreCmd extends Command {
 
-  private FlipperSubsystem subsystem;
+  private FlipEleSubsystem subsystem;
   private double flipperDelay;
 
-  public FlipperScoreCmd(FlipperSubsystem subsystem, double flipperDelay) {
+  public FlipperScoreCmd(FlipEleSubsystem subsystem, double flipperDelay) {
     this.subsystem = subsystem;
     this.flipperDelay = flipperDelay;
     addRequirements(subsystem);

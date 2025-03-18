@@ -1,16 +1,16 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.FlipEleSubsystem;
 
 public class ElevatorCmd extends Command {
 
   private boolean state;
   private int level;
 
-  private ElevatorSubsystem elevator;
+  private FlipEleSubsystem elevator;
 
-  public ElevatorCmd(ElevatorSubsystem subsystem, int level, boolean state) {
+  public ElevatorCmd(FlipEleSubsystem subsystem, int level, boolean state) {
     this.level = level;
     this.state = state;
     this.elevator = subsystem;
@@ -28,15 +28,15 @@ public class ElevatorCmd extends Command {
     // System.out.println("Execute");
     if (level == 1 && state) {
       // System.out.println("state 1");
-      ElevatorSubsystem.raiseFirstStage();
+      FlipEleSubsystem.raiseFirstStage();
     } else if (level == 1 && !state) {
-      ElevatorSubsystem.lowerFirstStage();
+      FlipEleSubsystem.lowerFirstStage();
     } else if (level == 2 && state) {
-      ElevatorSubsystem.raiseSecondStage();
-      ElevatorSubsystem.raiseFirstStage();
+      FlipEleSubsystem.raiseSecondStage();
+      FlipEleSubsystem.raiseFirstStage();
     } else if (level == 2 && !state) {
-      ElevatorSubsystem.lowerSecondStage();
-      ElevatorSubsystem.lowerFirstStage();
+      FlipEleSubsystem.lowerSecondStage();
+      FlipEleSubsystem.lowerFirstStage();
     }
   }
 

@@ -3,12 +3,16 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.*;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.Constants;
 import org.littletonrobotics.junction.Logger;
 
-public class FlipperSubsystem extends SubsystemBase {
+public class FlipEleSubsystem extends SubsystemBase {
+  static Solenoid elevatorPusher1 =
+      new Solenoid(2, Constants.SOLENOID_MODULE_TYPE, Constants.ELEVATOR_SOLENOID1_CHANNEL);
+  static Solenoid elevatorPusher2 =
+      new Solenoid(2, Constants.SOLENOID_MODULE_TYPE, Constants.ELEVATOR_SOLENOID2_CHANNEL);
 
   private static boolean believesHasCoral = false;
   private static Solenoid gripper =
@@ -30,8 +34,13 @@ public class FlipperSubsystem extends SubsystemBase {
   private boolean waitingForDelay = false; // Flag to track delay state
   private boolean isFlipperActive = false; // Flag to manage repeated calls
 
-  /** Subsystem handling coral intake and dropping onto branches/level1. */
-  public FlipperSubsystem() {}
+  public FlipEleSubsystem() {}
+
+  /** Raises lower stage of elevator */
+  public static void raiseFirstStage() {
+    //    this.flipper.coralCenterMechanism.set(false);
+    elevatorPusher1.set(true);
+  }
 
   public void flipperHoldingState() {
     if (flipperCallCount > 1) {
@@ -63,8 +72,50 @@ public class FlipperSubsystem extends SubsystemBase {
     }
   }
 
+  /** Raises upper stage of elevator */
+  public static void raiseSecondStage() {
+    elevatorPusher2.set(true);
+  }
+
+  /** Lowers lower stage of elevator */
+  public static void lowerFirstStage() {
+    elevatorPusher1.set(false);
+  }
+
+  /** Lowers upper stage of elevator */
+  public static void lowerSecondStage() {
+    elevatorPusher2.set(false);
+  }
+
+  /**
+   * Method used in the elevator command. Raises elevator levels according to the level parameter.
+   */
+  public void raiseFromInterface(int level) {
+    //    if (level != 0) {
+    //      this.flipper.coralCenterMechanism.set(false);
+    //      Timer.delay(0.1);
+    //    }
+
+    if (level <= 2) {
+      lowerFirstStage();
+      lowerSecondStage();
+    } else if (level == 3) {
+      raiseFirstStage();
+      lowerSecondStage();
+    } else if (level == 4) {
+      raiseFirstStage();
+      raiseSecondStage();
+    }
+  }
+
   @Override
   public void periodic() {
+    // Logging / SmartDashboard info
+    SmartDashboard.putBoolean("First Stage", elevatorPusher1.get());
+    SmartDashboard.putBoolean("Second Stage", elevatorPusher2.get());
+    Logger.recordOutput("Elevator/First Stage Up", elevatorPusher1.get());
+    Logger.recordOutput("Elevator/Second Stage Up", elevatorPusher2.get());
+
     // Handle flipperHoldingState retries with a non-blocking delay
     if (isFlipperActive && waitingForDelay && flipperTimer.hasElapsed(0.48)) {
       flipperCallCount++; // Increment count after delay
@@ -83,14 +134,6 @@ public class FlipperSubsystem extends SubsystemBase {
         (gripper.get() && coralDetector1.get() && coralDetector2.get()));
   }
 
-  public boolean getHasCoral() {
-    return believesHasCoral;
-  }
-
-  public boolean getIsntGripped() {
-    return !gripper.get();
-  }
-
   /** Flips the coral out. */
   public void flipperScore(double flipperDelay) {
     //    coralCenterMechanism.set(false);
@@ -105,8 +148,6 @@ public class FlipperSubsystem extends SubsystemBase {
                       gripper.set(false);
                     }));
   }
-
-  public void flipperClamp() {}
 
   public Command getFlipperCommand(double flipperDelay) {
     return new InstantCommand(
@@ -123,7 +164,5 @@ public class FlipperSubsystem extends SubsystemBase {
   }
 
   @Override
-  public void simulationPeriodic() {
-    // This method will be called once per scheduler run during simulation
-  }
+  public void simulationPeriodic() {}
 }

@@ -8,18 +8,14 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.FieldConstants;
-import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.FlipperSubsystem;
+import frc.robot.subsystems.FlipEleSubsystem;
 import frc.robot.subsystems.InterfaceSubsystem;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.util.GeomUtil;
 
 public class AutoScoreCommand extends SequentialCommandGroup {
   public AutoScoreCommand(
-      InterfaceSubsystem reef,
-      DriveSubsystem drive,
-      ElevatorSubsystem elevator,
-      FlipperSubsystem flipper) {
+      InterfaceSubsystem reef, DriveSubsystem drive, FlipEleSubsystem elevator) {
     // Determine target transform based on selected pole
     String pole = reef.getPole();
     boolean isRight = "b d f h j l".contains(pole);
@@ -88,7 +84,7 @@ public class AutoScoreCommand extends SequentialCommandGroup {
 
         // 5. Activate the flipper command for scoring (assume flipper.getFlipperCommand returns a
         // Command)
-        flipper.getFlipperCommand(Constants.SECONDS_TO_SCORE.get() + 8),
+        elevator.getFlipperCommand(Constants.SECONDS_TO_SCORE.get() + 8),
 
         // 6. Wait a short time after scoring
         Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() - 0.2),

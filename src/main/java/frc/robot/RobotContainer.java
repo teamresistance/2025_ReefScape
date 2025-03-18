@@ -21,8 +21,7 @@ import frc.robot.Constants.InterfaceExecuteMode;
 import frc.robot.commands.*;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ClimberSubsystem;
-import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.FlipperSubsystem;
+import frc.robot.subsystems.FlipEleSubsystem;
 import frc.robot.subsystems.InterfaceSubsystem;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.vision.Vision;
@@ -57,9 +56,8 @@ public class RobotContainer {
   // Subsystems
   private final DriveSubsystem drive;
   private final InterfaceSubsystem reef;
-  private final FlipperSubsystem flipper = new FlipperSubsystem();
   //   private final PressureSubsystem pressure = new PressureSubsystem();
-  final ElevatorSubsystem elevator = new ElevatorSubsystem(flipper);
+  final FlipEleSubsystem elevator = new FlipEleSubsystem();
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
   private final Joystick cojoystick = new Joystick(1);
@@ -100,7 +98,7 @@ public class RobotContainer {
   }
 
   private void configureNamedCommands() {
-    NamedCommands.registerCommand("grip", new FlipperGripperCmd(flipper));
+    NamedCommands.registerCommand("grip", new FlipperGripperCmd(elevator));
     NamedCommands.registerCommand("A Branch", new InterfaceVarsCmd(reef, "a", 0, true, false));
     NamedCommands.registerCommand("B Branch", new InterfaceVarsCmd(reef, "b", 0, true, false));
     NamedCommands.registerCommand("C Branch", new InterfaceVarsCmd(reef, "c", 0, true, false));
@@ -120,8 +118,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("4 Level", new InterfaceVarsCmd(reef, "a", 4, false, true));
 
     NamedCommands.registerCommand(
-        "autoScore",
-        new DeferredCommand(() -> new AutoScoreCommand(reef, drive, elevator, flipper)));
+        "autoScore", new DeferredCommand(() -> new AutoScoreCommand(reef, drive, elevator)));
   }
 
   private LoggedDashboardChooser<Command> configureAutos() {
@@ -170,7 +167,7 @@ public class RobotContainer {
   }
 
   private InterfaceSubsystem configureInterface() {
-    return new InterfaceSubsystem(drive, flipper, elevator);
+    return new InterfaceSubsystem(drive, elevator);
   }
 
   private DriveSubsystem configureDrive() {
@@ -220,7 +217,7 @@ public class RobotContainer {
     driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     // Squeeze + grip
-    driver.leftBumper().onTrue(new FlipperGripperCmd(flipper));
+    driver.leftBumper().onTrue(new FlipperGripperCmd(elevator));
 
     driver.y().onTrue(new CageSelectCmd.CycleCageCmd()); // cycles location of cage
 
@@ -307,7 +304,7 @@ public class RobotContainer {
                     () -> {})); // When right trigger is pressed, drive to the location selected
     driver.rightBumper().onFalse(new InterfaceActionCmd(reef, InterfaceExecuteMode.DISABLE));
 
-    driver.b().onTrue(new FlipperScoreCmd(flipper, 1.0));
+    driver.b().onTrue(new FlipperScoreCmd(elevator, 1.0));
     //            new ElevatorCmd(elevator, 2, true)
     //                .andThen(new FlipperScoreCmd(flipper, 1.0))
     //                .andThen(

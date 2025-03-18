@@ -39,18 +39,15 @@ public class InterfaceSubsystem extends SubsystemBase {
   private Transform2d leftRightOffset;
 
   private DriveSubsystem drive;
-  private FlipperSubsystem flipper;
-  private ElevatorSubsystem elevator;
+  private FlipEleSubsystem elevator;
 
   /**
    * Interface subsystem constructor - drive, flipper, elevator, subsystems are params from
    * robotcontainer. They are used because we cannot have two instances of any subsystem at the same
    * time.
    */
-  public InterfaceSubsystem(
-      DriveSubsystem drive, FlipperSubsystem flipper, ElevatorSubsystem elevator) {
+  public InterfaceSubsystem(DriveSubsystem drive, FlipEleSubsystem elevator) {
     this.drive = drive;
-    this.flipper = flipper;
     this.elevator = elevator;
   }
 
@@ -109,7 +106,7 @@ public class InterfaceSubsystem extends SubsystemBase {
                 Commands.waitSeconds(Constants.SECONDS_TO_RAISE_ELEVATOR.get())
                     .andThen(
                         () -> {
-                          flipper.flipperScore(
+                          elevator.flipperScore(
                               useOffset
                                   ? Constants.SECONDS_TO_SCORE.get()
                                   : Constants.SECONDS_TO_SCORE.get() + 8);
@@ -303,7 +300,7 @@ public class InterfaceSubsystem extends SubsystemBase {
                 Commands.waitSeconds(Constants.SECONDS_TO_RAISE_ELEVATOR.get())
                     .andThen(
                         () -> {
-                          flipper.flipperScore(Constants.SECONDS_TO_SCORE.get());
+                          elevator.flipperScore(Constants.SECONDS_TO_SCORE.get());
                         })
                     //            .alongWith(DriveCommands.joystickDrive())
                     .andThen(Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() + 0.1))
@@ -316,7 +313,7 @@ public class InterfaceSubsystem extends SubsystemBase {
                             .andThen(Commands.runOnce(drive::stop))
                             .andThen(
                                 () -> {
-                                  flipper.flipperScore(Constants.SECONDS_TO_SCORE.get());
+                                  elevator.flipperScore(Constants.SECONDS_TO_SCORE.get());
                                 })
                             .andThen(
                                 () -> {
@@ -477,7 +474,7 @@ public class InterfaceSubsystem extends SubsystemBase {
   /** Moves elevator to selected level and scores. */
   public void executeSelected() {
     Timer.delay(Constants.SECONDS_TO_RAISE_ELEVATOR.get());
-    flipper.flipperScore(Constants.SECONDS_TO_SCORE.get());
+    elevator.flipperScore(Constants.SECONDS_TO_SCORE.get());
     Timer.delay(Constants.SECONDS_TO_SCORE.get() + 0.1);
     elevator.raiseFromInterface(0);
   }
