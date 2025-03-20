@@ -43,10 +43,7 @@ public class ElevatorToggleCmd extends Command {
       CommandScheduler.getInstance()
           .schedule(
               Commands.waitSeconds(1.0) // Reduced to 1.0 seconds to match 0.75s elevator delay
-                  .andThen(
-                      () -> {
-                        FlipEleSubsystem.raiseSecondStage();
-                      }));
+                  .andThen(FlipEleSubsystem::raiseSecondStage));
       elevated = true;
     }
   }

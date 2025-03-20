@@ -68,5 +68,6 @@ public class DirectElevatorSequenceCmd extends Command {
   @Override
   public void end(boolean interrupted) {
     // Command is done
+    subsystem.raiseElevator(0);
   }
 }

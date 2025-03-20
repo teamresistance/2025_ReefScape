@@ -72,7 +72,8 @@ public class AutoScoreCommand extends SequentialCommandGroup {
         // 1. Pathfind to the target pose (converted from targetTransform)
         AutoBuilder.pathfindToPose(
             GeomUtil.transformToPose(targetTransform), Constants.PATH_CONSTRAINTS, 0.0),
-
+        new InstantCommand(() -> elevator.centerer.set(false)),
+        Commands.waitSeconds(0.25),
         // 2. Raise the elevator to the selected level
         new InstantCommand(() -> elevator.raiseElevator(reef.getLevel())),
 
@@ -84,7 +85,7 @@ public class AutoScoreCommand extends SequentialCommandGroup {
 
         // 5. Activate the flipper command for scoring (assume flipper.getFlipperCommand returns a
         // Command)
-        elevator.getFlipperCommand(Constants.SECONDS_TO_SCORE.get() + 8),
+        elevator.getFlipperCommand(Constants.SECONDS_TO_SCORE.get()),
 
         // 6. Wait a short time after scoring
         Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() - 0.2),

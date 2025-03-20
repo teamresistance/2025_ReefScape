@@ -39,12 +39,12 @@ public class FlipEleSubsystem extends SubsystemBase {
   private boolean isFlipperActive = false; // Flag to manage repeated calls
 
   // State machine variables
-  private boolean inHoldingState = false; // Tracks if we are in the coral holding state
+  public boolean inHoldingState = false; // Tracks if we are in the coral holding state
   private boolean inScoringMode = false; // Tracks if we are in scoring mode (elevator up)
   private final Timer centererTimer = new Timer(); // Timer for centerer delays
-  private boolean centererDelayActive = false; // Flag for tracking centerer delay
+  public boolean centererDelayActive = false; // Flag for tracking centerer delay
   private final Timer elevatorTimer = new Timer(); // Timer for elevator raising delay
-  private boolean elevatorDelayActive = false; // Flag for tracking elevator delay
+  public boolean elevatorDelayActive = false; // Flag for tracking elevator delay
   private final Timer elevatorLoweringTimer = new Timer(); // Timer for post-elevator lowering delay
   private boolean elevatorLoweringDelayActive = false; // Flag for tracking post-lowering delay
   private final Timer resetButtonTimer = new Timer(); // Timer for post-reset button delay
@@ -57,9 +57,10 @@ public class FlipEleSubsystem extends SubsystemBase {
   private final Timer gripperDelayTimer =
       new Timer(); // Timer for delayed gripper close after centerer
   private boolean gripperDelayActive = false; // Flag for tracking gripper delay
-  private boolean centererClosePending = false; // Flag to indicate centerer needs to close
+  public boolean centererClosePending = false; // Flag to indicate centerer needs to close
   private boolean gripperClosePending = false; // Flag to indicate gripper needs to close
   private boolean bannerSensorTriggered = false; // Flag to indicate a banner sensor was triggered
+  private double flipperDelay = 2.0;
 
   public FlipEleSubsystem() {
     // Initialize centerer to be open
@@ -143,7 +144,7 @@ public class FlipEleSubsystem extends SubsystemBase {
         centererTimer.start();
         centererDelayActive = true;
         Logger.recordOutput("Flipper/Banner Sensor Delay Started", true);
-        Logger.recordOutput("Flipper/Banner Sensor Delay Time", 1.0);
+        Logger.recordOutput("Flipper/Banner Sensor Delay Time", 0.5);
         SmartDashboard.putString("Banner State", "Banner sensor triggered, waiting 1.0s");
       }
     } else {
@@ -263,16 +264,6 @@ public class FlipEleSubsystem extends SubsystemBase {
 
     // While the delay is active, we stay in "scoring mode" to prevent banner sensor processing
     inScoringMode = true;
-
-    // Log the reset actions
-    Logger.recordOutput("Flipper/Reset Button Pressed", true);
-    Logger.recordOutput("Flipper/Reset Delay Active", resetButtonDelayActive);
-    Logger.recordOutput("Flipper/Gripper Opened by Reset", true);
-    Logger.recordOutput("Flipper/Centerer Opened by Reset", true);
-    Logger.recordOutput("Flipper/All Pending Operations Cancelled", true);
-    SmartDashboard.putBoolean("Reset Delay Active", resetButtonDelayActive);
-    SmartDashboard.putString(
-        "Reset Status", "Centerer and gripper opened, all operations cancelled");
   }
 
   @Override
@@ -282,6 +273,9 @@ public class FlipEleSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("Second Stage", elevatorPusher2.get());
     Logger.recordOutput("Elevator/First Stage Up", elevatorPusher1.get());
     Logger.recordOutput("Elevator/Second Stage Up", elevatorPusher2.get());
+    Logger.recordOutput("Flipper/Grip", gripper.get());
+    Logger.recordOutput("Flipper/center", centerer.get());
+    Logger.recordOutput("Flipper/flipper", flipper.get());
 
     // Check if elevator has been lowered, and start post-lowering delay
     if (!elevatorPusher1.get()
@@ -292,10 +286,6 @@ public class FlipEleSubsystem extends SubsystemBase {
       elevatorLoweringTimer.reset();
       elevatorLoweringTimer.start();
       elevatorLoweringDelayActive = true;
-
-      // Keep in scoring mode during delay to prevent banner sensor processing
-      // inScoringMode = false; (we'll do this after delay)
-      Logger.recordOutput("Elevator/Waiting For Post-Lowering Delay", true);
     }
 
     // Check if post-lowering delay has elapsed
@@ -306,8 +296,6 @@ public class FlipEleSubsystem extends SubsystemBase {
       // After delay, exit scoring mode to allow banner sensor processing
       inScoringMode = false;
       elevatorLoweringDelayActive = false;
-      Logger.recordOutput("Elevator/Waiting For Post-Lowering Delay", false);
-      Logger.recordOutput("Elevator/Scoring Mode", false);
     }
 
     // Check if elevator is up (either stage) and ensure centerer stays open
@@ -343,25 +331,21 @@ public class FlipEleSubsystem extends SubsystemBase {
       gripperClosePending = false;
 
       // Check if the delay has elapsed
-      if (resetButtonTimer.hasElapsed(2.0)) { // 2 second delay after reset button
+      if (resetButtonTimer.hasElapsed(0.0)) { // 2 second delay after reset button
         // After delay, exit scoring mode to allow banner sensor processing
         inScoringMode = false;
         resetButtonDelayActive = false;
-        Logger.recordOutput("Flipper/Reset Delay Complete", true);
-        Logger.recordOutput("Flipper/Reset Delay Active", false);
-        SmartDashboard.putBoolean("Reset Delay Active", false);
       }
     }
 
     // Process flipper actuation delay timer
     if (flipperActuationDelayActive
-        && flipperActuationTimer.hasElapsed(2.0)) { // 2 second delay after flipper actuation
+        && flipperActuationTimer.hasElapsed(
+            flipperDelay)) { // 2 second delay after flipper actuation
       // After delay, exit scoring mode to allow banner sensor processing
       inScoringMode = false;
       flipperActuationDelayActive = false;
-      Logger.recordOutput("Flipper/Flipper Delay Complete", true);
-      Logger.recordOutput("Flipper/Flipper Delay Active", false);
-      SmartDashboard.putBoolean("Flipper Delay Active", false);
+      flipper.set(false);
     }
 
     // Process gripper release delay timer - 1.0 seconds after flipper actuation
@@ -371,10 +355,6 @@ public class FlipEleSubsystem extends SubsystemBase {
       // After delay, open the gripper to release the game piece
       gripper.set(false);
       gripperReleaseDelayActive = false;
-      Logger.recordOutput("Flipper/Gripper Released After Scoring", true);
-      Logger.recordOutput("Flipper/Gripper Release Delay Active", false);
-      SmartDashboard.putBoolean("Gripper Release Delay Active", false);
-      SmartDashboard.putString("Scoring Status", "Gripper released after 1.0s delay");
     }
 
     // Process gripper delay timer - 0.5 seconds after centerer is closed
@@ -384,13 +364,9 @@ public class FlipEleSubsystem extends SubsystemBase {
       if (gripperClosePending) {
         gripper.set(true);
         gripperClosePending = false;
-        Logger.recordOutput("Flipper/Gripper Closed After Centerer Delay", true);
-        SmartDashboard.putString("Banner State", "Gripper closed 0.5s after centerer");
       }
 
       gripperDelayActive = false;
-      Logger.recordOutput("Flipper/Gripper Delay Complete", true);
-      Logger.recordOutput("Flipper/Gripper Delay Active", false);
     }
 
     // Skip banner sensor handling while elevator is up, going up, in scoring mode, or in
@@ -407,34 +383,25 @@ public class FlipEleSubsystem extends SubsystemBase {
       if (bannerSensorTriggered) {
         // If we're in the delay period after detecting coral
         if (centererDelayActive
-            && centererTimer.hasElapsed(1.0)) { // Changed to 1.0 second delay before centering
+            && centererTimer.hasElapsed(0.3)) { // Changed to 0.3 second delay before centering
           // The 1.0 second delay has elapsed
 
           // Close the centerer first if needed
           if (centererClosePending) {
             centerer.set(true);
             centererClosePending = false;
-            Logger.recordOutput("Flipper/Centerer Closed After Delay", true);
 
             // Start the gripper delay timer
             if (gripperClosePending && !gripperDelayActive) {
               gripperDelayTimer.reset();
               gripperDelayTimer.start();
               gripperDelayActive = true;
-              Logger.recordOutput("Flipper/Gripper Delay Started", true);
-              Logger.recordOutput("Flipper/Gripper Delay Time", 0.5);
-              SmartDashboard.putString("Banner State", "Centerer closed, waiting 0.5s for gripper");
             }
           }
 
           // Set the holding state flag - gripper will close after its own delay
           inHoldingState = true;
           centererDelayActive = false;
-
-          // Log that we're in holding state
-          Logger.recordOutput("Flipper/Entered Holding State", true);
-          Logger.recordOutput("Flipper/Banner Delay Complete", true);
-          SmartDashboard.putString("Banner State", "Centerer closed, waiting for gripper delay");
         }
       }
     } else {
@@ -448,60 +415,12 @@ public class FlipEleSubsystem extends SubsystemBase {
       centerer.set(false);
 
       // Check if delay has elapsed
-      if (elevatorTimer.hasElapsed(1.5)) { // Changed to 0.75 second delay
+      if (elevatorTimer.hasElapsed(0.0)) { // Changed to 0.75 second delay
         // After delay, raise the elevator
         elevatorPusher1.set(true);
         elevatorDelayActive = false;
-        // Log that the delay is complete
-        Logger.recordOutput("Elevator/Waiting For Delay", false);
-        Logger.recordOutput("Elevator/Elevator Raised After Delay", true);
-        SmartDashboard.putString("Elevator State", "Raised after 0.75s delay");
-      } else {
-        // Still in delay, log the current delay time
-        SmartDashboard.putString(
-            "Elevator State", "Waiting - " + elevatorTimer.get() + "s elapsed");
       }
     }
-
-    // Log additional state information
-    Logger.recordOutput("Flipper/Gripper Is Closed", gripper.get());
-    Logger.recordOutput("Flipper/Robot Thinks Has Coral", believesHasCoral);
-    Logger.recordOutput("Flipper/In Holding State", inHoldingState);
-    Logger.recordOutput("Flipper/In Scoring Mode", inScoringMode);
-    Logger.recordOutput("Flipper/Centerer Closed", !centerer.get());
-    Logger.recordOutput("Flipper/Elevator Delay Active", elevatorDelayActive);
-    Logger.recordOutput("Flipper/Post-Lowering Delay Active", elevatorLoweringDelayActive);
-    Logger.recordOutput("Flipper/Banner Sensor Triggered", bannerSensorTriggered);
-    Logger.recordOutput("Flipper/Centerer Delay Active", centererDelayActive);
-    Logger.recordOutput("Flipper/Gripper Delay Active", gripperDelayActive);
-    if (centererDelayActive) {
-      Logger.recordOutput("Flipper/Centerer Delay Elapsed", centererTimer.get());
-      Logger.recordOutput("Flipper/Centerer Delay Remaining", 1.0 - centererTimer.get());
-      SmartDashboard.putNumber("Banner Sensor Delay Remaining", 1.0 - centererTimer.get());
-    }
-
-    if (gripperDelayActive) {
-      Logger.recordOutput("Flipper/Gripper Delay Elapsed", gripperDelayTimer.get());
-      Logger.recordOutput("Flipper/Gripper Delay Remaining", 0.5 - gripperDelayTimer.get());
-      SmartDashboard.putNumber("Gripper Delay Remaining", 0.5 - gripperDelayTimer.get());
-    }
-    Logger.recordOutput("Flipper/Elevator Up", elevatorPusher1.get() || elevatorPusher2.get());
-    Logger.recordOutput("Flipper/Gripper Release Delay Active", gripperReleaseDelayActive);
-    if (gripperReleaseDelayActive) {
-      Logger.recordOutput(
-          "Flipper/Gripper Release Time Remaining", 1.0 - gripperReleaseTimer.get());
-    }
-    Logger.recordOutput(
-        "Flipper/Banner Sensors Disabled",
-        inScoringMode
-            || elevatorPusher1.get()
-            || elevatorPusher2.get()
-            || elevatorDelayActive
-            || elevatorLoweringDelayActive
-            || resetButtonDelayActive
-            || flipperActuationDelayActive);
-    Logger.recordOutput(
-        "Flipper/Coral Secured", (gripper.get() && coralDetector1.get() && coralDetector2.get()));
 
     SmartDashboard.putBoolean("Gripper Closed", gripper.get());
     SmartDashboard.putBoolean("Thinks has coral", believesHasCoral);
@@ -516,7 +435,7 @@ public class FlipEleSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("Elevator Up", elevatorPusher1.get() || elevatorPusher2.get());
     SmartDashboard.putBoolean("Gripper Release Delay Active", gripperReleaseDelayActive);
     if (gripperReleaseDelayActive) {
-      SmartDashboard.putNumber("Gripper Release Countdown", 1.0 - gripperReleaseTimer.get());
+      SmartDashboard.putNumber("Gripper Release Countdown", gripperReleaseTimer.get());
     }
     SmartDashboard.putBoolean(
         "Banner Sensors Disabled",
@@ -537,12 +456,13 @@ public class FlipEleSubsystem extends SubsystemBase {
     CommandScheduler.getInstance().schedule(getFlipperCommand(flipperDelay));
   }
 
-  public Command getFlipperCommand(double flipperDelay) {
+  public Command getFlipperCommand(double flipperDelay_) {
     return new InstantCommand(
         () -> {
           // Start the flipper pulse - this keeps the flipper out for flipperDelay seconds
-          flipper.setPulseDuration(flipperDelay);
-          flipper.startPulse();
+          //          flipper.setPulseDuration(flipperDelay);
+          //          flipper.startPulse();
+          flipper.set(true);
 
           // Ensure centerer is open during scoring
           centerer.set(false);
@@ -565,6 +485,7 @@ public class FlipEleSubsystem extends SubsystemBase {
           flipperActuationTimer.reset();
           flipperActuationTimer.start();
           flipperActuationDelayActive = true;
+          flipperDelay = flipperDelay_;
 
           // Log the actions
           Logger.recordOutput("Flipper/Flipper Started", true);
@@ -603,11 +524,23 @@ public class FlipEleSubsystem extends SubsystemBase {
    */
   public void resetAutoscoreState() {
     // Reset all timers to ensure clean state
+
+    elevatorDelayActive = false;
+    elevatorTimer.stop();
+    elevatorTimer.reset();
+    elevatorTimer.start();
+
+    flipper.set(false);
+    raiseElevator(0);
     flipperActuationTimer.stop();
+    flipperActuationTimer.reset();
+    flipperActuationTimer.start();
     flipperActuationDelayActive = false;
 
     // Make sure the gripper release timer is stopped
     gripperReleaseTimer.stop();
+    gripperReleaseTimer.reset();
+    gripperReleaseTimer.start();
     gripperReleaseDelayActive = false;
 
     // Don't immediately exit scoring mode, let natural cycle handle it

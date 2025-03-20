@@ -145,6 +145,13 @@ public class Robot extends LoggedRobot {
     }
 
     robotContainer.elevator.raiseElevator(0);
+
+    //    if (DriverStation.getAlliance().isPresent()) {
+    //      RobotContainer.setCageClimb(
+    //          DriverStation.getAlliance().get() == DriverStation.Alliance.Blue
+    //              ? new Pose2d(7.736 + 0.15, 7.254, Rotation2d.fromDegrees(-90.0))
+    //              : new Pose2d(9.786 - 0.15, 0.766, Rotation2d.fromDegrees(90.0)));
+    //    }
   }
 
   /** This function is called periodically during operator control. */

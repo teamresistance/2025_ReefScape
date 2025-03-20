@@ -33,6 +33,7 @@ public class InterfaceActionCmd2 extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    subsystem.elevator.resetAutoscoreState();
     //    subsystem.forceStopExecution();
     //    subsystem.drive_command.cancel();
     //    finished = true;
