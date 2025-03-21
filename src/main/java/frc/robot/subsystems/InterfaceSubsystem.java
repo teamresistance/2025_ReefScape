@@ -95,7 +95,7 @@ public class InterfaceSubsystem extends SubsystemBase {
     }
 
     drive_command =
-        (drive.testingmode
+        (!drive.testingmode
                 ? AutoBuilder.pathfindToPose(
                     GeomUtil.transformToPose(targetTransform),
                     Constants.PATH_CONSTRAINTS,
@@ -301,7 +301,7 @@ public class InterfaceSubsystem extends SubsystemBase {
     }
 
     drive_command =
-        (drive.testingmode
+        (!drive.testingmode
                 ? AutoBuilder.pathfindToPose(
                     GeomUtil.transformToPose(targetTransform),
                     Constants.PATH_CONSTRAINTS,
@@ -313,6 +313,7 @@ public class InterfaceSubsystem extends SubsystemBase {
                     () -> {
                       elevator.centererClosePending = false;
                       elevator.centerer.set(false);
+                      elevator.setInScoringMode(true);
                     }))
             .andThen(Commands.waitSeconds(0.25))
             .andThen(
