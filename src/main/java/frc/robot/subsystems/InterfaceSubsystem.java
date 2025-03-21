@@ -353,44 +353,51 @@ public class InterfaceSubsystem extends SubsystemBase {
                 Commands.waitSeconds(Constants.SECONDS_TO_RAISE_ELEVATOR.get())
                     .andThen(
                         () -> {
-                          elevator.flipperScore(Constants.SECONDS_TO_SCORE.get());
+                          elevator.flipperScore(Constants.SECONDS_TO_SCORE.get() + 3);
                         })
                     //            .alongWith(DriveCommands.joystickDrive())
                     .andThen(Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() + 0.1))
-                    .andThen(Commands.waitSeconds(1.1))
+//                    .andThen(Commands.waitSeconds(0.0))
                     .andThen(
                         goToTransform(
                                 drive,
                                 targetTransform.plus(
-                                    new Transform2d(0.50, -0.05, new Rotation2d(0))))
-                            .andThen(Commands.runOnce(drive::stop))
+                                    new Transform2d(0.2, -0.05, new Rotation2d(0))))
                             .andThen(
-                                () -> {
-                                  elevator.flipperScore(Constants.SECONDS_TO_SCORE.get());
-                                })
-                            .andThen(
-                                () -> {
-                                  elevator.raiseElevator(0);
-                                })
-                            // Add conditional delay based on which button was pressed
-                            .andThen(
-                                Commands.waitSeconds(
-                                    needsLongerDelay
-                                        ? Constants.SECONDS_TO_SCORE.get() - 0.5
-                                        : // 0.5s longer for CDGHKL
-                                        Constants.SECONDS_TO_SCORE.get()
-                                            - 1.0)) // Standard delay for others
-                            .andThen(goToTransform(drive, targetTransform))
-                            .andThen(
-                                () -> {
-                                  //                          System.out.println("drive command
-                                  // executed and
-                                  // ended");
-                                  //
-                                  //                          stuff.finishparentCommand();
-                                  //                          stuff.end(true);
-                                  //                          drive.stop();
-                                })));
+                                goToTransform(
+                                        drive,
+                                        targetTransform.plus(
+                                            new Transform2d(0.53, -0.05, new Rotation2d(0))))
+                                    .andThen(Commands.runOnce(drive::stop))
+                                    .andThen(
+                                        () -> {
+                                          //
+                                          // elevator.flipperScore(Constants.SECONDS_TO_SCORE.get());
+                                        })
+                                    .andThen(
+                                        () -> {
+                                          elevator.raiseElevator(0);
+                                        })
+                                    // Add conditional delay based on which button was pressed
+                                    .andThen(
+                                        Commands.waitSeconds(
+                                            needsLongerDelay
+                                                ? Constants.SECONDS_TO_SCORE.get() - 0.5
+                                                : // 0.5s longer for CDGHKL
+                                                Constants.SECONDS_TO_SCORE.get()
+                                                    - 1.0)) // Standard delay for others
+                                    .andThen(goToTransform(drive, targetTransform))
+                                    .andThen(
+                                        () -> {
+                                          //                          System.out.println("drive
+                                          // command
+                                          // executed and
+                                          // ended");
+                                          //
+                                          //                          stuff.finishparentCommand();
+                                          //                          stuff.end(true);
+                                          //                          drive.stop();
+                                        }))));
 
     //    elevator.raiseFromInterface(level);
     CommandScheduler.getInstance().schedule(drive_command);
