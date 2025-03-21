@@ -27,25 +27,23 @@ public class Vision extends SubsystemBase {
 
   private final PhotonCamera[] cameras;
   /* For shooting vs. path following in auto */
-  private final double stdDevScalarShooting = 1.6;
+  private final double stdDevScalarShooting = 0.2;
   private final double thetaStdDevCoefficientShooting = 0.075;
   private final PolynomialRegression xyStdDevModel =
       new PolynomialRegression(
           new double[] {
             0.752358, 1.016358, 1.296358, 1.574358, 1.913358, 2.184358, 2.493358, 2.758358,
-            3.223358, 4.093358, 4.726358, 6.0
+            3.223358, 4.093358, 4.726358
           },
-          new double[] {0.005, 0.0135, 0.016, 0.028, 0.0815, 2.4, 3.62, 5.7, 5.9, 5.3, 20.0, 25.0},
-          3);
+          new double[] {0.005, 0.0135, 0.016, 0.038, 0.0515, 0.0925, 0.12, 0.14, 0.17, 0.27, 0.38},
+          2);
   private final PolynomialRegression thetaStdDevModel =
       new PolynomialRegression(
           new double[] {
             0.752358, 1.016358, 1.296358, 1.574358, 1.913358, 2.184358, 2.493358, 2.758358,
-            3.223358, 4.093358, 4.726358, 6
+            3.223358, 4.093358, 4.726358
           },
-          new double[] {
-            0.008, 0.027, 0.015, 0.044, 0.04, 0.078, 0.089, 02.027, 3.459, 4.629, 6.068, 13.0
-          },
+          new double[] {0.008, 0.027, 0.015, 0.044, 0.04, 0.078, 0.049, 0.027, 0.059, 0.029, 0.068},
           1);
   AprilTagFieldLayout aprilTagFieldLayout;
   private Consumer<List<TimestampedVisionUpdate>> visionConsumer = (x) -> {};
@@ -178,7 +176,7 @@ public class Vision extends SubsystemBase {
         Logger.recordOutput("Photon/Camera Pose (Single Tag) " + instanceIndex, cameraPose);
       }
 
-      if (robotPose == null) {
+      if (cameraPose == null || robotPose == null) {
         continue;
       }
 

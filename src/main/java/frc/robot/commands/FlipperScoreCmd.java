@@ -6,11 +6,9 @@ import frc.robot.subsystems.FlipperSubsystem;
 public class FlipperScoreCmd extends Command {
 
   private FlipperSubsystem subsystem;
-  private double flipperDelay;
 
-  public FlipperScoreCmd(FlipperSubsystem subsystem, double flipperDelay) {
+  public FlipperScoreCmd(FlipperSubsystem subsystem) {
     this.subsystem = subsystem;
-    this.flipperDelay = flipperDelay;
     addRequirements(subsystem);
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -22,7 +20,7 @@ public class FlipperScoreCmd extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    subsystem.flipperScore(flipperDelay);
+    subsystem.flipperScore();
   }
 
   // Called once the command ends or is interrupted.
