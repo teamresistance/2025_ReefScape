@@ -5,57 +5,45 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "part 1"
+            "name": "4 Level"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "D Branch"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 4.0
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "grip"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "part 2 v2"
+            "pathName": "Right Push"
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 1.5
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "part 3"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.0
+            "name": "autoScore"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "part 4"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.5
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "part5"
+            "pathName": "17-Source"
           }
         },
         {
@@ -65,27 +53,45 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "part 6"
+            "name": "grip"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "C Branch"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.5
+            "waitTime": 0.25
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "part7"
+            "pathName": "Source - 17"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "autoScore"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "17-Source"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Right",
   "choreoAuto": false
 }

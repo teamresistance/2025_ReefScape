@@ -28,10 +28,8 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.Alert.AlertType;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -47,6 +45,7 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class DriveSubsystem extends SubsystemBase {
+
   public static final double DRIVE_BASE_RADIUS =
       Math.max(
           Math.max(
@@ -60,7 +59,7 @@ public class DriveSubsystem extends SubsystemBase {
       new CANBus(TunerConstants.DrivetrainConstants.CANBusName).isNetworkFD() ? 250.0 : 100.0;
   static final Lock odometryLock = new ReentrantLock();
   // PathPlanner config constants
-  private static final double ROBOT_MASS_KG = Units.lbsToKilograms(45.0);
+  private static final double ROBOT_MASS_KG = Units.lbsToKilograms(125.0);
   private static final double ROBOT_MOI =
       1.0
           / 12.0
@@ -81,13 +80,18 @@ public class DriveSubsystem extends SubsystemBase {
               TunerConstants.FrontLeft.SlipCurrent,
               1),
           getModuleTranslations());
+  private static final PneumaticsModuleType modType = PneumaticsModuleType.CTREPCM;
+  private static final int modID = 2; // CAN adr, ID, of PDH
+  public static Compressor pcm = new Compressor(modID, modType);
+  // PCM Air
+  private final Relay compressorRelay = new Relay(0); // Relay port 0
+  private final AnalogInput pressureSensor;
   private final GyroIO gyroIO;
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
   private final SysIdRoutine sysId;
   private final Alert gyroDisconnectedAlert =
       new Alert("Disconnected gyro, using kinematics as fallback.", AlertType.kError);
-
   private final SwerveDriveKinematics kinematics =
       new SwerveDriveKinematics(getModuleTranslations());
   private final SwerveModulePosition[] lastModulePositions = // For delta tracking
@@ -97,6 +101,7 @@ public class DriveSubsystem extends SubsystemBase {
         new SwerveModulePosition(),
         new SwerveModulePosition()
       };
+  public boolean testingmode = false;
   private Rotation2d rawGyroRotation = new Rotation2d();
   private final SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
@@ -107,6 +112,8 @@ public class DriveSubsystem extends SubsystemBase {
       ModuleIO frModuleIO,
       ModuleIO blModuleIO,
       ModuleIO brModuleIO) {
+    pressureSensor = new AnalogInput(0); // Ensure this is declared only once
+
     this.gyroIO = gyroIO;
     modules[0] = new Module(flModuleIO, 0, TunerConstants.FrontLeft);
     modules[1] = new Module(frModuleIO, 1, TunerConstants.FrontRight);
@@ -128,7 +135,10 @@ public class DriveSubsystem extends SubsystemBase {
         new PPHolonomicDriveController(
             new PIDConstants(5.0, 0.0, 0.0), new PIDConstants(5.0, 0.0, 0.0)),
         PP_CONFIG,
-        () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
+        () ->
+            DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue)
+                == DriverStation.Alliance
+                    .Red, // this is correct, model all trajectories for blue side in path planner
         this);
     Pathfinding.setPathfinder(new LocalADStarAK());
     PathPlannerLogging.setLogActivePathCallback(
@@ -150,9 +160,12 @@ public class DriveSubsystem extends SubsystemBase {
                 (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
             new SysIdRoutine.Mechanism(
                 (voltage) -> runCharacterization(voltage.in(Volts)), null, this));
+
+    // pch.enableAnalog(105.0, 120.0); // Reads 120 high
+    pcm.enableDigital();
   }
 
-  /** Returns an array of module translations. */
+  /** Returns array of module translations. */
   public static Translation2d[] getModuleTranslations() {
     return new Translation2d[] {
       new Translation2d(TunerConstants.FrontLeft.LocationX, TunerConstants.FrontLeft.LocationY),
@@ -162,8 +175,24 @@ public class DriveSubsystem extends SubsystemBase {
     };
   }
 
+  private double getPressurePSI() {
+    double voltage = pressureSensor.getVoltage();
+    return (250 * (voltage / 5.0)) - 25; // Example conversion
+  }
+
   @Override
   public void periodic() {
+    Command currentCommand = this.getCurrentCommand();
+    Logger.recordOutput(
+        "current Command", currentCommand != null ? currentCommand.getName() : "None");
+
+    Logger.recordOutput("Air Pressure", getPressurePSI());
+    if (getPressurePSI() < 110) {
+      compressorRelay.set(Relay.Value.kForward); // Turn ON compressor
+    } else if (getPressurePSI() > 121) {
+      compressorRelay.set(Relay.Value.kOff); // Turn OFF compressor
+    }
+
     odometryLock.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
     Logger.processInputs("Drive/Gyro", gyroInputs);
@@ -236,9 +265,11 @@ public class DriveSubsystem extends SubsystemBase {
     Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
     Logger.recordOutput("SwerveChassisSpeeds/Setpoints", discreteSpeeds);
 
-    // Send setpoints to modules
-    for (int i = 0; i < 4; i++) {
-      modules[i].runSetpoint(setpointStates[i]);
+    if (!testingmode) {
+      // Send setpoints to modules
+      for (int i = 0; i < 4; i++) {
+        modules[i].runSetpoint(setpointStates[i]);
+      }
     }
 
     // Log optimized setpoints (runSetpoint mutates each state)
