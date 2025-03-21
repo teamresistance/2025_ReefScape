@@ -314,7 +314,7 @@ public class InterfaceSubsystem extends SubsystemBase {
                       elevator.centererClosePending = false;
                       elevator.centerer.set(false);
                     }))
-            .andThen(Commands.waitSeconds(0.25))
+            .andThen(Commands.waitSeconds(0.35))
             .andThen(
                 () -> {
                   //                  // Use requestElevatorRaise for first stage when level is 3 or
