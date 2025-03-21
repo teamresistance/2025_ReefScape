@@ -22,10 +22,10 @@ public final class Constants {
   public static final int CORAL_SENSOR_CHANNEL1 = 0;
   public static final int CORAL_SENSOR_CHANNEL2 = 1;
   public static final LoggedTunableNumber SECONDS_TO_RAISE_ELEVATOR =
-      new LoggedTunableNumber("SECONDS_TO_RAISE_ELEVATOR", 0.5);
+      new LoggedTunableNumber("SECONDS_TO_RAISE_ELEVATORnewww", 0.4);
 
   public static final LoggedTunableNumber SECONDS_TO_SCORE =
-      new LoggedTunableNumber("SECONDS_TO_SCORE", 1.0);
+      new LoggedTunableNumber("SECONDS_TO_SCOREnewww", 1.2);
 
   public static final double SECONDS_GRIPPER_DELAY = 0;
   public static final int CORAL_SENSOR_CHANNEL_1 = 0;
@@ -46,7 +46,7 @@ public final class Constants {
   public static PathConstraints PATH_CONSTRAINTS =
       new PathConstraints(
           TunerConstants.kSpeedAt12Volts.in(MetersPerSecond), // TODO: CHANGE BACK
-          4.2, // TODO: CHANGE BACK
+          5.0, // TODO: CHANGE BACK
           Units.degreesToRadians(540),
           Units.degreesToRadians(400));
 

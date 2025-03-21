@@ -12,7 +12,9 @@ public class ClimberSubsystem extends SubsystemBase {
   private final Solenoid climberSV =
       new Solenoid(2, Constants.SOLENOID_MODULE_TYPE, Constants.CLIMBER_SOLENOID_CHANNEL);
 
-  public ClimberSubsystem() {}
+  public ClimberSubsystem() {
+    Logger.recordOutput("Climber/CurrentCage", 0);
+  }
 
   /** Activates the climber. Cannot be deactivated!! One-use. */
   public void activateClimber() {

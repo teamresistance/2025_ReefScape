@@ -3,9 +3,14 @@
   "robotLength": 0.9144,
   "holonomicMode": true,
   "pathFolders": [
-    "Red Right !!BAD!!"
+    "Left 3 Piece",
+    "Right 3 Piece",
+    "Red Right !!BAD!!",
+    "Taxi"
   ],
   "autoFolders": [
+    "Left",
+    "Right",
     "OLD"
   ],
   "defaultMaxVel": 4.68,

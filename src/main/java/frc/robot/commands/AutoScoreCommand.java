@@ -1,82 +1,99 @@
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.ClimberSubsystem;
+import com.pathplanner.lib.auto.AutoBuilder;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.Constants;
+import frc.robot.FieldConstants;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.FlipperSubsystem;
 import frc.robot.subsystems.InterfaceSubsystem;
 import frc.robot.subsystems.drive.DriveSubsystem;
-import frc.robot.subsystems.vision.Vision;
+import frc.robot.util.GeomUtil;
 
-public class AutoScoreCommand extends Command {
-  private final ClimberSubsystem climberSubsystem;
-  private final DriveSubsystem driveSubsystem;
-  private final ElevatorSubsystem elevatorSubsystem;
-  private final FlipperSubsystem flipperSubsystem;
-  private final InterfaceSubsystem interfaceSubsystem;
-  private final Vision vision;
-
+public class AutoScoreCommand extends SequentialCommandGroup {
   public AutoScoreCommand(
-      ClimberSubsystem climberSubsystem,
-      DriveSubsystem driveSubsystem,
-      ElevatorSubsystem elevatorSubsystem,
-      FlipperSubsystem flipperSubsystem,
-      InterfaceSubsystem interfaceSubsystem,
-      Vision vision) {
-    this.climberSubsystem = climberSubsystem;
-    this.driveSubsystem = driveSubsystem;
-    this.elevatorSubsystem = elevatorSubsystem;
-    this.flipperSubsystem = flipperSubsystem;
-    this.interfaceSubsystem = interfaceSubsystem;
-    this.vision = vision;
-    // each subsystem used by the command must be passed into the
-    // addRequirements() method (which takes a vararg of Subsystem)
-    addRequirements(
-        this.climberSubsystem,
-        this.driveSubsystem,
-        this.elevatorSubsystem,
-        this.flipperSubsystem,
-        this.interfaceSubsystem,
-        this.vision);
+      InterfaceSubsystem reef,
+      DriveSubsystem drive,
+      ElevatorSubsystem elevator,
+      FlipperSubsystem flipper) {
+    // Determine target transform based on selected pole
+    String pole = reef.getPole();
+    boolean isRight = "b d f h j l".contains(pole);
+    Transform2d targetTransform;
+    switch (pole) {
+      case "a":
+        targetTransform = reef.getTranslationFromPlace(FieldConstants.Place.A_TREE);
+        break;
+      case "b":
+        targetTransform = reef.getTranslationFromPlace(FieldConstants.Place.B_TREE);
+        break;
+      case "c":
+        targetTransform = reef.getTranslationFromPlace(FieldConstants.Place.C_TREE);
+        break;
+      case "d":
+        targetTransform = reef.getTranslationFromPlace(FieldConstants.Place.D_TREE);
+        break;
+      case "e":
+        targetTransform = reef.getTranslationFromPlace(FieldConstants.Place.E_TREE);
+        break;
+      case "f":
+        targetTransform = reef.getTranslationFromPlace(FieldConstants.Place.F_TREE);
+        break;
+      case "g":
+        targetTransform = reef.getTranslationFromPlace(FieldConstants.Place.G_TREE);
+        break;
+      case "h":
+        targetTransform = reef.getTranslationFromPlace(FieldConstants.Place.H_TREE);
+        break;
+      case "i":
+        targetTransform = reef.getTranslationFromPlace(FieldConstants.Place.I_TREE);
+        break;
+      case "j":
+        targetTransform = reef.getTranslationFromPlace(FieldConstants.Place.J_TREE);
+        break;
+      case "k":
+        targetTransform = reef.getTranslationFromPlace(FieldConstants.Place.K_TREE);
+        break;
+      case "l":
+        targetTransform = reef.getTranslationFromPlace(FieldConstants.Place.L_TREE);
+        break;
+      default:
+        throw new IllegalStateException("Unexpected pole: " + pole);
+    }
+
+    // Calculate left/right offset based on whether the target is on the right side
+    Transform2d leftRightOffset =
+        isRight
+            ? new Transform2d(0.50, -0.24, new Rotation2d())
+            : new Transform2d(0.50, 0.11, new Rotation2d());
+
+    // Build the autoscore command chain
+    addCommands(
+        // 1. Pathfind to the target pose (converted from targetTransform)
+        AutoBuilder.pathfindToPose(
+            GeomUtil.transformToPose(targetTransform), Constants.PATH_CONSTRAINTS, 0.0),
+
+        // 2. Raise the elevator to the selected level
+        new InstantCommand(() -> elevator.raiseFromInterface(reef.getLevel())),
+
+        // 3. Drive to a pose adjusted by the left/right offset
+        DriveCommands.goToTransform(drive, targetTransform.plus(leftRightOffset)),
+        Commands.runOnce(drive::stop),
+        // 4. Wait for the elevator to raise (nonblocking wait)
+        Commands.waitSeconds(Constants.SECONDS_TO_RAISE_ELEVATOR.get()),
+
+        // 5. Activate the flipper command for scoring (assume flipper.getFlipperCommand returns a
+        // Command)
+        flipper.getFlipperCommand(Constants.SECONDS_TO_SCORE.get() + 8),
+
+        // 6. Wait a short time after scoring
+        Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() - 0.2),
+
+        // 7. Lower the elevator back down
+        new InstantCommand(() -> elevator.raiseFromInterface(0)));
   }
-
-  /** The initial subroutine of a command. Called once when the command is initially scheduled. */
-  @Override
-  public void initialize() {}
-
-  /**
-   * The main body of a command. Called repeatedly while the command is scheduled. (That is, it is
-   * called repeatedly until {@link #isFinished()}) returns true.)
-   */
-  @Override
-  public void execute() {}
-
-  /**
-   * Returns whether this command has finished. Once a command finishes -- indicated by this method
-   * returning true -- the scheduler will call its {@link #end(boolean)} method.
-   *
-   * <p>Returning false will result in the command never ending automatically. It may still be
-   * cancelled manually or interrupted by another command. Hard coding this command to always return
-   * true will result in the command executing once and finishing immediately. It is recommended to
-   * use * {@link edu.wpi.first.wpilibj2.command.InstantCommand InstantCommand} for such an
-   * operation.
-   *
-   * @return whether this command has finished.
-   */
-  @Override
-  public boolean isFinished() {
-    // TODO: Make this return true when this Command no longer needs to run execute()
-    return false;
-  }
-
-  /**
-   * The action to take when the command ends. Called when either the command finishes normally --
-   * that is it is called when {@link #isFinished()} returns true -- or when it is
-   * interrupted/canceled. This is where you may want to wrap up loose ends, like shutting off a
-   * motor that was being used in the command.
-   *
-   * @param interrupted whether the command was interrupted/canceled
-   */
-  @Override
-  public void end(boolean interrupted) {}
 }

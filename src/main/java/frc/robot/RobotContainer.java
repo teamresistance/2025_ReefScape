@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -27,6 +28,7 @@ import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.GeomUtil;
 import java.io.IOException;
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.photonvision.PhotonCamera;
 
@@ -37,26 +39,26 @@ import org.photonvision.PhotonCamera;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+  public boolean testingmode = false;
   private static Pose2d climbTargetTransform = new Pose2d();
   private static Transform2d stationTargetTransform =
-      new Transform2d(15.86, 1.64, new Rotation2d(Units.degreesToRadians(-54.4)));
+      new Transform2d(15.9, 0.72, new Rotation2d(Units.degreesToRadians(-54.4)));
   private static Transform2d stationOffsetTransform =
-      new Transform2d(0.15, 0.0, new Rotation2d(0.0));
+      new Transform2d(0.2, 0.0, new Rotation2d(0.0));
 
   public final PhotonCamera frontLeftCamera = new PhotonCamera("front-left");
   public final PhotonCamera frontRightCamera = new PhotonCamera("front-right");
   public final PhotonCamera backLeftCamera = new PhotonCamera("back_left");
   public final PhotonCamera backRightCamera = new PhotonCamera("back_right");
   public final PhotonCamera frontCenterCamera = new PhotonCamera("front-center");
+  public final ClimberSubsystem climber = new ClimberSubsystem();
   private final Alert cameraFailureAlert;
   // Subsystems
   private final DriveSubsystem drive;
   private final InterfaceSubsystem reef;
   private final FlipperSubsystem flipper = new FlipperSubsystem();
   //   private final PressureSubsystem pressure = new PressureSubsystem();
-  private final ElevatorSubsystem elevator = new ElevatorSubsystem();
-  private final ClimberSubsystem climber = new ClimberSubsystem();
-
+  final ElevatorSubsystem elevator = new ElevatorSubsystem(flipper);
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
   private final Joystick cojoystick = new Joystick(1);
@@ -67,7 +69,7 @@ public class RobotContainer {
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
   public Vision aprilTagVision;
-
+  public boolean ForceClimberUp = false;
   Translation2d targetTranslation = new Translation2d(12.225, 2.474); // X = 14, Y = 4
   Rotation2d targetRotation = new Rotation2d(Units.degreesToRadians(60.0)); // No rotation
   Transform2d targetTransform = new Transform2d(targetTranslation, targetRotation);
@@ -85,7 +87,7 @@ public class RobotContainer {
   }
 
   public static void setStationTargetTransform(Transform2d _targetTransform) {
-    stationOffsetTransform = _targetTransform;
+    stationTargetTransform = _targetTransform;
   }
 
   public static void setStationOffsetTransform(Transform2d _offsetTransform) {
@@ -117,7 +119,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("4 Level", new InterfaceVarsCmd(reef, "a", 4, false, true));
 
     NamedCommands.registerCommand(
-        "autoScore", new InterfaceActionCmd(reef, InterfaceExecuteMode.REEF));
+        "autoScore",
+        new DeferredCommand(() -> new AutoScoreCommand(reef, drive, elevator, flipper)));
   }
 
   private LoggedDashboardChooser<Command> configureAutos() {
@@ -218,48 +221,61 @@ public class RobotContainer {
     // Squeeze + grip
     driver.leftBumper().onTrue(new FlipperGripperCmd(flipper));
 
-    driver.b().onTrue(new CageSelectCmd.CycleCageCmd()); // cycles location of cage
+    driver.y().onTrue(new CageSelectCmd.CycleCageCmd()); // cycles location of cage
 
     // Climbing sequence
     driver
-        .start()
-        .and(driver.back())
+        .back()
         .whileTrue(
-            DriveCommands.goToTransformWithPathFinderPlusOffset(
-                    drive,
-                    GeomUtil.poseToTransform(climbTargetTransform),
-                    new Transform2d(0.0, 1.0, new Rotation2d(0.0)))
-                .andThen(Commands.runOnce(drive::stop, drive))
-                .andThen(Commands.waitSeconds(1.0))
-                .andThen(
-                    DriveCommands.goToTransform(
-                        drive,
-                        GeomUtil.poseToTransform(climbTargetTransform)
-                            .plus(new Transform2d(0.0, 0.8, new Rotation2d(0.0)))))
-                .andThen(Commands.runOnce(drive::stop, drive))
-                .andThen(Commands.waitSeconds(2.0))
-                .andThen(new ActivateClimberCommand(climber))
-                .beforeStarting(
-                    () -> {
-                      DriveCommands.goToTransform(
-                              drive, GeomUtil.poseToTransform(climbTargetTransform))
-                          .cancel();
-                      DriveCommands.goToTransformWithPathFinder(
-                              drive, GeomUtil.poseToTransform(climbTargetTransform))
-                          .cancel();
-                    }));
+            new DeferredCommand(
+                () ->
+                    new InstantCommand(() -> ForceClimberUp = true)
+                        .andThen(
+                            DriveCommands.goToTransformWithPathFinder(
+                                drive, GeomUtil.poseToTransform(climbTargetTransform)))
+                        .andThen(
+                            DriveCommands.goToTransformClimb(
+                                drive,
+                                GeomUtil.poseToTransform(climbTargetTransform)
+                                    .plus(new Transform2d(0.0, 1.0, new Rotation2d(0.0)))))
+                        .andThen(Commands.runOnce(drive::stop, drive))
+                        .andThen(Commands.waitSeconds(1.0))
+                        .andThen(
+                            DriveCommands.goToTransformClimb(
+                                drive,
+                                GeomUtil.poseToTransform(climbTargetTransform)
+                                    .plus(new Transform2d(0.0, 0.8, new Rotation2d(0.0)))))
+                        .andThen(Commands.runOnce(drive::stop, drive))
+                        .andThen(Commands.waitSeconds(2.0))
+                        .andThen(new ActivateClimberCommand(climber))
+                        .beforeStarting(
+                            () -> {
+                              DriveCommands.goToTransformClimb(
+                                      drive, GeomUtil.poseToTransform(climbTargetTransform))
+                                  .cancel();
+                              DriveCommands.goToTransformWithPathFinder(
+                                      drive, GeomUtil.poseToTransform(climbTargetTransform))
+                                  .cancel();
+                            })));
 
+    driver.start().onTrue(new ActivateClimberCommand(climber));
     driver
         .leftTrigger()
         .whileTrue(
-            DriveCommands.goToTransformWithPathFinderPlusOffset(
-                    drive, stationTargetTransform, stationOffsetTransform)
-                .beforeStarting(
-                    () -> {
-                      DriveCommands.goToTransform(drive, stationTargetTransform).cancel();
-                      DriveCommands.goToTransformWithPathFinder(drive, stationTargetTransform)
-                          .cancel();
-                    }));
+            new DeferredCommand(
+                () -> {
+                  Logger.recordOutput("stationOffset", stationOffsetTransform);
+                  return DriveCommands.goToTransformWithPathFinderPlusOffset(
+                          drive,
+                          stationTargetTransform,
+                          new Transform2d(0.15, 0.0, new Rotation2d(0.0)))
+                      .beforeStarting(
+                          () -> {
+                            DriveCommands.goToTransform(drive, stationTargetTransform).cancel();
+                            DriveCommands.goToTransformWithPathFinder(drive, stationTargetTransform)
+                                .cancel();
+                          });
+                }));
 
     driver.povUp().onTrue(new PickupStationCmd(0)); // Change to upper
     driver.povDown().onTrue(new PickupStationCmd(1)); // Change to lower
@@ -275,6 +291,14 @@ public class RobotContainer {
     driver.rightTrigger().onFalse(new InterfaceActionCmd(reef, InterfaceExecuteMode.DISABLE));
 
     driver
+        .a()
+        .whileTrue(
+            new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF)
+                .andThen(
+                    () -> {})); // When right trigger is pressed, drive to the location selected
+    driver.a().onFalse(new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE));
+
+    driver
         .rightBumper()
         .whileTrue(
             new InterfaceActionCmd(reef, InterfaceExecuteMode.ALGEE)
@@ -282,15 +306,14 @@ public class RobotContainer {
                     () -> {})); // When right trigger is pressed, drive to the location selected
     driver.rightBumper().onFalse(new InterfaceActionCmd(reef, InterfaceExecuteMode.DISABLE));
 
-    driver
-        .y()
-        .whileTrue(
-            new ElevatorCmd(elevator, 2, true)
-                .andThen(new FlipperScoreCmd(flipper, 1.0))
-                .andThen(
-                    new ElevatorCmd(
-                        elevator, 0,
-                        false))); // TODO: CLEAN UP INTO INTERFACE COMMAND, this is meant to raise
+    driver.b().onTrue(new FlipperScoreCmd(flipper, 1.0));
+    //            new ElevatorCmd(elevator, 2, true)
+    //                .andThen(new FlipperScoreCmd(flipper, 1.0))
+    //                .andThen(
+    //                    new ElevatorCmd(
+    //                        elevator, 0,
+    //                        false))); // TODO: CLEAN UP INTO INTERFACE COMMAND, this is meant to
+    // raise
     // elevator to selected level and actuate flipper
 
     //    Codriver Bindings
@@ -339,5 +362,10 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return autoChooser.get();
+  }
+
+  public void setTestingModetrue() {
+    testingmode = true;
+    drive.testingmode = true;
   }
 }

@@ -3,9 +3,7 @@ package frc.robot;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.DriveMotorArrangement;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerMotorArrangement;
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
-import edu.wpi.first.cscore.VideoSource.ConnectionStrategy;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -77,10 +75,10 @@ public class Robot extends LoggedRobot {
     }
 
     // Added USB Cams - JCH
-    camera1 = CameraServer.startAutomaticCapture(0);
-    camera2 = CameraServer.startAutomaticCapture(1);
-    camera1.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
-    camera2.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
+    //    camera1 = CameraServer.startAutomaticCapture(0);
+    //    camera2 = CameraServer.startAutomaticCapture(1);
+    //    camera1.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
+    //    camera2.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
 
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.
@@ -112,11 +110,15 @@ public class Robot extends LoggedRobot {
 
   /** This function is called once when the robot is disabled. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    //    if (robotContainer.ForceClimberUp) robotContainer.climber.activateClimber();
+  }
 
   /** This function is called periodically when disabled. */
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    //    if (robotContainer.ForceClimberUp) robotContainer.climber.activateClimber();
+  }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
@@ -124,9 +126,7 @@ public class Robot extends LoggedRobot {
     autonomousCommand = robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
-    if (autonomousCommand != null) {
-      autonomousCommand.schedule();
-    }
+    if (autonomousCommand != null) autonomousCommand.schedule();
   }
 
   /** This function is called periodically during autonomous. */
@@ -143,6 +143,8 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
+
+    robotContainer.elevator.raiseFromInterface(0);
   }
 
   /** This function is called periodically during operator control. */
@@ -162,7 +164,7 @@ public class Robot extends LoggedRobot {
     // Solenoid sol = new Solenoid(Constants.SOLENOID_MODULE_TYPE,
     // Constants.ELEVATOR_SOLENOID1_CHANNEL);
     // sol.set(true); // Force ON for testing
-
+    robotContainer.setTestingModetrue();
   }
 
   /** This function is called once when the robot is first started up. */

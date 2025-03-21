@@ -3,10 +3,8 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.*;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.Constants;
 import org.littletonrobotics.junction.Logger;
 
@@ -22,19 +20,18 @@ public class FlipperSubsystem extends SubsystemBase {
   // and 5
   private Solenoid flipper =
       new Solenoid(2, Constants.SOLENOID_MODULE_TYPE, Constants.FLIPPER_SOLENOID_CHANNEL);
-  private Solenoid coralCenterMechanism =
+  public Solenoid coralCenterMechanism =
       new Solenoid(2, Constants.SOLENOID_MODULE_TYPE, Constants.CENTERER_SOLENOID_CHANNEL);
   private DigitalInput coralDetector1 = new DigitalInput(Constants.CORAL_SENSOR_CHANNEL1);
   private DigitalInput coralDetector2 = new DigitalInput(Constants.CORAL_SENSOR_CHANNEL2);
-
-  /** Subsystem handling coral intake and dropping onto branches/level1. */
-  public FlipperSubsystem() {}
-
   // Variables to control flipperHoldingState execution
   private int flipperCallCount = 0; // Counter for function calls
   private Timer flipperTimer = new Timer(); // Timer instance for non-blocking delay
   private boolean waitingForDelay = false; // Flag to track delay state
   private boolean isFlipperActive = false; // Flag to manage repeated calls
+
+  /** Subsystem handling coral intake and dropping onto branches/level1. */
+  public FlipperSubsystem() {}
 
   public void flipperHoldingState() {
     if (flipperCallCount > 1) {
@@ -59,6 +56,7 @@ public class FlipperSubsystem extends SubsystemBase {
       }
     } else {
       gripper.set(true);
+      //      coralCenterMechanism.set(true);
       flipperCallCount = 0; // Reset count after gripping
       waitingForDelay = false;
       isFlipperActive = false;
@@ -95,11 +93,28 @@ public class FlipperSubsystem extends SubsystemBase {
 
   /** Flips the coral out. */
   public void flipperScore(double flipperDelay) {
+    //    coralCenterMechanism.set(false);
     flipper.setPulseDuration(flipperDelay);
     flipper.startPulse();
 
     CommandScheduler.getInstance()
         .schedule(
+            Commands.waitSeconds(0.75)
+                .andThen(
+                    () -> {
+                      gripper.set(false);
+                    }));
+  }
+
+  public void flipperClamp() {}
+
+  public Command getFlipperCommand(double flipperDelay) {
+    return new InstantCommand(
+            () -> {
+              flipper.setPulseDuration(flipperDelay);
+              flipper.startPulse();
+            })
+        .andThen(
             Commands.waitSeconds(0.75)
                 .andThen(
                     () -> {
