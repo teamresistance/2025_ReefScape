@@ -64,8 +64,8 @@ public class AutoScoreCommand extends SequentialCommandGroup {
     // Calculate left/right offset based on whether the target is on the right side
     Transform2d leftRightOffset =
         isRight
-            ? new Transform2d(0.50, -0.24, new Rotation2d())
-            : new Transform2d(0.50, 0.11, new Rotation2d());
+            ? new Transform2d(0.52, -0.24, new Rotation2d())
+            : new Transform2d(0.52, 0.11, new Rotation2d());
 
     // Build the autoscore command chain
     addCommands(

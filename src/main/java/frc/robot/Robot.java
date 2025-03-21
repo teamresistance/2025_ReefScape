@@ -111,13 +111,13 @@ public class Robot extends LoggedRobot {
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
-    //    if (robotContainer.ForceClimberUp) robotContainer.climber.activateClimber();
+    if (robotContainer.ForceClimberUp) robotContainer.climber.activateClimber();
   }
 
   /** This function is called periodically when disabled. */
   @Override
   public void disabledPeriodic() {
-    //    if (robotContainer.ForceClimberUp) robotContainer.climber.activateClimber();
+    if (robotContainer.ForceClimberUp) robotContainer.climber.activateClimber();
   }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */

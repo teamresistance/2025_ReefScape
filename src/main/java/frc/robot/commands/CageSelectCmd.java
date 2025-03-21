@@ -11,17 +11,17 @@ import org.littletonrobotics.junction.Logger;
 public class CageSelectCmd extends Command {
 
   public static final Pose2d INNER_CAGE_RED =
-      new Pose2d(9.786 - 0.15, 3.02, Rotation2d.fromDegrees(90.0));
+      new Pose2d(9.786 - 0.15, 3.02 - 0.05, Rotation2d.fromDegrees(90.0));
   public static final Pose2d MIDDLE_CAGE_RED =
-      new Pose2d(9.786 - 0.15, 1.894, Rotation2d.fromDegrees(90.0));
+      new Pose2d(9.786 - 0.15, 1.894 - 0.05, Rotation2d.fromDegrees(90.0));
   public static final Pose2d OUTER_CAGE_RED =
-      new Pose2d(9.786 - 0.15, 0.766, Rotation2d.fromDegrees(90.0));
+      new Pose2d(9.786 - 0.15, 0.766 - 0.05, Rotation2d.fromDegrees(90.0));
   public static final Pose2d INNER_CAGE_BLUE =
-      new Pose2d(7.736 + 0.15, 5.072, Rotation2d.fromDegrees(-90.0));
+      new Pose2d(7.736 + 0.15, 5.072 + 0.05, Rotation2d.fromDegrees(-90.0));
   public static final Pose2d MIDDLE_CAGE_BLUE =
-      new Pose2d(7.736 + 0.15, 6.170, Rotation2d.fromDegrees(-90.0));
+      new Pose2d(7.736 + 0.15, 6.170 + 0.05, Rotation2d.fromDegrees(-90.0));
   public static final Pose2d OUTER_CAGE_BLUE =
-      new Pose2d(7.736 + 0.15, 7.254, Rotation2d.fromDegrees(-90.0));
+      new Pose2d(7.736 + 0.15, 7.254 + 0.05, Rotation2d.fromDegrees(-90.0));
   public static Optional<DriverStation.Alliance> ally;
   private static int currentCageId = 2;
   private final int cageId;

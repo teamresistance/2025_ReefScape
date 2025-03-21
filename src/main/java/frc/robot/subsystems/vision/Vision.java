@@ -55,7 +55,7 @@ public class Vision extends SubsystemBase {
             3.223358, 4.093358, 4.726358, 6
           },
           new double[] {
-            0.008, 0.027, 0.015, 0.044, 0.04, 0.078, 0.089, 02.027, 3.459, 4.629, 6.068, 13.0
+            0.008, 0.027, 0.015, 0.044, 0.04, 0.078, 0.089, 2.027, 3.459, 4.629, 6.068, 13.0
           },
           1);
 
@@ -112,35 +112,35 @@ public class Vision extends SubsystemBase {
   public void periodic() {
     Pose2d currentPose = poseSupplier.get();
     visionUpdates = new ArrayList<>();
-
-    if (Constants.TUNING_MODE) {
-      xyStdDevModel =
-          new PolynomialRegression(
-              new double[] {1, 2, 3, 4, 5, 6},
-              new double[] {
-                xyStdDevThreshold_1.get(),
-                xyStdDevThreshold_2.get(),
-                xyStdDevThreshold_3.get(),
-                xyStdDevThreshold_4.get(),
-                xyStdDevThreshold_5.get(),
-                xyStdDevThreshold_6.get()
-              },
-              2);
-
-      thetaStdDevModel =
-          new PolynomialRegression(
-              new double[] {1, 2, 3, 4, 5, 6},
-              new double[] {
-                thetaStdDevThreshold_1.get(),
-                thetaStdDevThreshold_2.get(),
-                thetaStdDevThreshold_3.get(),
-                thetaStdDevThreshold_4.get(),
-                thetaStdDevThreshold_5.get(),
-                thetaStdDevThreshold_6.get()
-              },
-              2);
-      stdDevScalarShooting = multitagDistrubution.get();
-    }
+    //
+    //    if (Constants.TUNING_MODE) {
+    //      xyStdDevModel =
+    //          new PolynomialRegression(
+    //              new double[] {1, 2, 3, 4, 5, 6},
+    //              new double[] {
+    //                xyStdDevThreshold_1.get(),
+    //                xyStdDevThreshold_2.get(),
+    //                xyStdDevThreshold_3.get(),
+    //                xyStdDevThreshold_4.get(),
+    //                xyStdDevThreshold_5.get(),
+    //                xyStdDevThreshold_6.get()
+    //              },
+    //              2);
+    //
+    //      thetaStdDevModel =
+    //          new PolynomialRegression(
+    //              new double[] {1, 2, 3, 4, 5, 6},
+    //              new double[] {
+    //                thetaStdDevThreshold_1.get(),
+    //                thetaStdDevThreshold_2.get(),
+    //                thetaStdDevThreshold_3.get(),
+    //                thetaStdDevThreshold_4.get(),
+    //                thetaStdDevThreshold_5.get(),
+    //                thetaStdDevThreshold_6.get()
+    //              },
+    //              2);
+    //      stdDevScalarShooting = multitagDistrubution.get();
+    //    }
 
     double singleTagAdjustment = 1.0;
     if (Constants.TUNING_MODE) SingleTagAdjustment.updateLoggedTagAdjustments();

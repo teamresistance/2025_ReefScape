@@ -39,7 +39,7 @@ import org.photonvision.PhotonCamera;
  */
 public class RobotContainer {
   private static Pose2d climbTargetTransform =
-      new Pose2d(7.736 + 0.15, 7.254, Rotation2d.fromDegrees(-90.0));
+      new Pose2d(7.736 + 0.15, 7.254 + 0.05, Rotation2d.fromDegrees(-90.0));
   private static Transform2d stationTargetTransform =
       new Transform2d(15.9, 0.72, new Rotation2d(Units.degreesToRadians(-54.4)));
   private static Transform2d stationOffsetTransform =
@@ -268,7 +268,7 @@ public class RobotContainer {
                   return DriveCommands.goToTransformWithPathFinderPlusOffset(
                           drive,
                           stationTargetTransform,
-                          new Transform2d(0.15, 0.0, new Rotation2d(0.0)))
+                          new Transform2d(0.25, 0.0, new Rotation2d(0.0)))
                       .beforeStarting(
                           () -> {
                             DriveCommands.goToTransform(drive, stationTargetTransform).cancel();
@@ -277,8 +277,8 @@ public class RobotContainer {
                           });
                 }));
 
-    driver.povUp().onTrue(new PickupStationCmd(0)); // Change to upper
-    driver.povDown().onTrue(new PickupStationCmd(1)); // Change to lower
+    // driver.povUp().onTrue(new PickupStationCmd(0)); // Change to upper
+    // driver.povDown().onTrue(new PickupStationCmd(1)); // Change to lower
     driver.povLeft().onTrue(new PickupStationCmd(2)); // Change to left
     driver.povRight().onTrue(new PickupStationCmd(3)); // Change to right
 

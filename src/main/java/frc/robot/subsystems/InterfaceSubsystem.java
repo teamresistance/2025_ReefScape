@@ -275,9 +275,9 @@ public class InterfaceSubsystem extends SubsystemBase {
     //    Logger.recordOutput("running work", true);
     if (useOffset) {
       if (isRight) {
-        leftRightOffset = new Transform2d(0.50, -0.24, new Rotation2d(Units.degreesToRadians(0.0)));
+        leftRightOffset = new Transform2d(0.52, -0.24, new Rotation2d(Units.degreesToRadians(0.0)));
       } else {
-        leftRightOffset = new Transform2d(0.50, 0.11, new Rotation2d(Units.degreesToRadians(0.0)));
+        leftRightOffset = new Transform2d(0.52, 0.11, new Rotation2d(Units.degreesToRadians(0.0)));
       }
     } else {
       leftRightOffset = new Transform2d(0.52, -0.05, new Rotation2d(0));

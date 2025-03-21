@@ -8,8 +8,28 @@ public class SingleTagAdjustment {
 
   // Default adjustment factors for each tag ID.  These are applied if no dynamic override exists.
   private static final double[] DEFAULT_TAG_ADJUSTMENTS = {
-    1.0, 1.0, 1.0, 100.0, 100.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 100.0, 100.0, 1.0
-    // 1  2    3    4    5    6    7    8    9    10   11   12   13   14   15   16
+    1.0, // 1
+    1.0, // 2
+    1.0, // 3
+    1000.0, // 4
+    1000.0, // 5
+    0.8, // 6
+    0.8, // 7
+    0.8, // 8
+    0.8, // 9
+    0.8, // 10
+    0.8, // 11
+    1.0, // 12
+    1.0, // 13
+    1000.0, // 14
+    1000.0, // 15
+    1.0, // 16
+    0.8, // 17
+    0.8, // 18
+    0.8, // 19
+    0.8, // 20
+    0.8, // 21
+    0.8, // 22
   };
 
   // A map to store dynamic adjustments (overrides) for specific tag IDs.  This allows runtime
