@@ -1,7 +1,6 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -13,22 +12,16 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.InterfaceExecuteMode;
 import frc.robot.commands.*;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.ClimberSubsystem;
-import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.FlipperSubsystem;
-import frc.robot.subsystems.InterfaceSubsystem;
+import frc.robot.subsystems.*;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.vision.Vision;
-import frc.robot.util.GeomUtil;
 import java.io.IOException;
-import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.photonvision.PhotonCamera;
 
@@ -39,88 +32,47 @@ import org.photonvision.PhotonCamera;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  public boolean testingmode = false;
-  private static Pose2d climbTargetTransform = new Pose2d();
-  private static Transform2d stationTargetTransform =
-      new Transform2d(15.9, 0.72, new Rotation2d(Units.degreesToRadians(-54.4)));
-  private static Transform2d stationOffsetTransform =
-      new Transform2d(0.2, 0.0, new Rotation2d(0.0));
-
   public final PhotonCamera frontLeftCamera = new PhotonCamera("front-left");
   public final PhotonCamera frontRightCamera = new PhotonCamera("front-right");
   public final PhotonCamera backLeftCamera = new PhotonCamera("back_left");
   public final PhotonCamera backRightCamera = new PhotonCamera("back_right");
-  public final PhotonCamera frontCenterCamera = new PhotonCamera("front-center");
-  public final ClimberSubsystem climber = new ClimberSubsystem();
+  public final PhotonCamera frontCenterCamera = new PhotonCamera("front_center");
+
   private final Alert cameraFailureAlert;
+
   // Subsystems
   private final DriveSubsystem drive;
-  private final InterfaceSubsystem reef;
+  private InterfaceSubsystem reef;
   private final FlipperSubsystem flipper = new FlipperSubsystem();
-  //   private final PressureSubsystem pressure = new PressureSubsystem();
-  final ElevatorSubsystem elevator = new ElevatorSubsystem(flipper);
+  private final ElevatorSubsystem elevator = new ElevatorSubsystem();
+  private final ClimberSubsystem climber = new ClimberSubsystem();
+  private final PressureSubsystem pressure = new PressureSubsystem();
+
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
+
   private final Joystick cojoystick = new Joystick(1);
   // There are two codriver joystick ports because only 12 buttons can be detected, and just the
   // branch select is 12 buttons.
   private final Joystick codriverInterfaceBranch = new Joystick(2);
   private final Joystick codriverInterfaceOther = new Joystick(3);
+
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
   public Vision aprilTagVision;
-  public boolean ForceClimberUp = false;
-  Translation2d targetTranslation = new Translation2d(12.225, 2.474); // X = 14, Y = 4
-  Rotation2d targetRotation = new Rotation2d(Units.degreesToRadians(60.0)); // No rotation
+  // Create the target Transform2d (Translation and Rotation)
+  Translation2d targetTranslation = new Translation2d(14.35, 4.31); // X = 14, Y = 4
+  Rotation2d targetRotation = new Rotation2d(Units.degreesToRadians(-178.0)); // No rotation
   Transform2d targetTransform = new Transform2d(targetTranslation, targetRotation);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    drive = configureDrive();
     reef = configureInterface();
-    aprilTagVision = configureAprilTagVision();
-    configureNamedCommands();
-
+    drive = configureDrive();
     autoChooser = configureAutos();
+    aprilTagVision = configureAprilTagVision();
     configureButtonBindings();
     cameraFailureAlert = new Alert("Camera failure.", Alert.AlertType.kError);
-  }
-
-  public static void setStationTargetTransform(Transform2d _targetTransform) {
-    stationTargetTransform = _targetTransform;
-  }
-
-  public static void setStationOffsetTransform(Transform2d _offsetTransform) {
-    stationOffsetTransform = _offsetTransform;
-  }
-
-  public static void setCageClimb(Pose2d _targetTransform) {
-    climbTargetTransform = _targetTransform;
-  }
-
-  private void configureNamedCommands() {
-    NamedCommands.registerCommand("grip", new FlipperGripperCmd(flipper));
-    NamedCommands.registerCommand("A Branch", new InterfaceVarsCmd(reef, "a", 0, true, false));
-    NamedCommands.registerCommand("B Branch", new InterfaceVarsCmd(reef, "b", 0, true, false));
-    NamedCommands.registerCommand("C Branch", new InterfaceVarsCmd(reef, "c", 0, true, false));
-    NamedCommands.registerCommand("D Branch", new InterfaceVarsCmd(reef, "d", 0, true, false));
-    NamedCommands.registerCommand("E Branch", new InterfaceVarsCmd(reef, "e", 0, true, false));
-    NamedCommands.registerCommand("F Branch", new InterfaceVarsCmd(reef, "f", 0, true, false));
-    NamedCommands.registerCommand("G Branch", new InterfaceVarsCmd(reef, "g", 0, true, false));
-    NamedCommands.registerCommand("H Branch", new InterfaceVarsCmd(reef, "h", 0, true, false));
-    NamedCommands.registerCommand("I Branch", new InterfaceVarsCmd(reef, "i", 0, true, false));
-    NamedCommands.registerCommand("J Branch", new InterfaceVarsCmd(reef, "j", 0, true, false));
-    NamedCommands.registerCommand("K Branch", new InterfaceVarsCmd(reef, "k", 0, true, false));
-    NamedCommands.registerCommand("L Branch", new InterfaceVarsCmd(reef, "l", 0, true, false));
-
-    NamedCommands.registerCommand("1 Level", new InterfaceVarsCmd(reef, "a", 1, false, true));
-    NamedCommands.registerCommand("2 Level", new InterfaceVarsCmd(reef, "a", 2, false, true));
-    NamedCommands.registerCommand("3 Level", new InterfaceVarsCmd(reef, "a", 3, false, true));
-    NamedCommands.registerCommand("4 Level", new InterfaceVarsCmd(reef, "a", 4, false, true));
-
-    NamedCommands.registerCommand(
-        "autoScore",
-        new DeferredCommand(() -> new AutoScoreCommand(reef, drive, elevator, flipper)));
   }
 
   private LoggedDashboardChooser<Command> configureAutos() {
@@ -153,13 +105,9 @@ public class RobotContainer {
           new Vision(
               frontLeftCamera,
               frontRightCamera,
+              backLeftCamera,
               backRightCamera,
-              frontCenterCamera,
-              backLeftCamera);
-
-      //   backLeftCamera,
-      //   backRightCamera,
-      //   frontCenterCamera
+              frontCenterCamera);
     } catch (IOException e) {
       assert cameraFailureAlert != null;
       cameraFailureAlert.set(true);
@@ -210,112 +158,45 @@ public class RobotContainer {
    * XboxController}), and then passing it to a {@link JoystickButton}.
    */
   private void configureButtonBindings() {
-    // Normal field-relative drive
+    // Default command, normal field-relative drive
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> -driver.getRightX()));
 
-    // Switch to X pattern when X button is pressed
-    driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
-
-    // Squeeze + grip
-    driver.leftBumper().onTrue(new FlipperGripperCmd(flipper));
-
-    driver.y().onTrue(new CageSelectCmd.CycleCageCmd()); // cycles location of cage
-
-    // Climbing sequence
-    driver
-        .back()
-        .whileTrue(
-            new DeferredCommand(
-                () ->
-                    new InstantCommand(() -> ForceClimberUp = true)
-                        .andThen(
-                            DriveCommands.goToTransformWithPathFinder(
-                                drive, GeomUtil.poseToTransform(climbTargetTransform)))
-                        .andThen(
-                            DriveCommands.goToTransformClimb(
-                                drive,
-                                GeomUtil.poseToTransform(climbTargetTransform)
-                                    .plus(new Transform2d(0.0, 1.0, new Rotation2d(0.0)))))
-                        .andThen(Commands.runOnce(drive::stop, drive))
-                        .andThen(Commands.waitSeconds(1.0))
-                        .andThen(
-                            DriveCommands.goToTransformClimb(
-                                drive,
-                                GeomUtil.poseToTransform(climbTargetTransform)
-                                    .plus(new Transform2d(0.0, 0.8, new Rotation2d(0.0)))))
-                        .andThen(Commands.runOnce(drive::stop, drive))
-                        .andThen(Commands.waitSeconds(2.0))
-                        .andThen(new ActivateClimberCommand(climber))
-                        .beforeStarting(
-                            () -> {
-                              DriveCommands.goToTransformClimb(
-                                      drive, GeomUtil.poseToTransform(climbTargetTransform))
-                                  .cancel();
-                              DriveCommands.goToTransformWithPathFinder(
-                                      drive, GeomUtil.poseToTransform(climbTargetTransform))
-                                  .cancel();
-                            })));
-
-    driver.start().onTrue(new ActivateClimberCommand(climber));
-    driver
-        .leftTrigger()
-        .whileTrue(
-            new DeferredCommand(
-                () -> {
-                  Logger.recordOutput("stationOffset", stationOffsetTransform);
-                  return DriveCommands.goToTransformWithPathFinderPlusOffset(
-                          drive,
-                          stationTargetTransform,
-                          new Transform2d(0.15, 0.0, new Rotation2d(0.0)))
-                      .beforeStarting(
-                          () -> {
-                            DriveCommands.goToTransform(drive, stationTargetTransform).cancel();
-                            DriveCommands.goToTransformWithPathFinder(drive, stationTargetTransform)
-                                .cancel();
-                          });
-                }));
-
-    driver.povUp().onTrue(new PickupStationCmd(0)); // Change to upper
-    driver.povDown().onTrue(new PickupStationCmd(1)); // Change to lower
-    driver.povLeft().onTrue(new PickupStationCmd(2)); // Change to left
-    driver.povRight().onTrue(new PickupStationCmd(3)); // Change to right
-
-    driver
-        .rightTrigger()
-        .whileTrue(
-            new InterfaceActionCmd(reef, InterfaceExecuteMode.REEF)
-                .andThen(
-                    () -> {})); // When right trigger is pressed, drive to the location selected
-    driver.rightTrigger().onFalse(new InterfaceActionCmd(reef, InterfaceExecuteMode.DISABLE));
-
+    // Lock to 0° when A button is held
     driver
         .a()
         .whileTrue(
-            new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF)
-                .andThen(
-                    () -> {})); // When right trigger is pressed, drive to the location selected
-    driver.a().onFalse(new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE));
+            DriveCommands.joystickDriveAtAngle(
+                drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), Rotation2d::new));
 
+    // Switch to X pattern when X button is pressed
+    driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+
+    // need both commands
     driver
         .rightBumper()
         .whileTrue(
-            new InterfaceActionCmd(reef, InterfaceExecuteMode.ALGEE)
-                .andThen(
-                    () -> {})); // When right trigger is pressed, drive to the location selected
-    driver.rightBumper().onFalse(new InterfaceActionCmd(reef, InterfaceExecuteMode.DISABLE));
+            DriveCommands.goToTransformWithPathFinder(drive, targetTransform)
+                .andThen(DriveCommands.goToTransform(drive, targetTransform))
+                .beforeStarting(
+                    () -> {
+                      DriveCommands.goToTransform(drive, targetTransform).cancel();
+                      DriveCommands.goToTransformWithPathFinder(drive, targetTransform).cancel();
+                    }));
 
-    driver.b().onTrue(new FlipperScoreCmd(flipper, 1.0));
-    //            new ElevatorCmd(elevator, 2, true)
-    //                .andThen(new FlipperScoreCmd(flipper, 1.0))
-    //                .andThen(
-    //                    new ElevatorCmd(
-    //                        elevator, 0,
-    //                        false))); // TODO: CLEAN UP INTO INTERFACE COMMAND, this is meant to
-    // raise
-    // elevator to selected level and actuate flipper
+    // Reset gyro to 0 when B button is pressed
+    driver
+        .b()
+        .onTrue(
+            Commands.runOnce(
+                    () ->
+                        drive.setPose(
+                            new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
+                    drive)
+                .ignoringDisable(true));
 
+    //
     //    Codriver Bindings
     //
     // Reef branch selection
@@ -344,7 +225,10 @@ public class RobotContainer {
     new JoystickButton(codriverInterfaceBranch, 12)
         .onTrue(new InterfaceVarsCmd(reef, "l", 0, true, false));
 
-    // Elevator level selection
+    // Climber toggle, elevator level selection
+    new JoystickButton(codriverInterfaceOther, 1)
+        .and(new JoystickButton(codriverInterfaceOther, 2))
+        .onTrue(new ActivateClimberCommand(climber));
     new JoystickButton(codriverInterfaceOther, 3)
         .onTrue(new InterfaceVarsCmd(reef, "", 1, false, true));
     new JoystickButton(codriverInterfaceOther, 4)
@@ -353,6 +237,15 @@ public class RobotContainer {
         .onTrue(new InterfaceVarsCmd(reef, "", 3, false, true));
     new JoystickButton(codriverInterfaceOther, 6)
         .onTrue(new InterfaceVarsCmd(reef, "", 4, false, true));
+
+    // Driver connection to interface: driver presses button - interface handles.
+    // The interface merely exists for the codriver to select locations.
+    // The driver controls if and when said selections are actually executed.
+    // The execute button scores, other buttons drive to a location.
+    driver.a().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.EXECUTE));
+    driver.b().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.REEF));
+    driver.x().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.CORAL));
+    driver.y().onTrue(new InterfaceActionCmd(reef, InterfaceExecuteMode.CLIMBER));
   }
 
   /**
@@ -362,10 +255,5 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return autoChooser.get();
-  }
-
-  public void setTestingModetrue() {
-    testingmode = true;
-    drive.testingmode = true;
   }
 }

@@ -18,35 +18,21 @@ public class InterfaceActionCmd extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    //    Logger.recordOutput("running work", false);
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    //    Logger.recordOutput("finished work", false);
-    subsystem.driveToLoc(loc, this);
+    subsystem.driveToLoc(loc);
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    //    subsystem.forceStopExecution();
-    //    subsystem.drive_command.cancel();
-    //    finished = true;
-  }
-
-  private boolean finished = true;
-
-  public void finishparentCommand() {
-    finished = true;
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    //    Logger.recordOutput("auto/state", finished);
     return true;
   }
 }
