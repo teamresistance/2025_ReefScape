@@ -351,7 +351,7 @@ public class FlipEleSubsystem extends SubsystemBase {
     // Process gripper release delay timer - 1.0 seconds after flipper actuation
     if (gripperReleaseDelayActive
         && gripperReleaseTimer.hasElapsed(
-            1.0)) { // Increased to 1.0 second delay before releasing gripper
+            1.5)) { // Increased to 1.0 second delay before releasing gripper
       // After delay, open the gripper to release the game piece
       gripper.set(false);
       gripperReleaseDelayActive = false;

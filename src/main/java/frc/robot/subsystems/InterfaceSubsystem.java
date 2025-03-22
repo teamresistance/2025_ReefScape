@@ -321,20 +321,22 @@ public class InterfaceSubsystem extends SubsystemBase {
                   elevator.inHoldingState = true;
                   elevator.raiseElevator(level);
                   //                  }
-                })                    .andThen(
-            () -> {
-              elevator.flipperScore(Constants.SECONDS_TO_SCORE.get() + 3+0.4); //idk time fix pls
-            })
+                })
+            .andThen(
+                () -> {
+                  elevator.flipperScore(Constants.SECONDS_TO_SCORE.get() + 5.5); // idk time fix pls
+                })
             .andThen(goToTransform(drive, targetTransform.plus(leftRightOffset)))
             .andThen(Commands.runOnce(drive::stop))
             .andThen(
                 Commands.waitSeconds(Constants.SECONDS_TO_RAISE_ELEVATOR.get())
-//                    .andThen(
-//                        () -> {
-//                          elevator.flipperScore(Constants.SECONDS_TO_SCORE.get() + 3);
-//                        })
+                    //                    .andThen(
+                    //                        () -> {
+                    //
+                    // elevator.flipperScore(Constants.SECONDS_TO_SCORE.get() + 3);
+                    //                        })
                     //            .alongWith(DriveCommands.joystickDrive())
-                    .andThen(Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() + 0.1))
+                    .andThen(Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() - 1.0))
                     //                    .andThen(Commands.waitSeconds(0.0))
                     .andThen(
                         goToTransform(
@@ -345,7 +347,7 @@ public class InterfaceSubsystem extends SubsystemBase {
                                 goToTransform(
                                         drive,
                                         targetTransform.plus(
-                                            new Transform2d(0.53, -0.05, new Rotation2d(0))))
+                                            new Transform2d(0.55, -0.05, new Rotation2d(0))))
                                     .andThen(Commands.runOnce(drive::stop))
                                     .andThen(
                                         () -> {
@@ -360,10 +362,10 @@ public class InterfaceSubsystem extends SubsystemBase {
                                     .andThen(
                                         Commands.waitSeconds(
                                             needsLongerDelay
-                                                ? Constants.SECONDS_TO_SCORE.get() - 0.5
+                                                ? Constants.SECONDS_TO_SCORE.get() - 0.9
                                                 : // 0.5s longer for CDGHKL
                                                 Constants.SECONDS_TO_SCORE.get()
-                                                    - 1.0)) // Standard delay for others
+                                                    - 1.4)) // Standard delay for others
                                     .andThen(goToTransform(drive, targetTransform))
                                     .andThen(
                                         () -> {
