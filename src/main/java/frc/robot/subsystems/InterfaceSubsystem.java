@@ -115,7 +115,7 @@ public class InterfaceSubsystem extends SubsystemBase {
                           elevator.flipperScore(
                               useOffset
                                   ? Constants.SECONDS_TO_SCORE.get()
-                                  : Constants.SECONDS_TO_SCORE.get() + 8);
+                                  : Constants.SECONDS_TO_SCORE.get() + 2);
                         })
                     //            .alongWith(DriveCommands.joystickDrive())
                     .andThen(

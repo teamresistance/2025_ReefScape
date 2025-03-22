@@ -23,7 +23,7 @@ public class CageSelectCmd extends Command {
   public static final Pose2d OUTER_CAGE_BLUE =
       new Pose2d(7.736 + 0.15, 7.254 + 0.05, Rotation2d.fromDegrees(-90.0));
   public static Optional<DriverStation.Alliance> ally;
-  private static int currentCageId = 2;
+  private static int currentCageId = 0;
   private final int cageId;
 
   public CageSelectCmd(int cageId) {

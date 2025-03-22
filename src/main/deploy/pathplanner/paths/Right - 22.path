@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.285609042594352,
-        "y": 2.534733621662332
+        "x": 6.083377659574469,
+        "y": 2.321343085106382
       },
       "isLocked": false,
       "linkedName": null
@@ -20,8 +20,8 @@
         "y": 2.558
       },
       "prevControl": {
-        "x": 5.716401884156988,
-        "y": 2.5489511742497712
+        "x": 6.091156914893617,
+        "y": 2.399135638297872
       },
       "nextControl": null,
       "isLocked": false,
@@ -48,7 +48,7 @@
   "folder": "Right 3 Piece",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 119.99999999999999
+    "rotation": 159.49001745098144
   },
   "useDefaultConstraints": true
 }
