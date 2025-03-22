@@ -318,46 +318,24 @@ public class InterfaceSubsystem extends SubsystemBase {
             .andThen(Commands.waitSeconds(0.25))
             .andThen(
                 () -> {
-                  //                  // Use requestElevatorRaise for first stage when level is 3 or
-                  // 4
-                  //                  // This ensures proper delay between centerer opening and
-                  // elevator rising
-                  //                  if (level >= 3) {
-                  //                    // Open centerer first, the elevator will raise after the
-                  // delay in periodic
-                  //                    elevator.requestElevatorRaise();
-                  //
-                  //                    // For level 4, also raise second stage after a small delay
-                  //                    if (level == 4) {
-                  //                      // Second stage will be raised in a separate command
-                  //                      CommandScheduler.getInstance()
-                  //                          .schedule(
-                  //                              Commands.waitSeconds(0.8)
-                  //                                  .andThen(() ->
-                  // FlipEleSubsystem.raiseSecondStage()));
-                  //                    }
-                  //
-                  //                    Logger.recordOutput("Interface/Using Safe Elevator Raise",
-                  // true);
-                  //                    SmartDashboard.putString("Elevator Action", "Using delayed
-                  // elevator raise");
-                  //                  } else {
-                  //                    // For lower levels, just lower the elevator
                   elevator.inHoldingState = true;
                   elevator.raiseElevator(level);
                   //                  }
-                })
+                })                    .andThen(
+            () -> {
+              elevator.flipperScore(Constants.SECONDS_TO_SCORE.get() + 3+0.4); //idk time fix pls
+            })
             .andThen(goToTransform(drive, targetTransform.plus(leftRightOffset)))
             .andThen(Commands.runOnce(drive::stop))
             .andThen(
                 Commands.waitSeconds(Constants.SECONDS_TO_RAISE_ELEVATOR.get())
-                    .andThen(
-                        () -> {
-                          elevator.flipperScore(Constants.SECONDS_TO_SCORE.get() + 3);
-                        })
+//                    .andThen(
+//                        () -> {
+//                          elevator.flipperScore(Constants.SECONDS_TO_SCORE.get() + 3);
+//                        })
                     //            .alongWith(DriveCommands.joystickDrive())
                     .andThen(Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() + 0.1))
-//                    .andThen(Commands.waitSeconds(0.0))
+                    //                    .andThen(Commands.waitSeconds(0.0))
                     .andThen(
                         goToTransform(
                                 drive,
