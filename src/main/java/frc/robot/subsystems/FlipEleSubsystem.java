@@ -69,9 +69,6 @@ public class FlipEleSubsystem extends SubsystemBase {
 
   /** Raises lower stage of elevator without safety checks (use raiseFirstStageSafely instead) */
   public static void raiseFirstStage() {
-    // Static method now just sets the solenoid directly
-    // This is not ideal but preserved for backward compatibility
-    // Should be managed through the instance method requestElevatorRaise() instead
     elevatorPusher1.set(true);
   }
 
@@ -83,27 +80,12 @@ public class FlipEleSubsystem extends SubsystemBase {
   /** Lowers lower stage of elevator */
   public static void lowerFirstStage() {
     elevatorPusher1.set(false);
-    // Exit scoring mode and starting the post-lowering delay are handled in periodic
   }
 
   /** Lowers upper stage of elevator */
   public static void lowerSecondStage() {
     elevatorPusher2.set(false);
   }
-
-  /**
-   * Legacy method now redirects to requestElevatorRaise Use requestElevatorRaise() going forward
-   */
-  public void raiseFirstStageSafely() {
-    // Redirect to the new method that handles proper sequencing
-    requestElevatorRaise();
-  }
-
-  /**
-   * Call this in periodic to handle the elevator raising sequence. This is necessary because the
-   * elevator raising may span multiple cycles.
-   */
-  private void handleElevatorRaising() {}
 
   /**
    * This method is called when the FlipperGripperCmd runs. It now just detects banner sensors and
@@ -194,6 +176,8 @@ public class FlipEleSubsystem extends SubsystemBase {
     elevatorTimer.reset();
     elevatorTimer.start();
     elevatorDelayActive = true;
+
+
     Logger.recordOutput("Elevator/Centerer Opened", true);
     Logger.recordOutput("Elevator/Waiting For Delay", true);
 
@@ -215,14 +199,14 @@ public class FlipEleSubsystem extends SubsystemBase {
       lowerSecondStage();
     } else if (level == 3) {
       if (inHoldingState) {
-        raiseFirstStageSafely();
+        requestElevatorRaise();
       } else {
         raiseFirstStage();
       }
       lowerSecondStage();
     } else if (level == 4) {
       if (inHoldingState) {
-        raiseFirstStageSafely();
+        requestElevatorRaise();
       } else {
         raiseFirstStage();
       }
