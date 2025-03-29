@@ -5,13 +5,13 @@ import frc.robot.Constants.InterfaceExecuteMode;
 import frc.robot.subsystems.InterfaceSubsystem;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class InterfaceActionCmd extends Command {
+public class InterfaceActionCmd2 extends Command {
 
   private final InterfaceSubsystem subsystem;
   private final InterfaceExecuteMode loc;
   private boolean finished = true;
 
-  public InterfaceActionCmd(InterfaceSubsystem subsystem, InterfaceExecuteMode loc) {
+  public InterfaceActionCmd2(InterfaceSubsystem subsystem, InterfaceExecuteMode loc) {
     addRequirements(subsystem);
     this.subsystem = subsystem;
     this.loc = loc;
@@ -27,12 +27,13 @@ public class InterfaceActionCmd extends Command {
   @Override
   public void execute() {
     //    Logger.recordOutput("finished work", false);
-    subsystem.driveToLoc(loc, this);
+    subsystem.driveToLoc2(loc, this);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    subsystem.elevator.resetAutoscoreState();
     //    subsystem.forceStopExecution();
     //    subsystem.drive_command.cancel();
     //    finished = true;
