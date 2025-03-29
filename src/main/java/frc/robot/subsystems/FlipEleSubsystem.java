@@ -177,7 +177,6 @@ public class FlipEleSubsystem extends SubsystemBase {
     elevatorTimer.start();
     elevatorDelayActive = true;
 
-
     Logger.recordOutput("Elevator/Centerer Opened", true);
     Logger.recordOutput("Elevator/Waiting For Delay", true);
 
