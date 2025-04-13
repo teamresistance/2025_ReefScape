@@ -70,8 +70,9 @@ public class AutoScoreCommand extends SequentialCommandGroup {
     // Build the autoscore command chain
     addCommands(
         // 1. Pathfind to the target pose (converted from targetTransform)
-        AutoBuilder.pathfindToPose(
-            GeomUtil.transformToPose(targetTransform), Constants.PATH_CONSTRAINTS, 0.0),
+        // Test without this initial target pose (because the one in pathplanner should in theory be the same)
+        // AutoBuilder.pathfindToPose(
+        //     GeomUtil.transformToPose(targetTransform), Constants.PATH_CONSTRAINTS, 0.0),
         new InstantCommand(() -> elevator.centerer.set(false)),
         Commands.waitSeconds(0.25),
         // 2. Raise the elevator to the selected level
@@ -85,10 +86,10 @@ public class AutoScoreCommand extends SequentialCommandGroup {
 
         // 5. Activate the flipper command for scoring (assume flipper.getFlipperCommand returns a
         // Command)
-        elevator.getFlipperCommand(Constants.SECONDS_TO_SCORE.get()),
+        elevator.getFlipperCommand(Constants.SECONDS_TO_SCORE.get() - 0.4), // was - 0.2
 
         // 6. Wait a short time after scoring
-        Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() - 0.2),
+        Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() - 0.2), // was - 0.1 
 
         // 7. Lower the elevator back down
         new InstantCommand(() -> elevator.raiseElevator(0)));
