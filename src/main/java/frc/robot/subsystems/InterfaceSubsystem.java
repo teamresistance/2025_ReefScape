@@ -315,21 +315,23 @@ public class InterfaceSubsystem extends SubsystemBase {
                       elevator.centerer.set(false);
                       elevator.setInScoringMode(true);
                     }))
-            .andThen(Commands.waitSeconds(0.25))
+            .andThen(Commands.waitSeconds(0.18)) // was 0.25
             .andThen(
                 () -> {
                   elevator.inHoldingState = true;
                   elevator.raiseElevator(level);
                   //                  }
                 })
-            .andThen(
-                () -> {
-                  elevator.flipperScore(Constants.SECONDS_TO_SCORE.get() + 5.5); // idk time fix pls
-                })
+                .andThen(
+                  () -> {
+                    elevator.flipperScore(Constants.SECONDS_TO_SCORE.get() + getExtraScoringTimeForLevel());
+                  })
+              
             .andThen(goToTransform(drive, targetTransform.plus(leftRightOffset)))
             .andThen(Commands.runOnce(drive::stop))
             .andThen(
-                Commands.waitSeconds(Constants.SECONDS_TO_RAISE_ELEVATOR.get())
+              Commands.waitSeconds(Constants.SECONDS_TO_RAISE_ELEVATOR.get() + getElevatorRaiseWaitOffset())
+          
                     //                    .andThen(
                     //                        () -> {
                     //
@@ -540,6 +542,25 @@ public class InterfaceSubsystem extends SubsystemBase {
     this.pole = updatepole ? pole : this.pole;
     this.level = updatelevel ? level : this.level;
   }
+
+  private double getExtraScoringTimeForLevel() {
+    return switch (level) {
+      case 4 -> 5.5;
+      case 3 -> 5.0;
+      case 2 -> 4.0;
+      default -> 0.0;
+    };
+  }
+
+  private double getElevatorRaiseWaitOffset() {
+    return switch (level) {
+      case 4 -> 0.0;
+      case 3 -> -0.5;
+      case 2 -> -1.0;
+      default -> 0.0;
+    };
+  }
+  
 
   @Override
   public void periodic() {

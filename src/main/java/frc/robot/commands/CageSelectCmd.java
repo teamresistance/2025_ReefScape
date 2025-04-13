@@ -37,7 +37,7 @@ public class CageSelectCmd extends Command {
   @Override
   public void initialize() {
     ally =
-        DriverStation.getAlliance(); // victor you actually have to call the get alliance function
+        DriverStation.getAlliance();
     if (ally.isPresent()) {
       DriverStation.Alliance team = ally.get();
       Pose2d targetPose;
