@@ -128,6 +128,10 @@ public class RobotContainer {
 
     NamedCommands.registerCommand(
         "autoScore", new DeferredCommand(() -> new AutoScoreCommand(reef, drive, elevator)));
+    NamedCommands.registerCommand(
+    "autoScoreAlgae", new DeferredCommand(() -> new AutoScoreAlgaeCommand(reef, drive, elevator, false)));
+    NamedCommands.registerCommand(
+    "autoScoreBoth", new DeferredCommand(() -> new AutoScoreAlgaeCommand(reef, drive, elevator, true)));
   }
 
   private LoggedDashboardChooser<Command> configureAutos() {
