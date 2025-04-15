@@ -30,9 +30,6 @@ import java.io.IOException;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.photonvision.PhotonCamera;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -74,8 +71,6 @@ public class RobotContainer {
   Translation2d targetTranslation = new Translation2d(12.225, 2.474); // X = 14, Y = 4
   Rotation2d targetRotation = new Rotation2d(Units.degreesToRadians(60.0)); // No rotation
   Transform2d targetTransform = new Transform2d(targetTranslation, targetRotation);
-  public static final SendableChooser<Integer> cageChooser = new SendableChooser<>();
-
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -83,8 +78,6 @@ public class RobotContainer {
     reef = configureInterface();
     aprilTagVision = configureAprilTagVision();
     configureNamedCommands();
-
-    setupCageChooser();
 
     // Set up continuous banner detection for the elevator/flipper subsystem
     elevator.setDefaultCommand(new FlipperGripperCmd(elevator, false));
@@ -392,17 +385,4 @@ public class RobotContainer {
     testingmode = true;
     drive.testingmode = true;
   }
-
-  public static void setupCageChooser() {
-    cageChooser.setDefaultOption("Outer Cage", 0);
-    cageChooser.addOption("Middle Cage", 1);
-    cageChooser.addOption("Inner Cage", 2);
-    SmartDashboard.putData("Cage Selector", cageChooser);
-  }
-  
-  public static void updateCageFromChooser() {
-    int selectedCage = cageChooser.getSelected();
-    new CageSelectCmd(selectedCage).schedule();
-  }
-  
 }
