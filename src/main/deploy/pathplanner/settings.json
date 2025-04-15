@@ -4,16 +4,14 @@
   "holonomicMode": true,
   "pathFolders": [
     "Left 3 Piece",
-    "Center",
-    "Red Right !!BAD!!",
     "Right 3 Piece",
+    "Red Right !!BAD!!",
     "Taxi"
   ],
   "autoFolders": [
     "Left",
-    "Center",
-    "OLD",
-    "Right"
+    "Right",
+    "OLD"
   ],
   "defaultMaxVel": 4.68,
   "defaultMaxAccel": 4.2,
