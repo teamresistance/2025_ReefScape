@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.util.GeomUtil;
+import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.PolynomialRegression;
 import frc.robot.util.TimestampedVisionUpdate;
 import java.io.IOException;
@@ -27,24 +28,66 @@ public class Vision extends SubsystemBase {
 
   private final PhotonCamera[] cameras;
   /* For shooting vs. path following in auto */
-  private final double stdDevScalarShooting = 0.2;
+  //  private double stdDevScalarShooting = 0.65;
+
+  //  private PolynomialRegression xyStdDevModel =
+  //      new PolynomialRegression(
+  //          new double[] {1, 2, 3, 4, 5, 6}, new double[] {0.01, 0.01, 0.01, 0.01, 7, 10}, 2);
+  //  private PolynomialRegression thetaStdDevModel =
+  //      new PolynomialRegression(
+  //          new double[] {1, 2, 3, 4, 5, 6}, new double[] {0.01, 0.01, 0.01, 0.01, 7, 10}, 2);
+
+  /* For shooting vs. path following in auto */
+  private double stdDevScalarShooting = 1.6;
   private final double thetaStdDevCoefficientShooting = 0.075;
-  private final PolynomialRegression xyStdDevModel =
+  private PolynomialRegression xyStdDevModel =
       new PolynomialRegression(
           new double[] {
             0.752358, 1.016358, 1.296358, 1.574358, 1.913358, 2.184358, 2.493358, 2.758358,
-            3.223358, 4.093358, 4.726358
+            3.223358, 4.093358, 4.726358, 6.0
           },
-          new double[] {0.005, 0.0135, 0.016, 0.038, 0.0515, 0.0925, 0.12, 0.14, 0.17, 0.27, 0.38},
+          new double[] {0.005, 0.0135, 0.016, 0.028, 0.0815, 2.4, 3.62, 5.7, 5.9, 5.3, 20.0, 25.0},
           2);
-  private final PolynomialRegression thetaStdDevModel =
+  private PolynomialRegression thetaStdDevModel =
       new PolynomialRegression(
           new double[] {
             0.752358, 1.016358, 1.296358, 1.574358, 1.913358, 2.184358, 2.493358, 2.758358,
-            3.223358, 4.093358, 4.726358
+            3.223358, 4.093358, 4.726358, 6
           },
-          new double[] {0.008, 0.027, 0.015, 0.044, 0.04, 0.078, 0.049, 0.027, 0.059, 0.029, 0.068},
+          new double[] {
+            0.008, 0.027, 0.015, 0.044, 0.04, 0.078, 0.089, 2.027, 3.459, 4.629, 6.068, 13.0
+          },
           1);
+
+  public final LoggedTunableNumber xyStdDevThreshold_1 =
+      new LoggedTunableNumber("Vision/xyStdDevThreshold 1 meter", 0.01);
+  public final LoggedTunableNumber xyStdDevThreshold_2 =
+      new LoggedTunableNumber("Vision/xyStdDevThreshold 2 meter", 0.01);
+  public final LoggedTunableNumber xyStdDevThreshold_3 =
+      new LoggedTunableNumber("Vision/xyStdDevThreshold 3 meter", 0.01);
+  public final LoggedTunableNumber xyStdDevThreshold_4 =
+      new LoggedTunableNumber("Vision/xyStdDevThreshold 4 meter", 0.01);
+  public final LoggedTunableNumber xyStdDevThreshold_5 =
+      new LoggedTunableNumber("Vision/xyStdDevThreshold 5 meter", 7);
+  public final LoggedTunableNumber xyStdDevThreshold_6 =
+      new LoggedTunableNumber("Vision/xyStdDevThreshold 6 meter", 10);
+
+  public final LoggedTunableNumber thetaStdDevThreshold_1 =
+      new LoggedTunableNumber("Vision/thetaStdDevThreshold 1 meter", 0.01);
+  public final LoggedTunableNumber thetaStdDevThreshold_2 =
+      new LoggedTunableNumber("Vision/thetaStdDevThreshold 2 meter", 0.01);
+  public final LoggedTunableNumber thetaStdDevThreshold_3 =
+      new LoggedTunableNumber("Vision/thetaStdDevThreshold 3 meter", 0.01);
+  public final LoggedTunableNumber thetaStdDevThreshold_4 =
+      new LoggedTunableNumber("Vision/thetaStdDevThreshold 4 meter", 0.01);
+  public final LoggedTunableNumber thetaStdDevThreshold_5 =
+      new LoggedTunableNumber("Vision/thetaStdDevThreshold 5 meter", 7);
+  public final LoggedTunableNumber thetaStdDevThreshold_6 =
+      new LoggedTunableNumber("Vision/thetaStdDevThreshold 6 meter", 10);
+
+  public final LoggedTunableNumber multitagDistrubution =
+      new LoggedTunableNumber("Vision/multitagDistrubution", 0.65);
+
   AprilTagFieldLayout aprilTagFieldLayout;
   private Consumer<List<TimestampedVisionUpdate>> visionConsumer = (x) -> {};
   private List<TimestampedVisionUpdate> visionUpdates;
@@ -69,6 +112,35 @@ public class Vision extends SubsystemBase {
   public void periodic() {
     Pose2d currentPose = poseSupplier.get();
     visionUpdates = new ArrayList<>();
+    //
+    //    if (Constants.TUNING_MODE) {
+    //      xyStdDevModel =
+    //          new PolynomialRegression(
+    //              new double[] {1, 2, 3, 4, 5, 6},
+    //              new double[] {
+    //                xyStdDevThreshold_1.get(),
+    //                xyStdDevThreshold_2.get(),
+    //                xyStdDevThreshold_3.get(),
+    //                xyStdDevThreshold_4.get(),
+    //                xyStdDevThreshold_5.get(),
+    //                xyStdDevThreshold_6.get()
+    //              },
+    //              2);
+    //
+    //      thetaStdDevModel =
+    //          new PolynomialRegression(
+    //              new double[] {1, 2, 3, 4, 5, 6},
+    //              new double[] {
+    //                thetaStdDevThreshold_1.get(),
+    //                thetaStdDevThreshold_2.get(),
+    //                thetaStdDevThreshold_3.get(),
+    //                thetaStdDevThreshold_4.get(),
+    //                thetaStdDevThreshold_5.get(),
+    //                thetaStdDevThreshold_6.get()
+    //              },
+    //              2);
+    //      stdDevScalarShooting = multitagDistrubution.get();
+    //    }
 
     double singleTagAdjustment = 1.0;
     if (Constants.TUNING_MODE) SingleTagAdjustment.updateLoggedTagAdjustments();
@@ -176,7 +248,7 @@ public class Vision extends SubsystemBase {
         Logger.recordOutput("Photon/Camera Pose (Single Tag) " + instanceIndex, cameraPose);
       }
 
-      if (cameraPose == null || robotPose == null) {
+      if (robotPose == null) {
         continue;
       }
 
