@@ -1,6 +1,5 @@
 package frc.robot.commands;
 
-import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -11,10 +10,9 @@ import frc.robot.FieldConstants;
 import frc.robot.subsystems.FlipEleSubsystem;
 import frc.robot.subsystems.InterfaceSubsystem;
 import frc.robot.subsystems.drive.DriveSubsystem;
-import frc.robot.util.GeomUtil;
 
 public class AutoScoreAlgaeCommand extends SequentialCommandGroup {
-  
+
   private boolean needsLongerDelay;
 
   public AutoScoreAlgaeCommand(
@@ -63,16 +61,15 @@ public class AutoScoreAlgaeCommand extends SequentialCommandGroup {
       default:
         throw new IllegalStateException("Unexpected pole: " + pole);
     }
-        
+
     // Determine if this is a CDGHKL button press which needs longer delay
     needsLongerDelay =
-    "c".equals(pole)
-        || "d".equals(pole)
-        || "g".equals(pole)
-        || "h".equals(pole)
-        || "k".equals(pole)
-        || "l".equals(pole);
-    
+        "c".equals(pole)
+            || "d".equals(pole)
+            || "g".equals(pole)
+            || "h".equals(pole)
+            || "k".equals(pole)
+            || "l".equals(pole);
 
     // Calculate left/right offset based on whether the target is on the right side
     Transform2d leftRightOffset =
@@ -99,32 +96,32 @@ public class AutoScoreAlgaeCommand extends SequentialCommandGroup {
         elevator.getFlipperCommand(Constants.SECONDS_TO_SCORE.get() - 0.4), // was - 0.2
 
         // 6. Wait a short time after scoring
-        Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() - 0.2), // was - 0.1 
+        Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() - 0.2), // was - 0.1
 
         // 7. Lower the elevator back down
         new InstantCommand(() -> elevator.raiseElevator(0)));
 
     if (doCoral) {
       addCommands(
-        new InstantCommand(() -> elevator.centerer.set(false)),
+          new InstantCommand(() -> elevator.centerer.set(false)),
           Commands.waitSeconds(0.18), // was 0.25
-          new InstantCommand(() -> {
-            elevator.inHoldingState = true;
-            elevator.raiseElevator(reef.getLevel());
-          }),
-          new InstantCommand(() -> {
-            elevator.flipperScore(Constants.SECONDS_TO_SCORE.get() + 5.5);
-          }),
+          new InstantCommand(
+              () -> {
+                elevator.inHoldingState = true;
+                elevator.raiseElevator(reef.getLevel());
+              }),
+          new InstantCommand(
+              () -> {
+                elevator.flipperScore(Constants.SECONDS_TO_SCORE.get() + 5.5);
+              }),
           DriveCommands.goToTransform(drive, targetTransform.plus(leftRightOffset)),
           Commands.runOnce(drive::stop),
           Commands.waitSeconds(Constants.SECONDS_TO_RAISE_ELEVATOR.get()),
           Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() - 1.0),
           DriveCommands.goToTransform(
-                  drive,
-                  targetTransform.plus(new Transform2d(0.2, -0.05, new Rotation2d(0)))),
+              drive, targetTransform.plus(new Transform2d(0.2, -0.05, new Rotation2d(0)))),
           DriveCommands.goToTransform(
-                  drive,
-                  targetTransform.plus(new Transform2d(0.55, -0.05, new Rotation2d(0)))),
+              drive, targetTransform.plus(new Transform2d(0.55, -0.05, new Rotation2d(0)))),
           Commands.runOnce(drive::stop),
           new InstantCommand(() -> elevator.raiseElevator(0)),
           Commands.waitSeconds(
@@ -137,20 +134,19 @@ public class AutoScoreAlgaeCommand extends SequentialCommandGroup {
           new InstantCommand(() -> elevator.centerer.set(false)),
           Commands.waitSeconds(0.2),
           new InstantCommand(() -> elevator.raiseElevator(reef.getLevel())),
-          new InstantCommand(() -> {
-            elevator.flipperScore(Constants.SECONDS_TO_SCORE.get() + 5.5);
-          }),
+          new InstantCommand(
+              () -> {
+                elevator.flipperScore(Constants.SECONDS_TO_SCORE.get() + 5.5);
+              }),
           DriveCommands.goToTransform(drive, targetTransform.plus(middleOffset)),
           Commands.runOnce(drive::stop),
           Commands.waitSeconds(Constants.SECONDS_TO_RAISE_ELEVATOR.get()),
           elevator.getFlipperCommand(Constants.SECONDS_TO_SCORE.get() - 0.4),
           new InstantCommand(() -> elevator.raiseElevator(0)),
-  
           Commands.waitSeconds(
               needsLongerDelay
                   ? Constants.SECONDS_TO_SCORE.get() - 0.9
                   : Constants.SECONDS_TO_SCORE.get() - 1.4),
-                
           DriveCommands.goToTransform(drive, targetTransform));
     }
   }

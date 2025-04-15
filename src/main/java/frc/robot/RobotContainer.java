@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -30,9 +32,6 @@ import java.io.IOException;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.photonvision.PhotonCamera;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -75,7 +74,6 @@ public class RobotContainer {
   Rotation2d targetRotation = new Rotation2d(Units.degreesToRadians(60.0)); // No rotation
   Transform2d targetTransform = new Transform2d(targetTranslation, targetRotation);
   public static final SendableChooser<Integer> cageChooser = new SendableChooser<>();
-
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -129,9 +127,11 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "autoScore", new DeferredCommand(() -> new AutoScoreCommand(reef, drive, elevator)));
     NamedCommands.registerCommand(
-    "autoScoreAlgae", new DeferredCommand(() -> new AutoScoreAlgaeCommand(reef, drive, elevator, false)));
+        "autoScoreAlgae",
+        new DeferredCommand(() -> new AutoScoreAlgaeCommand(reef, drive, elevator, false)));
     NamedCommands.registerCommand(
-    "autoScoreBoth", new DeferredCommand(() -> new AutoScoreAlgaeCommand(reef, drive, elevator, true)));
+        "autoScoreBoth",
+        new DeferredCommand(() -> new AutoScoreAlgaeCommand(reef, drive, elevator, true)));
   }
 
   private LoggedDashboardChooser<Command> configureAutos() {
@@ -403,10 +403,9 @@ public class RobotContainer {
     cageChooser.addOption("Inner Cage", 2);
     SmartDashboard.putData("Cage Selector", cageChooser);
   }
-  
+
   public static void updateCageFromChooser() {
     int selectedCage = cageChooser.getSelected();
     new CageSelectCmd(selectedCage).schedule();
   }
-  
 }

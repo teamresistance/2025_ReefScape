@@ -322,16 +322,17 @@ public class InterfaceSubsystem extends SubsystemBase {
                   elevator.raiseElevator(level);
                   //                  }
                 })
-                .andThen(
-                  () -> {
-                    elevator.flipperScore(Constants.SECONDS_TO_SCORE.get() + getExtraScoringTimeForLevel());
-                  })
-              
+            .andThen(
+                () -> {
+                  elevator.flipperScore(
+                      Constants.SECONDS_TO_SCORE.get() + getExtraScoringTimeForLevel());
+                })
             .andThen(goToTransform(drive, targetTransform.plus(leftRightOffset)))
             .andThen(Commands.runOnce(drive::stop))
             .andThen(
-              Commands.waitSeconds(Constants.SECONDS_TO_RAISE_ELEVATOR.get() + getElevatorRaiseWaitOffset())
-          
+                Commands.waitSeconds(
+                        Constants.SECONDS_TO_RAISE_ELEVATOR.get() + getElevatorRaiseWaitOffset())
+
                     //                    .andThen(
                     //                        () -> {
                     //
@@ -560,7 +561,6 @@ public class InterfaceSubsystem extends SubsystemBase {
       default -> 0.0;
     };
   }
-  
 
   @Override
   public void periodic() {
