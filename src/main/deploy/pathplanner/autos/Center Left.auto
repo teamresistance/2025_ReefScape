@@ -17,6 +17,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "grip"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Center - 21"
@@ -32,12 +38,6 @@
           "type": "named",
           "data": {
             "name": "J Branch"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "3 Level"
           }
         },
         {
