@@ -397,16 +397,16 @@ public class RobotContainer {
     drive.testingmode = true;
   }
 
-  public static void setupCageChooser() {
+  private void setupCageChooser() {
     cageChooser.setDefaultOption("Outer Cage", 0);
     cageChooser.addOption("Middle Cage", 1);
     cageChooser.addOption("Inner Cage", 2);
     SmartDashboard.putData("Cage Selector", cageChooser);
   }
-  
-  public static void updateCageFromChooser() {
+
+  public void updateCageFromChooser() {
     int selectedCage = cageChooser.getSelected();
     new CageSelectCmd(selectedCage).schedule();
   }
-  
+
 }

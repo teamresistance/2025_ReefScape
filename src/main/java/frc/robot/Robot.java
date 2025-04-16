@@ -146,7 +146,7 @@ public class Robot extends LoggedRobot {
 
     robotContainer.elevator.raiseElevator(0);
 
-    RobotContainer.updateCageFromChooser();
+    robotContainer.updateCageFromChooser();
 
     //    if (DriverStation.getAlliance().isPresent()) {
     //      RobotContainer.setCageClimb(
