@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -73,7 +72,7 @@ public class RobotContainer {
   Translation2d targetTranslation = new Translation2d(12.225, 2.474); // X = 14, Y = 4
   Rotation2d targetRotation = new Rotation2d(Units.degreesToRadians(60.0)); // No rotation
   Transform2d targetTransform = new Transform2d(targetTranslation, targetRotation);
-  public static final SendableChooser<Integer> cageChooser = new SendableChooser<>();
+  public LoggedDashboardChooser<Integer> cageChooser;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -82,12 +81,12 @@ public class RobotContainer {
     aprilTagVision = configureAprilTagVision();
     configureNamedCommands();
 
-    setupCageChooser();
-
     // Set up continuous banner detection for the elevator/flipper subsystem
     elevator.setDefaultCommand(new FlipperGripperCmd(elevator, false));
 
     autoChooser = configureAutos();
+    cageChooser = new LoggedDashboardChooser<>("Climber Choices", new SendableChooser<>());
+    setupCageChooser();
     configureButtonBindings();
     cameraFailureAlert = new Alert("Camera failure.", Alert.AlertType.kError);
   }
@@ -398,14 +397,13 @@ public class RobotContainer {
   }
 
   private void setupCageChooser() {
-    cageChooser.setDefaultOption("Outer Cage", 0);
+    cageChooser.addDefaultOption("Outer Cage", 0);
     cageChooser.addOption("Middle Cage", 1);
     cageChooser.addOption("Inner Cage", 2);
-    SmartDashboard.putData("Cage Selector", cageChooser);
   }
 
   public void updateCageFromChooser() {
-    int selectedCage = cageChooser.getSelected();
+    int selectedCage = cageChooser.get();
     new CageSelectCmd(selectedCage).schedule();
   }
 }
