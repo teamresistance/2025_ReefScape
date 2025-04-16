@@ -14,7 +14,7 @@ import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.util.GeomUtil;
 
 public class AutoScoreAlgaeCommand extends SequentialCommandGroup {
-  
+
   private boolean needsLongerDelay;
 
   public AutoScoreAlgaeCommand(
@@ -63,7 +63,7 @@ public class AutoScoreAlgaeCommand extends SequentialCommandGroup {
       default:
         throw new IllegalStateException("Unexpected pole: " + pole);
     }
-        
+
     // Determine if this is a CDGHKL button press which needs longer delay
     needsLongerDelay =
     "c".equals(pole)
@@ -72,7 +72,7 @@ public class AutoScoreAlgaeCommand extends SequentialCommandGroup {
         || "h".equals(pole)
         || "k".equals(pole)
         || "l".equals(pole);
-    
+
 
     // Calculate left/right offset based on whether the target is on the right side
     Transform2d leftRightOffset =
@@ -81,28 +81,29 @@ public class AutoScoreAlgaeCommand extends SequentialCommandGroup {
             : new Transform2d(0.52, 0.11, new Rotation2d());
 
     Transform2d middleOffset = new Transform2d(0.52, -0.05, new Rotation2d(0));
-
-    // Build the autoscore command chain
-    addCommands(
-        Commands.waitSeconds(0.2),
-        // 2. Raise the elevator to the selected level
-        new InstantCommand(() -> elevator.raiseElevator(reef.getLevel())),
-
-        // 3. Drive to a pose adjusted by the left/right offset
-        DriveCommands.goToTransform(drive, targetTransform.plus(middleOffset)),
-        Commands.runOnce(drive::stop),
-        // 4. Wait for the elevator to raise (nonblocking wait)
-        Commands.waitSeconds(Constants.SECONDS_TO_RAISE_ELEVATOR.get()),
-
-        // 5. Activate the flipper command for scoring (assume flipper.getFlipperCommand returns a
-        // Command)
-        elevator.getFlipperCommand(Constants.SECONDS_TO_SCORE.get() - 0.4), // was - 0.2
-
-        // 6. Wait a short time after scoring
-        Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() - 0.2), // was - 0.1 
-
-        // 7. Lower the elevator back down
-        new InstantCommand(() -> elevator.raiseElevator(0)));
+    //
+    //    // Build the autoscore command chain
+    //    addCommands(
+    //        Commands.waitSeconds(0.2),
+    //        // 2. Raise the elevator to the selected level
+    //        new InstantCommand(() -> elevator.raiseElevator(reef.getLevel())),
+    //
+    //        // 3. Drive to a pose adjusted by the left/right offset
+    //        DriveCommands.goToTransform(drive, targetTransform.plus(middleOffset)),
+    //        Commands.runOnce(drive::stop),
+    //        // 4. Wait for the elevator to raise (nonblocking wait)
+    //        Commands.waitSeconds(Constants.SECONDS_TO_RAISE_ELEVATOR.get()),
+    //
+    //        // 5. Activate the flipper command for scoring (assume flipper.getFlipperCommand
+    // returns a
+    //        // Command)
+    //        elevator.getFlipperCommand(Constants.SECONDS_TO_SCORE.get() - 0.4), // was - 0.2
+    //
+    //        // 6. Wait a short time after scoring
+    //        Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() - 0.2), // was - 0.1
+    //
+    //        // 7. Lower the elevator back down
+    //        new InstantCommand(() -> elevator.raiseElevator(0)));
 
     if (doCoral) {
       addCommands(
@@ -145,12 +146,12 @@ public class AutoScoreAlgaeCommand extends SequentialCommandGroup {
           Commands.waitSeconds(Constants.SECONDS_TO_RAISE_ELEVATOR.get()),
           elevator.getFlipperCommand(Constants.SECONDS_TO_SCORE.get() - 0.4),
           new InstantCommand(() -> elevator.raiseElevator(0)),
-  
+
           Commands.waitSeconds(
               needsLongerDelay
                   ? Constants.SECONDS_TO_SCORE.get() - 0.9
                   : Constants.SECONDS_TO_SCORE.get() - 1.4),
-                
+
           DriveCommands.goToTransform(drive, targetTransform));
     }
   }
