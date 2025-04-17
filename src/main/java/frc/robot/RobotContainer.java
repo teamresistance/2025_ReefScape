@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -65,9 +66,12 @@ public class RobotContainer {
   private final Joystick codriverInterfaceOther = new Joystick(3);
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
+  public LoggedDashboardChooser<Integer> cageChooser;
+
   public boolean testingmode = false;
   public Vision aprilTagVision;
   public boolean ForceClimberUp = false;
+
   Translation2d targetTranslation = new Translation2d(12.225, 2.474); // X = 14, Y = 4
   Rotation2d targetRotation = new Rotation2d(Units.degreesToRadians(60.0)); // No rotation
   Transform2d targetTransform = new Transform2d(targetTranslation, targetRotation);
@@ -83,7 +87,12 @@ public class RobotContainer {
     elevator.setDefaultCommand(new FlipperGripperCmd(elevator, false));
 
     autoChooser = configureAutos();
+
+    cageChooser = new LoggedDashboardChooser<>("Climber Choices", new SendableChooser<>());
+    setupCageChooser();
+
     configureButtonBindings();
+
     cameraFailureAlert = new Alert("Camera failure.", Alert.AlertType.kError);
   }
 
@@ -384,5 +393,16 @@ public class RobotContainer {
   public void setTestingModetrue() {
     testingmode = true;
     drive.testingmode = true;
+  }
+
+  private void setupCageChooser() {
+    cageChooser.addDefaultOption("Outer Cage", 0);
+    cageChooser.addOption("Middle Cage", 1);
+    cageChooser.addOption("Inner Cage", 2);
+  }
+
+  public void updateCageFromChooser() {
+    int selectedCage = cageChooser.get();
+    new CageSelectCmd(selectedCage).schedule();
   }
 }
