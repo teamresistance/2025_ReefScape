@@ -286,17 +286,18 @@ public class InterfaceSubsystem extends SubsystemBase {
                   elevator.inHoldingState = true;
                   elevator.raiseElevator(level);
                 })
-                .andThen(
-                  () -> {
-                    // updated flipperScore callelevator.flipperScore(Constants.SECONDS_TO_SCORE.get() + getExtraScoringTimeForLevel(),
-                  getGripperReleaseDelayForLevel());})
-
+            .andThen(
+                () -> {
+                  // updated flipperScore call
+                  elevator.flipperScore(
+                      Constants.SECONDS_TO_SCORE.get() + getExtraScoringTimeForLevel(),
+                      getGripperReleaseDelayForLevel());
+                })
             .andThen(goToTransform(drive, targetTransform.plus(leftRightOffset)))
             .andThen(Commands.runOnce(drive::stop))
             .andThen(
-              Commands.waitSeconds(Constants.SECONDS_TO_RAISE_ELEVATOR.get() + getElevatorRaiseWaitOffset())
-
-
+                Commands.waitSeconds(
+                        Constants.SECONDS_TO_RAISE_ELEVATOR.get() + getElevatorRaiseWaitOffset())
                     .andThen(Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() - 1.0))
                     .andThen(
                         goToTransform(
@@ -398,7 +399,6 @@ public class InterfaceSubsystem extends SubsystemBase {
       default -> 0.0;
     };
   }
-
 
   /** Returns the gripper release delay based on the current elevator level. */
   private double getGripperReleaseDelayForLevel() {
