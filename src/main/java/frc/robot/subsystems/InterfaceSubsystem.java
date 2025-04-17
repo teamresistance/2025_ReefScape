@@ -298,7 +298,7 @@ public class InterfaceSubsystem extends SubsystemBase {
             .andThen(
                 Commands.waitSeconds(
                         Constants.SECONDS_TO_RAISE_ELEVATOR.get() + getElevatorRaiseWaitOffset())
-                    .andThen(Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() - 1.0))
+                    .andThen(Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() - 1.3))
                     .andThen(
                         goToTransform(
                             drive,

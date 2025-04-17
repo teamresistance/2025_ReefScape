@@ -218,7 +218,7 @@ public class DriveCommands {
     // PID controllers for X and Y positions
     ProfiledPIDController pidX =
         new ProfiledPIDController(
-            0.7, // KP for X (tune as needed)
+            0.8, // KP for X (tune as needed)
             0.0, // KI for X (no integral term)
             0.0, // KD for X (no derivative term)
             new TrapezoidProfile.Constraints(
@@ -228,7 +228,7 @@ public class DriveCommands {
 
     ProfiledPIDController pidY =
         new ProfiledPIDController(
-            0.7, // KP for Y (tune as needed)
+            0.8, // KP for Y (tune as needed)
             0.0, // KI for Y (no integral term)
             0.0, // KD for Y (no derivative term)
             new TrapezoidProfile.Constraints(
