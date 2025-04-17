@@ -22,7 +22,7 @@ public class FlipperScoreCmd extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    subsystem.flipperScore(flipperDelay);
+    subsystem.flipperScore(flipperDelay, 0.5);
   }
 
   // Called once the command ends or is interrupted.
