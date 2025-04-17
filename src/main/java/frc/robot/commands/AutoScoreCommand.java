@@ -78,7 +78,7 @@ public class AutoScoreCommand extends SequentialCommandGroup {
         new InstantCommand(() -> elevator.raiseElevator(reef.getLevel())),
         new InstantCommand(
             () -> {
-              elevator.flipperScore(Constants.SECONDS_TO_SCORE.get() + 5.5);
+              elevator.flipperScore(Constants.SECONDS_TO_SCORE.get() + 5.5, 1.3);
             }),
         // 3. Drive to a pose adjusted by the left/right offset
         DriveCommands.goToTransform(drive, targetTransform.plus(leftRightOffset)),
@@ -88,7 +88,7 @@ public class AutoScoreCommand extends SequentialCommandGroup {
 
         // 5. Activate the flipper command for scoring (assume flipper.getFlipperCommand returns a
         // Command)
-        elevator.getFlipperCommand(Constants.SECONDS_TO_SCORE.get() - 0.4), // was - 0.2
+        elevator.getFlipperCommand(Constants.SECONDS_TO_SCORE.get() - 0.4, 1.4), // was - 0.2
 
         // 6. Wait a short time after scoring
         Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() - 0.2), // was - 0.1

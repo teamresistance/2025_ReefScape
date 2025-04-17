@@ -110,7 +110,7 @@ public class AutoScoreAlgaeCommand extends SequentialCommandGroup {
           new InstantCommand(() -> elevator.raiseElevator(reef.getLevel())),
           new InstantCommand(
               () -> {
-                elevator.flipperScore(Constants.SECONDS_TO_SCORE.get() + 4.0);
+                elevator.flipperScore(Constants.SECONDS_TO_SCORE.get() + 4.0, 1.35);
               }),
           DriveCommands.goToTransform(drive, targetTransform.plus(leftRightOffset)),
           Commands.runOnce(drive::stop),
@@ -134,12 +134,12 @@ public class AutoScoreAlgaeCommand extends SequentialCommandGroup {
           new InstantCommand(() -> elevator.raiseElevator(reef.getLevel())),
           new InstantCommand(
               () -> {
-                elevator.flipperScore(Constants.SECONDS_TO_SCORE.get() + 4.0);
+                elevator.flipperScore(Constants.SECONDS_TO_SCORE.get() + 4.0, 1.5);
               }),
           DriveCommands.goToTransform(drive, targetTransform.plus(middleOffset)),
           Commands.runOnce(drive::stop),
           Commands.waitSeconds(Constants.SECONDS_TO_RAISE_ELEVATOR.get()),
-          elevator.getFlipperCommand(Constants.SECONDS_TO_SCORE.get() - 0.4),
+          elevator.getFlipperCommand(Constants.SECONDS_TO_SCORE.get() - 0.4, 1.5),
           new InstantCommand(() -> elevator.raiseElevator(0)),
           Commands.waitSeconds(
               needsLongerDelay
