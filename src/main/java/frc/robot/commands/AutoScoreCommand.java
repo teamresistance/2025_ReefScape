@@ -1,6 +1,5 @@
 package frc.robot.commands;
 
-import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -11,7 +10,6 @@ import frc.robot.FieldConstants;
 import frc.robot.subsystems.FlipEleSubsystem;
 import frc.robot.subsystems.InterfaceSubsystem;
 import frc.robot.subsystems.drive.DriveSubsystem;
-import frc.robot.util.GeomUtil;
 
 public class AutoScoreCommand extends SequentialCommandGroup {
   public AutoScoreCommand(
@@ -70,13 +68,18 @@ public class AutoScoreCommand extends SequentialCommandGroup {
     // Build the autoscore command chain
     addCommands(
         // 1. Pathfind to the target pose (converted from targetTransform)
-        AutoBuilder.pathfindToPose(
-            GeomUtil.transformToPose(targetTransform), Constants.PATH_CONSTRAINTS, 0.0),
+        // Test without this initial target pose (because the one in pathplanner should in theory be
+        // the same)
+        // AutoBuilder.pathfindToPose(
+        //     GeomUtil.transformToPose(targetTransform), Constants.PATH_CONSTRAINTS, 0.0),
         new InstantCommand(() -> elevator.centerer.set(false)),
         Commands.waitSeconds(0.25),
         // 2. Raise the elevator to the selected level
         new InstantCommand(() -> elevator.raiseElevator(reef.getLevel())),
-
+        new InstantCommand(
+            () -> {
+              elevator.flipperScore(Constants.SECONDS_TO_SCORE.get() + 5.5, 1.3);
+            }),
         // 3. Drive to a pose adjusted by the left/right offset
         DriveCommands.goToTransform(drive, targetTransform.plus(leftRightOffset)),
         Commands.runOnce(drive::stop),
@@ -85,10 +88,10 @@ public class AutoScoreCommand extends SequentialCommandGroup {
 
         // 5. Activate the flipper command for scoring (assume flipper.getFlipperCommand returns a
         // Command)
-        elevator.getFlipperCommand(Constants.SECONDS_TO_SCORE.get()),
+        elevator.getFlipperCommand(Constants.SECONDS_TO_SCORE.get() - 0.4, 1.4), // was - 0.2
 
         // 6. Wait a short time after scoring
-        Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() - 0.2),
+        Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() - 0.2), // was - 0.1
 
         // 7. Lower the elevator back down
         new InstantCommand(() -> elevator.raiseElevator(0)));
