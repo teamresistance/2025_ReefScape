@@ -29,8 +29,8 @@ public class InterfaceSubsystem extends SubsystemBase {
   private String pole = "a";
   private int level = 1;
   private boolean executing = false;
-  private Transform2d targetTransform;
-  private Transform2d leftRightOffset;
+  private Transform2d targetTransform = new Transform2d();
+  private Transform2d leftRightOffset = new Transform2d();
 
   public InterfaceSubsystem(DriveSubsystem drive, FlipEleSubsystem elevator) {
     this.drive = drive;
@@ -330,13 +330,98 @@ public class InterfaceSubsystem extends SubsystemBase {
     boolean isRight = false;
     switch (loc) {
       case REEF:
-        /* identical pole-switch as driveToLoc */
-        // ...
+        switch (pole) {
+          case "a":
+            targetTransform = getTranslationFromPlace(Place.A_TREE);
+            break;
+          case "b":
+            targetTransform = getTranslationFromPlace(Place.B_TREE);
+            isRight = true;
+            break;
+          case "c":
+            targetTransform = getTranslationFromPlace(Place.C_TREE);
+            break;
+          case "d":
+            targetTransform = getTranslationFromPlace(Place.D_TREE);
+            isRight = true;
+            break;
+          case "e":
+            targetTransform = getTranslationFromPlace(Place.E_TREE);
+            break;
+          case "f":
+            targetTransform = getTranslationFromPlace(Place.F_TREE);
+            isRight = true;
+            break;
+          case "g":
+            targetTransform = getTranslationFromPlace(Place.G_TREE);
+            break;
+          case "h":
+            targetTransform = getTranslationFromPlace(Place.H_TREE);
+            isRight = true;
+            break;
+          case "i":
+            targetTransform = getTranslationFromPlace(Place.I_TREE);
+            break;
+          case "j":
+            targetTransform = getTranslationFromPlace(Place.J_TREE);
+            isRight = true;
+            break;
+          case "k":
+            targetTransform = getTranslationFromPlace(Place.K_TREE);
+            break;
+          case "l":
+            targetTransform = getTranslationFromPlace(Place.L_TREE);
+            isRight = true;
+            break;
+        }
         executeDrive2(targetTransform, isRight, true, stuff);
         break;
+
       case ALGEE:
-        /* identical pole-switch as driveToLoc */
-        // ...
+        switch (pole) {
+          case "a":
+            targetTransform = getTranslationFromPlace(Place.A_TREE);
+            break;
+          case "b":
+            targetTransform = getTranslationFromPlace(Place.B_TREE);
+            isRight = true;
+            break;
+          case "c":
+            targetTransform = getTranslationFromPlace(Place.C_TREE);
+            break;
+          case "d":
+            targetTransform = getTranslationFromPlace(Place.D_TREE);
+            isRight = true;
+            break;
+          case "e":
+            targetTransform = getTranslationFromPlace(Place.E_TREE);
+            break;
+          case "f":
+            targetTransform = getTranslationFromPlace(Place.F_TREE);
+            isRight = true;
+            break;
+          case "g":
+            targetTransform = getTranslationFromPlace(Place.G_TREE);
+            break;
+          case "h":
+            targetTransform = getTranslationFromPlace(Place.H_TREE);
+            isRight = true;
+            break;
+          case "i":
+            targetTransform = getTranslationFromPlace(Place.I_TREE);
+            break;
+          case "j":
+            targetTransform = getTranslationFromPlace(Place.J_TREE);
+            isRight = true;
+            break;
+          case "k":
+            targetTransform = getTranslationFromPlace(Place.K_TREE);
+            break;
+          case "l":
+            targetTransform = getTranslationFromPlace(Place.L_TREE);
+            isRight = true;
+            break;
+        }
         executeDrive2(targetTransform, isRight, false, stuff);
         break;
       case CORAL:
@@ -404,8 +489,8 @@ public class InterfaceSubsystem extends SubsystemBase {
   private double getGripperReleaseDelayForLevel() {
     return switch (level) {
       case 4 -> 1.5;
-      case 3 -> 1.4;
-      case 2 -> 1.2;
+      case 3 -> 1.2;
+      case 2 -> 1.0;
       default -> 1.5;
     };
   }
