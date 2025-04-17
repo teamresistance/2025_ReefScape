@@ -489,8 +489,8 @@ public class InterfaceSubsystem extends SubsystemBase {
   private double getGripperReleaseDelayForLevel() {
     return switch (level) {
       case 4 -> 1.5;
-      case 3 -> 1.2;
-      case 2 -> 1.0;
+      case 3 -> 1.3;
+      case 2 -> 1.2;
       default -> 1.5;
     };
   }
