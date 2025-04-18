@@ -27,9 +27,14 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -106,6 +111,8 @@ public class DriveSubsystem extends SubsystemBase {
   private final SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
 
+  private final Field2d m_field = new Field2d();
+
   public DriveSubsystem(
       GyroIO gyroIO,
       ModuleIO flModuleIO,
@@ -144,6 +151,19 @@ public class DriveSubsystem extends SubsystemBase {
     PathPlannerLogging.setLogActivePathCallback(
         (activePath) -> {
           Logger.recordOutput("Odometry/Trajectory", activePath.toArray(new Pose2d[0]));
+          if (activePath.isEmpty()) return;
+          Trajectory trajectory =
+              TrajectoryGenerator.generateTrajectory(
+                  activePath.get(0),
+                  activePath.stream()
+                      .skip(1)
+                      .limit(activePath.size() - 2)
+                      .map(Pose2d::getTranslation)
+                      .toList(),
+                  activePath.get(activePath.size() - 1),
+                  new TrajectoryConfig(getMaxLinearSpeedMetersPerSec(), 4.2));
+
+          m_field.getObject("traj").setTrajectory(trajectory);
         });
     PathPlannerLogging.setLogTargetPoseCallback(
         (targetPose) -> {
@@ -163,6 +183,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     // pch.enableAnalog(105.0, 120.0); // Reads 120 high
     pcm.enableDigital();
+
+    SmartDashboard.putData("Field", m_field);
   }
 
   /** Returns array of module translations. */
@@ -248,6 +270,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.CURRENT_MODE != Mode.SIM);
+
+    m_field.setRobotPose(this.getPose());
   }
 
   /**
