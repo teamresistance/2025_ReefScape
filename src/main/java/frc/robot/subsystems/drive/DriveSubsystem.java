@@ -151,8 +151,7 @@ public class DriveSubsystem extends SubsystemBase {
     PathPlannerLogging.setLogActivePathCallback(
         (activePath) -> {
           Logger.recordOutput("Odometry/Trajectory", activePath.toArray(new Pose2d[0]));
-          if (activePath.size() == 0) return;
-          // try {
+          if (activePath.isEmpty()) return;
           Trajectory trajectory =
               TrajectoryGenerator.generateTrajectory(
                   activePath.get(0),
@@ -165,9 +164,6 @@ public class DriveSubsystem extends SubsystemBase {
                   new TrajectoryConfig(getMaxLinearSpeedMetersPerSec(), 4.2));
 
           m_field.getObject("traj").setTrajectory(trajectory);
-          // } catch (Exception e) {
-          // System.out.println("Error generating trajectory: " + e.getMessage());
-          // }
         });
     PathPlannerLogging.setLogTargetPoseCallback(
         (targetPose) -> {
