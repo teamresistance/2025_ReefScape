@@ -1,0 +1,67 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "4 Level"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "H Branch"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "grip"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center - 21"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "autoScore"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "21 - Side"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 4.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Side - Source"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

@@ -225,7 +225,7 @@ public class RobotContainer {
             drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> -driver.getRightX()));
 
     // Switch to X pattern when X button is pressed
-    //    driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     // Squeeze + grip
     //    driver.leftBumper().onTrue(new FlipperGripperCmd(elevator));
@@ -329,10 +329,11 @@ public class RobotContainer {
                 elevator, true)); // Use B+LB to toggle gripper and reset holding state
 
     // Add elevator toggle button for testing
-    driver
-        .x()
-        .onTrue(
-            new ElevatorToggleCmd(elevator)); // Press left stick to toggle elevator between 0 and 2
+    //    driver
+    //        .x()
+    //        .onTrue(
+    //            new ElevatorToggleCmd(elevator)); // Press left stick to toggle elevator between 0
+    // and 2
     //            new ElevatorCmd(elevator, 2, true)
     //                .andThen(new FlipperScoreCmd(flipper, 1.0))
     //                .andThen(
