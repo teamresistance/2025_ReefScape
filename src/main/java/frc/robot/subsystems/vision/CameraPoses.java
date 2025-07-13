@@ -10,15 +10,15 @@ public class CameraPoses {
       new Pose3d[] {
         // Front Left
         new Pose3d(
-            new Translation3d(0.235, 0.235, 0.267), // Right camera translation (X, Y, Z)
-            new Rotation3d(0.0, Units.degreesToRadians(-12.63), Units.degreesToRadians(45))),
+            new Translation3d(0.256, 0.213, 0.267), // Right camera translation (X, Y, Z)
+            new Rotation3d(0.0, Units.degreesToRadians(-12.63), Units.degreesToRadians(-15))),
         // Front Right
         new Pose3d(
-            new Translation3d(0.235, -0.235, 0.267), // Left camera translation (X, Y, Z)
+            new Translation3d(0.268, -0.213, 0.267), // Left camera translation (X, Y, Z)
             new Rotation3d(
                 0.0,
                 Units.degreesToRadians(-12.63),
-                Units.degreesToRadians(-45))), // in radians btw
+                Units.degreesToRadians(45))), // in radians btw
         //        // Back Right
         new Pose3d(
             new Translation3d(-0.235, -0.235, 0.267), // Left camera translation (X, Y, Z)
