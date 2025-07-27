@@ -256,6 +256,7 @@ public class InterfaceSubsystem extends SubsystemBase {
       boolean useOffset,
       InterfaceActionCmd2 stuff,
       CommandXboxController toRumble) {
+
     if (useOffset) {
       if (isRight) {
         leftRightOffset = new Transform2d(0.52, -0.24, new Rotation2d(Units.degreesToRadians(0.0)));
@@ -281,6 +282,8 @@ public class InterfaceSubsystem extends SubsystemBase {
       drive_command.cancel();
     }
 
+    Pose2d targetPose = GeomUtil.transformToPose(targetTransform.plus(leftRightOffset));
+
     drive_command =
         (!drive.testingmode
                 ? AutoBuilder.pathfindToPose(
@@ -301,16 +304,18 @@ public class InterfaceSubsystem extends SubsystemBase {
                 })
             .andThen(
                 () -> {
-                  // updated flipperScore call
                   elevator.flipperScore(
                       Constants.SECONDS_TO_SCORE.get() + getExtraScoringTimeForLevel(),
                       getGripperReleaseDelayForLevel());
                 })
             .andThen(goToTransform(drive, targetTransform.plus(leftRightOffset)))
             .andThen(Commands.runOnce(drive::stop))
+            // *** Wait until robot is close enough before checking coral ***
+            .andThen(new WaitUntilCommand(() -> isAtTargetPose(drive, targetPose)).withTimeout(3))
+            // *** Then run the either command to rumble or continue scoring ***
             .andThen(
                 Commands.either(
-                    // If too far: rumble and exit
+                    // IF coral is blocking: rumble + stop
                     new SequentialCommandGroup(
                         new InstantCommand(
                             () -> {
@@ -322,44 +327,37 @@ public class InterfaceSubsystem extends SubsystemBase {
                             () -> {
                               toRumble.getHID().setRumble(GenericHID.RumbleType.kLeftRumble, 0.0);
                               toRumble.getHID().setRumble(GenericHID.RumbleType.kRightRumble, 0.0);
-                            })),
-                    // Else: continue scoring routine
-                    Commands.waitSeconds(
-                            Constants.SECONDS_TO_RAISE_ELEVATOR.get()
-                                + getElevatorRaiseWaitOffset())
-                        .andThen(Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() - 1.3))
-                        .andThen(
-                            goToTransform(
-                                drive,
-                                targetTransform.plus(
-                                    new Transform2d(0.2, -0.05, new Rotation2d(0)))))
-                        .andThen(
-                            goToTransform(
-                                drive,
-                                targetTransform.plus(
-                                    new Transform2d(0.55, -0.05, new Rotation2d(0)))))
-                        .andThen(Commands.runOnce(drive::stop))
-                        .andThen(
-                            () -> {
-                              elevator.raiseElevator(0);
-                            })
-                        .andThen(
-                            Commands.waitSeconds(
-                                needsLongerDelay
-                                    ? Constants.SECONDS_TO_SCORE.get() - 0.9
-                                    : Constants.SECONDS_TO_SCORE.get() - 1.4))
-                        .andThen(goToTransform(drive, targetTransform))
-                        .andThen(
-                            () -> {
-                              // no-op
                             }),
-                    // Condition: too far from coral after reaching it
-                    () ->
-                        shouldAbortScoringDueToCoralAtFeet(
+                        Commands.none()),
+                    // ELSE: proceed with scoring sequence
+                    new SequentialCommandGroup(
+                        Commands.waitSeconds(
+                            Constants.SECONDS_TO_RAISE_ELEVATOR.get()
+                                + getElevatorRaiseWaitOffset()),
+                        Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() - 1.3),
+                        goToTransform(
                             drive,
-                            GeomUtil.transformToPose(targetTransform.plus(leftRightOffset)))));
+                            targetTransform.plus(new Transform2d(0.2, -0.05, new Rotation2d(0)))),
+                        goToTransform(
+                            drive,
+                            targetTransform.plus(new Transform2d(0.55, -0.05, new Rotation2d(0)))),
+                        Commands.runOnce(drive::stop),
+                        new InstantCommand(() -> elevator.raiseElevator(0)),
+                        Commands.waitSeconds(
+                            needsLongerDelay
+                                ? Constants.SECONDS_TO_SCORE.get() - 0.9
+                                : Constants.SECONDS_TO_SCORE.get() - 1.4),
+                        goToTransform(drive, targetTransform)),
+                    // CONDITION: coral blocking check
+                    () -> !shouldAbortScoringDueToCoralAtFeet(drive, targetPose)));
 
     CommandScheduler.getInstance().schedule(drive_command);
+  }
+
+  private boolean isAtTargetPose(DriveSubsystem drive, Pose2d targetPose) {
+    double distance = drive.getPose().getTranslation().getDistance(targetPose.getTranslation());
+    Logger.recordOutput("Distance to target pose", distance);
+    return distance < 0.1;
   }
 
   public void driveToLoc2(
