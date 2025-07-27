@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.InterfaceExecuteMode;
 import frc.robot.subsystems.InterfaceSubsystem;
 
@@ -10,11 +11,14 @@ public class InterfaceActionCmd2 extends Command {
   private final InterfaceSubsystem subsystem;
   private final InterfaceExecuteMode loc;
   private boolean finished = true;
+  private CommandXboxController control;
 
-  public InterfaceActionCmd2(InterfaceSubsystem subsystem, InterfaceExecuteMode loc) {
+  public InterfaceActionCmd2(
+      InterfaceSubsystem subsystem, InterfaceExecuteMode loc, CommandXboxController control) {
     addRequirements(subsystem);
     this.subsystem = subsystem;
     this.loc = loc;
+    this.control = control;
   }
 
   // Called when the command is initially scheduled.
@@ -27,7 +31,7 @@ public class InterfaceActionCmd2 extends Command {
   @Override
   public void execute() {
     //    Logger.recordOutput("finished work", false);
-    subsystem.driveToLoc2(loc, this);
+    subsystem.driveToLoc2(loc, this, control);
   }
 
   // Called once the command ends or is interrupted.

@@ -3,13 +3,16 @@ package frc.robot.subsystems;
 import static frc.robot.commands.DriveCommands.goToTransform;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.Constants.InterfaceExecuteMode;
 import frc.robot.FieldConstants;
@@ -35,6 +38,12 @@ public class InterfaceSubsystem extends SubsystemBase {
   public InterfaceSubsystem(DriveSubsystem drive, FlipEleSubsystem elevator) {
     this.drive = drive;
     this.elevator = elevator;
+  }
+
+  private boolean shouldAbortScoringDueToCoralAtFeet(DriveSubsystem drive, Pose2d pose) {
+    Pose2d currentPose = drive.getPose();
+    double distanceToCoral = currentPose.getTranslation().getDistance(pose.getTranslation());
+    return distanceToCoral > 0.05;
   }
 
   public String getPole() {
@@ -242,7 +251,11 @@ public class InterfaceSubsystem extends SubsystemBase {
   }
 
   private void executeDrive2(
-      Transform2d targetTransform, boolean isRight, boolean useOffset, InterfaceActionCmd2 stuff) {
+      Transform2d targetTransform,
+      boolean isRight,
+      boolean useOffset,
+      InterfaceActionCmd2 stuff,
+      CommandXboxController toRumble) {
     if (useOffset) {
       if (isRight) {
         leftRightOffset = new Transform2d(0.52, -0.24, new Rotation2d(Units.degreesToRadians(0.0)));
@@ -296,37 +309,61 @@ public class InterfaceSubsystem extends SubsystemBase {
             .andThen(goToTransform(drive, targetTransform.plus(leftRightOffset)))
             .andThen(Commands.runOnce(drive::stop))
             .andThen(
-                Commands.waitSeconds(
-                        Constants.SECONDS_TO_RAISE_ELEVATOR.get() + getElevatorRaiseWaitOffset())
-                    .andThen(Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() - 1.3))
-                    .andThen(
-                        goToTransform(
+                Commands.either(
+                    // If too far: rumble and exit
+                    new SequentialCommandGroup(
+                        new InstantCommand(
+                            () -> {
+                              toRumble.getHID().setRumble(GenericHID.RumbleType.kLeftRumble, 1.0);
+                              toRumble.getHID().setRumble(GenericHID.RumbleType.kRightRumble, 1.0);
+                            }),
+                        new WaitCommand(0.5),
+                        new InstantCommand(
+                            () -> {
+                              toRumble.getHID().setRumble(GenericHID.RumbleType.kLeftRumble, 0.0);
+                              toRumble.getHID().setRumble(GenericHID.RumbleType.kRightRumble, 0.0);
+                            })),
+                    // Else: continue scoring routine
+                    Commands.waitSeconds(
+                            Constants.SECONDS_TO_RAISE_ELEVATOR.get()
+                                + getElevatorRaiseWaitOffset())
+                        .andThen(Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() - 1.3))
+                        .andThen(
+                            goToTransform(
+                                drive,
+                                targetTransform.plus(
+                                    new Transform2d(0.2, -0.05, new Rotation2d(0)))))
+                        .andThen(
+                            goToTransform(
+                                drive,
+                                targetTransform.plus(
+                                    new Transform2d(0.55, -0.05, new Rotation2d(0)))))
+                        .andThen(Commands.runOnce(drive::stop))
+                        .andThen(
+                            () -> {
+                              elevator.raiseElevator(0);
+                            })
+                        .andThen(
+                            Commands.waitSeconds(
+                                needsLongerDelay
+                                    ? Constants.SECONDS_TO_SCORE.get() - 0.9
+                                    : Constants.SECONDS_TO_SCORE.get() - 1.4))
+                        .andThen(goToTransform(drive, targetTransform))
+                        .andThen(
+                            () -> {
+                              // no-op
+                            }),
+                    // Condition: too far from coral after reaching it
+                    () ->
+                        shouldAbortScoringDueToCoralAtFeet(
                             drive,
-                            targetTransform.plus(new Transform2d(0.2, -0.05, new Rotation2d(0)))))
-                    .andThen(
-                        goToTransform(
-                            drive,
-                            targetTransform.plus(new Transform2d(0.55, -0.05, new Rotation2d(0)))))
-                    .andThen(Commands.runOnce(drive::stop))
-                    .andThen(
-                        () -> {
-                          elevator.raiseElevator(0);
-                        })
-                    .andThen(
-                        Commands.waitSeconds(
-                            needsLongerDelay
-                                ? Constants.SECONDS_TO_SCORE.get() - 0.9
-                                : Constants.SECONDS_TO_SCORE.get() - 1.4))
-                    .andThen(goToTransform(drive, targetTransform))
-                    .andThen(
-                        () -> {
-                          // no-op
-                        }));
+                            GeomUtil.transformToPose(targetTransform.plus(leftRightOffset)))));
 
     CommandScheduler.getInstance().schedule(drive_command);
   }
 
-  public void driveToLoc2(InterfaceExecuteMode loc, InterfaceActionCmd2 stuff) {
+  public void driveToLoc2(
+      InterfaceExecuteMode loc, InterfaceActionCmd2 stuff, CommandXboxController toToRumble) {
     boolean isRight = false;
     switch (loc) {
       case REEF:
@@ -374,7 +411,7 @@ public class InterfaceSubsystem extends SubsystemBase {
             isRight = true;
             break;
         }
-        executeDrive2(targetTransform, isRight, true, stuff);
+        executeDrive2(targetTransform, isRight, true, stuff, toToRumble);
         break;
 
       case ALGEE:
@@ -422,11 +459,11 @@ public class InterfaceSubsystem extends SubsystemBase {
             isRight = true;
             break;
         }
-        executeDrive2(targetTransform, isRight, false, stuff);
+        executeDrive2(targetTransform, isRight, false, stuff, toToRumble);
         break;
       case CORAL:
         targetTransform = getTranslationFromPlace(Place.LEFT_CORAL_STATION);
-        executeDrive2(targetTransform, false, false, stuff);
+        executeDrive2(targetTransform, false, false, stuff, toToRumble);
         break;
       case DISABLE:
         drive_command.cancel();
@@ -435,7 +472,7 @@ public class InterfaceSubsystem extends SubsystemBase {
         break;
       case CLIMBER:
         targetTransform = getTranslationFromPlace(Place.MIDDLE_CAGE);
-        executeDrive2(targetTransform, false, false, stuff);
+        executeDrive2(targetTransform, false, false, stuff, toToRumble);
         break;
       case EXECUTE:
         if (!executing) {
