@@ -280,29 +280,7 @@ public class InterfaceSubsystem extends SubsystemBase {
         DriveCommands.goToTransformWithPathFinderPlusOffset(drive, targetTransform, leftRightOffset)
             .andThen(
                 new ConditionalCommand(
-                        // coral detected blocking
-                    Commands.runOnce(
-                        () -> {
-                          toRumble.getHID().setRumble(GenericHID.RumbleType.kLeftRumble, 1.0);
-                          toRumble.getHID().setRumble(GenericHID.RumbleType.kRightRumble, 1.0);
-
-                          CommandScheduler.getInstance()
-                              .schedule(
-                                  Commands.waitSeconds(0.5)
-                                      .andThen(
-                                          Commands.runOnce(
-                                              () -> {
-                                                toRumble
-                                                    .getHID()
-                                                    .setRumble(
-                                                        GenericHID.RumbleType.kLeftRumble, 0.0);
-                                                toRumble
-                                                    .getHID()
-                                                    .setRumble(
-                                                        GenericHID.RumbleType.kRightRumble, 0.0);
-                                              })));
-                        }),
-                    // full sequence
+                    // Condition is TRUE!!! full sequence
                     new SequentialCommandGroup(
                         Commands.runOnce(
                             () -> {
@@ -326,9 +304,30 @@ public class InterfaceSubsystem extends SubsystemBase {
                             needsLongerDelay
                                 ? Constants.SECONDS_TO_SCORE.get() - 0.9
                                 : Constants.SECONDS_TO_SCORE.get() - 1.4),
-                        Commands.runOnce(
-                            () -> elevator.raiseElevator(0))),
-                    // condition
+                        Commands.runOnce(() -> elevator.raiseElevator(0))),
+                    // Condition is FALSE!!! coral detected blocking
+                    Commands.runOnce(
+                        () -> {
+                          toRumble.getHID().setRumble(GenericHID.RumbleType.kLeftRumble, 1.0);
+                          toRumble.getHID().setRumble(GenericHID.RumbleType.kRightRumble, 1.0);
+
+                          CommandScheduler.getInstance()
+                              .schedule(
+                                  Commands.waitSeconds(0.5)
+                                      .andThen(
+                                          Commands.runOnce(
+                                              () -> {
+                                                toRumble
+                                                    .getHID()
+                                                    .setRumble(
+                                                        GenericHID.RumbleType.kLeftRumble, 0.0);
+                                                toRumble
+                                                    .getHID()
+                                                    .setRumble(
+                                                        GenericHID.RumbleType.kRightRumble, 0.0);
+                                              })));
+                        }),
+                    // condition if distance is less than 0.05 meter (returns TRUE when close so it will SCORE!)
                     () -> {
                       double dist =
                           drive.getPose().getTranslation().getDistance(offsetPose.getTranslation());
