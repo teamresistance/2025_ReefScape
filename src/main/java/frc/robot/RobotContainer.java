@@ -302,10 +302,8 @@ public class RobotContainer {
 
     driver
         .rightTrigger()
-        .whileTrue(
-            new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, driver)
-                .andThen(
-                    () -> {})); // When right trigger is pressed, drive to the location selected
+        .whileTrue(new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, driver));
+
     driver
         .rightTrigger()
         .onFalse(new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, driver));

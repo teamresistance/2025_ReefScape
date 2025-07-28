@@ -43,10 +43,6 @@ public class InterfaceActionCmd2 extends Command {
     //    finished = true;
   }
 
-  public void finishparentCommand() {
-    finished = true;
-  }
-
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
