@@ -18,7 +18,6 @@ import frc.robot.Constants.InterfaceExecuteMode;
 import frc.robot.FieldConstants;
 import frc.robot.FieldConstants.AllianceTreePlace;
 import frc.robot.FieldConstants.Place;
-import frc.robot.commands.DriveCommands;
 import frc.robot.commands.InterfaceActionCmd;
 import frc.robot.commands.InterfaceActionCmd2;
 import frc.robot.subsystems.drive.DriveSubsystem;
@@ -274,13 +273,25 @@ public class InterfaceSubsystem extends SubsystemBase {
       drive_command.cancel();
     }
 
-    Pose2d offsetPose = GeomUtil.transformToPose(targetTransform.plus(leftRightOffset));
+    Pose2d finalIntendedPose = GeomUtil.transformToPose(targetTransform.plus(leftRightOffset));
+
+    // to side
+    Command pathfinderCmd =
+        !drive.testingmode
+            ? AutoBuilder.pathfindToPose(
+                GeomUtil.transformToPose(targetTransform), Constants.PATH_CONSTRAINTS, 0.0)
+            : Commands.none();
+
+    // offset
+    Command offsetMoveCmd = goToTransform(drive, targetTransform.plus(leftRightOffset));
 
     drive_command =
-        DriveCommands.goToTransformWithPathFinderPlusOffset(drive, targetTransform, leftRightOffset)
+        pathfinderCmd
+            .andThen(offsetMoveCmd)
+            .andThen(Commands.runOnce(drive::stop))
             .andThen(
                 new ConditionalCommand(
-                    // Condition is TRUE!!! full sequence
+                    // coral is NOT blocking!
                     new SequentialCommandGroup(
                         Commands.runOnce(
                             () -> {
@@ -305,7 +316,8 @@ public class InterfaceSubsystem extends SubsystemBase {
                                 ? Constants.SECONDS_TO_SCORE.get() - 0.9
                                 : Constants.SECONDS_TO_SCORE.get() - 1.4),
                         Commands.runOnce(() -> elevator.raiseElevator(0))),
-                    // Condition is FALSE!!! coral detected blocking
+
+                    // coral is BLOCKING!
                     Commands.runOnce(
                         () -> {
                           toRumble.getHID().setRumble(GenericHID.RumbleType.kLeftRumble, 1.0);
@@ -327,10 +339,14 @@ public class InterfaceSubsystem extends SubsystemBase {
                                                         GenericHID.RumbleType.kRightRumble, 0.0);
                                               })));
                         }),
-                    // condition if distance is less than 0.05 meter (returns TRUE when close so it will SCORE!)
+
+                    // true if distance less than 0.05 meter (like 2 inches)
                     () -> {
                       double dist =
-                          drive.getPose().getTranslation().getDistance(offsetPose.getTranslation());
+                          drive
+                              .getPose()
+                              .getTranslation()
+                              .getDistance(finalIntendedPose.getTranslation());
                       return dist <= 0.05;
                     }));
 
