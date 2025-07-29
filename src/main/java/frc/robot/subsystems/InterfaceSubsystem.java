@@ -18,6 +18,7 @@ import frc.robot.Constants.InterfaceExecuteMode;
 import frc.robot.FieldConstants;
 import frc.robot.FieldConstants.AllianceTreePlace;
 import frc.robot.FieldConstants.Place;
+import frc.robot.commands.DriveCommands;
 import frc.robot.commands.InterfaceActionCmd;
 import frc.robot.commands.InterfaceActionCmd2;
 import frc.robot.subsystems.drive.DriveSubsystem;
@@ -276,11 +277,7 @@ public class InterfaceSubsystem extends SubsystemBase {
     Pose2d finalIntendedPose = GeomUtil.transformToPose(targetTransform.plus(leftRightOffset));
 
     // to side
-    Command pathfinderCmd =
-        !drive.testingmode
-            ? AutoBuilder.pathfindToPose(
-                GeomUtil.transformToPose(targetTransform), Constants.PATH_CONSTRAINTS, 0.0)
-            : Commands.none();
+    Command pathfinderCmd = DriveCommands.goToTransform(drive, targetTransform);
 
     // offset
     Command offsetMoveCmd = goToTransform(drive, targetTransform.plus(leftRightOffset));
