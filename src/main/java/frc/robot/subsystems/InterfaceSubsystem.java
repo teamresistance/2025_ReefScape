@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import static frc.robot.commands.DriveCommands.goToTransform;
+import static frc.robot.commands.DriveCommands.goToTransformWithPathFinder;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -18,7 +19,6 @@ import frc.robot.Constants.InterfaceExecuteMode;
 import frc.robot.FieldConstants;
 import frc.robot.FieldConstants.AllianceTreePlace;
 import frc.robot.FieldConstants.Place;
-import frc.robot.commands.DriveCommands;
 import frc.robot.commands.InterfaceActionCmd;
 import frc.robot.commands.InterfaceActionCmd2;
 import frc.robot.subsystems.drive.DriveSubsystem;
@@ -270,82 +270,70 @@ public class InterfaceSubsystem extends SubsystemBase {
             || "k".equals(pole)
             || "l".equals(pole);
 
+    Logger.recordOutput("Scoring/Using Extended Delay", needsLongerDelay);
+    SmartDashboard.putBoolean("Using Extended Delay", needsLongerDelay);
+
     if (drive_command != null) {
       drive_command.cancel();
     }
 
-    Pose2d finalIntendedPose = GeomUtil.transformToPose(targetTransform.plus(leftRightOffset));
-
-    // to side
-    Command pathfinderCmd = DriveCommands.goToTransform(drive, targetTransform);
-
-    // offset
-    Command offsetMoveCmd = goToTransform(drive, targetTransform.plus(leftRightOffset));
+    Pose2d intendedFinalPose = GeomUtil.transformToPose(targetTransform.plus(leftRightOffset));
 
     drive_command =
-        pathfinderCmd
-            .andThen(offsetMoveCmd)
-            .andThen(Commands.runOnce(drive::stop))
-            .andThen(
-                new ConditionalCommand(
-                    // coral is NOT blocking!
-                    new SequentialCommandGroup(
-                        Commands.runOnce(
-                            () -> {
-                              elevator.centererClosePending = false;
-                              elevator.centerer.set(false);
-                              elevator.setInScoringMode(true);
-                            }),
-                        Commands.waitSeconds(0.18),
-                        Commands.runOnce(
-                            () -> {
-                              elevator.inHoldingState = true;
-                              elevator.raiseElevator(level);
-                            }),
-                        Commands.runOnce(
-                            () -> {
-                              elevator.flipperScore(
-                                  Constants.SECONDS_TO_SCORE.get() + getExtraScoringTimeForLevel(),
-                                  getGripperReleaseDelayForLevel());
-                            }),
-                        Commands.waitSeconds(
-                            needsLongerDelay
-                                ? Constants.SECONDS_TO_SCORE.get() - 0.9
-                                : Constants.SECONDS_TO_SCORE.get() - 1.4),
-                        Commands.runOnce(() -> elevator.raiseElevator(0))),
+        new SequentialCommandGroup(
+            goToTransformWithPathFinder(drive, targetTransform),
+            goToTransform(drive, targetTransform.plus(leftRightOffset)),
+            Commands.runOnce(drive::stop),
+            new ConditionalCommand(
+                // close
+                new SequentialCommandGroup(
+                    new InstantCommand(
+                        () -> {
+                          elevator.centererClosePending = false;
+                          elevator.centerer.set(false);
+                          elevator.setInScoringMode(true);
+                        }),
+                    Commands.waitSeconds(0.18),
+                    new InstantCommand(
+                        () -> {
+                          elevator.inHoldingState = true;
+                          elevator.raiseElevator(level);
+                        }),
+                    new InstantCommand(
+                        () -> {
+                          elevator.flipperScore(
+                              Constants.SECONDS_TO_SCORE.get() + getExtraScoringTimeForLevel(),
+                              getGripperReleaseDelayForLevel());
+                        }),
+                    Commands.waitSeconds(
+                        needsLongerDelay
+                            ? Constants.SECONDS_TO_SCORE.get() - 0.9
+                            : Constants.SECONDS_TO_SCORE.get() - 1.4),
+                    new InstantCommand(() -> elevator.raiseElevator(0))),
 
-                    // coral is BLOCKING!
-                    Commands.runOnce(
+                // not close
+                new SequentialCommandGroup(
+                    new InstantCommand(
                         () -> {
                           toRumble.getHID().setRumble(GenericHID.RumbleType.kLeftRumble, 1.0);
                           toRumble.getHID().setRumble(GenericHID.RumbleType.kRightRumble, 1.0);
-
-                          CommandScheduler.getInstance()
-                              .schedule(
-                                  Commands.waitSeconds(0.5)
-                                      .andThen(
-                                          Commands.runOnce(
-                                              () -> {
-                                                toRumble
-                                                    .getHID()
-                                                    .setRumble(
-                                                        GenericHID.RumbleType.kLeftRumble, 0.0);
-                                                toRumble
-                                                    .getHID()
-                                                    .setRumble(
-                                                        GenericHID.RumbleType.kRightRumble, 0.0);
-                                              })));
                         }),
-
-                    // true if distance less than 0.05 meter (like 2 inches)
-                    () -> {
-                      double dist =
-                          drive
-                              .getPose()
-                              .getTranslation()
-                              .getDistance(finalIntendedPose.getTranslation());
-                      return dist <= 0.05;
-                    }));
+                    new WaitCommand(0.5),
+                    new InstantCommand(
+                        () -> {
+                          toRumble.getHID().setRumble(GenericHID.RumbleType.kLeftRumble, 0.0);
+                          toRumble.getHID().setRumble(GenericHID.RumbleType.kRightRumble, 0.0);
+                        }),
+                    // make sure its DOWN!!!!! and DOES NOT!!!!! score
+                    new InstantCommand(
+                        () -> {
+                          elevator.setInScoringMode(false);
+                          elevator.raiseElevator(0);
+                        })),
+                // condition
+                () ->
+                    drive.getPose().getTranslation().getDistance(intendedFinalPose.getTranslation())
+                        <= 0.05));
 
     CommandScheduler.getInstance().schedule(drive_command);
   }
