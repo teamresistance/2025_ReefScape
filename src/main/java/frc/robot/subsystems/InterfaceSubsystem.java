@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 import static frc.robot.commands.DriveCommands.goToTransform;
-import static frc.robot.commands.DriveCommands.goToTransformWithPathFinder;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -253,39 +252,39 @@ public class InterfaceSubsystem extends SubsystemBase {
       CommandXboxController toRumble) {
 
     if (useOffset) {
-      if (isRight) {
-        leftRightOffset = new Transform2d(0.52, -0.24, new Rotation2d(Units.degreesToRadians(0.0)));
-      } else {
-        leftRightOffset = new Transform2d(0.52, 0.11, new Rotation2d(Units.degreesToRadians(0.0)));
-      }
+      leftRightOffset =
+          isRight
+              ? new Transform2d(0.52, -0.24, new Rotation2d())
+              : new Transform2d(0.52, 0.11, new Rotation2d());
     } else {
-      leftRightOffset = new Transform2d(0.52, -0.05, new Rotation2d(0));
+      leftRightOffset = new Transform2d(0.52, -0.05, new Rotation2d());
     }
 
-    boolean needsLongerDelay =
-        "c".equals(pole)
-            || "d".equals(pole)
-            || "g".equals(pole)
-            || "h".equals(pole)
-            || "k".equals(pole)
-            || "l".equals(pole);
-
-    Logger.recordOutput("Scoring/Using Extended Delay", needsLongerDelay);
-    SmartDashboard.putBoolean("Using Extended Delay", needsLongerDelay);
+    boolean needsLongerDelay = "cdghkl".contains(pole);
+    Logger.recordOutput("ExtendedDelay", needsLongerDelay);
+    SmartDashboard.putBoolean("ExtendedDelay", needsLongerDelay);
 
     if (drive_command != null) {
       drive_command.cancel();
     }
 
-    Pose2d intendedFinalPose = GeomUtil.transformToPose(targetTransform.plus(leftRightOffset));
+    Pose2d finalPose = GeomUtil.transformToPose(targetTransform.plus(leftRightOffset));
 
     drive_command =
         new SequentialCommandGroup(
-            goToTransformWithPathFinder(drive, targetTransform),
-            goToTransform(drive, targetTransform.plus(leftRightOffset)),
+            // to tag
+            drive.testingmode
+                ? new InstantCommand(() -> {})
+                : AutoBuilder.pathfindToPose(
+                    GeomUtil.transformToPose(targetTransform), Constants.PATH_CONSTRAINTS, 0.0),
+
+            // offset
+            goToTransform(drive, targetTransform.plus(leftRightOffset)).withTimeout(2),
             Commands.runOnce(drive::stop),
+
+            // dist check (j)
             new ConditionalCommand(
-                // close
+                // in range: score
                 new SequentialCommandGroup(
                     new InstantCommand(
                         () -> {
@@ -298,20 +297,12 @@ public class InterfaceSubsystem extends SubsystemBase {
                         () -> {
                           elevator.inHoldingState = true;
                           elevator.raiseElevator(level);
-                        }),
-                    new InstantCommand(
-                        () -> {
                           elevator.flipperScore(
                               Constants.SECONDS_TO_SCORE.get() + getExtraScoringTimeForLevel(),
                               getGripperReleaseDelayForLevel());
-                        }),
-                    Commands.waitSeconds(
-                        needsLongerDelay
-                            ? Constants.SECONDS_TO_SCORE.get() - 0.9
-                            : Constants.SECONDS_TO_SCORE.get() - 1.4),
-                    new InstantCommand(() -> elevator.raiseElevator(0))),
+                        })),
 
-                // not close
+                // out of range: rumble only
                 new SequentialCommandGroup(
                     new InstantCommand(
                         () -> {
@@ -323,16 +314,10 @@ public class InterfaceSubsystem extends SubsystemBase {
                         () -> {
                           toRumble.getHID().setRumble(GenericHID.RumbleType.kLeftRumble, 0.0);
                           toRumble.getHID().setRumble(GenericHID.RumbleType.kRightRumble, 0.0);
-                        }),
-                    // make sure its DOWN!!!!! and DOES NOT!!!!! score
-                    new InstantCommand(
-                        () -> {
-                          elevator.setInScoringMode(false);
-                          elevator.raiseElevator(0);
                         })),
                 // condition
                 () ->
-                    drive.getPose().getTranslation().getDistance(intendedFinalPose.getTranslation())
+                    drive.getPose().getTranslation().getDistance(finalPose.getTranslation())
                         <= 0.05));
 
     CommandScheduler.getInstance().schedule(drive_command);
