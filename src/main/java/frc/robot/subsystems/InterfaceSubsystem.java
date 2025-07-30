@@ -269,7 +269,14 @@ public class InterfaceSubsystem extends SubsystemBase {
     }
 
     Pose2d checkPose = GeomUtil.transformToPose(targetTransform);
-    Transform2d offsetPose = targetTransform.plus(leftRightOffset);
+    Transform2d offsetTransform = targetTransform.plus(leftRightOffset);
+
+    /*
+    1. drive to place
+    2. arrive and make sure within 0.1 meter of intended place
+    3. offset to new pose (offset command will auto end)
+    4. score if within 0.05 meter of intended place
+     */
 
     drive_command =
         new SequentialCommandGroup(
@@ -282,51 +289,79 @@ public class InterfaceSubsystem extends SubsystemBase {
             // Location check is based off of the first auto-drive-to movement
             // IF the robot is close enough, it will do the score sequence if NOT, it will rumble
             new ConditionalCommand(
-                // close enough
+                // close enough pt 1
                 new SequentialCommandGroup(
-                    goToTransform(drive, offsetPose).withTimeout(2),
+                    goToTransform(drive, offsetTransform),
                     Commands.runOnce(drive::stop),
-                    new InstantCommand(
-                        () -> {
-                          elevator.centererClosePending = false;
-                          elevator.centerer.set(false);
-                          elevator.setInScoringMode(true);
-                        }),
-                    Commands.waitSeconds(0.18),
-                    new InstantCommand(
-                        () -> {
-                          elevator.inHoldingState = true;
-                          elevator.raiseElevator(level);
-                        }),
-                    new InstantCommand(
-                        () -> {
-                          elevator.flipperScore(
-                              Constants.SECONDS_TO_SCORE.get() + getExtraScoringTimeForLevel(),
-                              getGripperReleaseDelayForLevel());
-                        }),
-                    Commands.waitSeconds(
-                        Constants.SECONDS_TO_RAISE_ELEVATOR.get() + getElevatorRaiseWaitOffset()),
-                    Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() - 1.3),
-                    goToTransform(
-                        drive,
-                        targetTransform.plus(new Transform2d(0.2, -0.05, new Rotation2d(0)))),
-                    goToTransform(
-                        drive,
-                        targetTransform.plus(new Transform2d(0.55, -0.05, new Rotation2d(0)))),
-                    Commands.runOnce(drive::stop),
-                    new InstantCommand(
-                        () -> {
-                          elevator.raiseElevator(0);
-                        }),
-                    Commands.waitSeconds(
-                        needsLongerDelay
-                            ? Constants.SECONDS_TO_SCORE.get() - 0.9
-                            : Constants.SECONDS_TO_SCORE.get() - 1.4),
-                    goToTransform(drive, targetTransform),
-                    new InstantCommand(
-                        () -> {
-                          // done
-                        })),
+                    new ConditionalCommand(
+                            // close enough pt 2
+                        new SequentialCommandGroup(
+                            new InstantCommand(
+                                () -> {
+                                  elevator.centererClosePending = false;
+                                  elevator.centerer.set(false);
+                                  elevator.setInScoringMode(true);
+                                }),
+                            Commands.waitSeconds(0.18),
+                            new InstantCommand(
+                                () -> {
+                                  elevator.inHoldingState = true;
+                                  elevator.raiseElevator(level);
+                                }),
+                            new InstantCommand(
+                                () -> {
+                                  elevator.flipperScore(
+                                      Constants.SECONDS_TO_SCORE.get()
+                                          + getExtraScoringTimeForLevel(),
+                                      getGripperReleaseDelayForLevel());
+                                }),
+                            Commands.waitSeconds(
+                                Constants.SECONDS_TO_RAISE_ELEVATOR.get()
+                                    + getElevatorRaiseWaitOffset()),
+                            Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() - 1.3),
+                            goToTransform(
+                                drive,
+                                targetTransform.plus(
+                                    new Transform2d(0.2, -0.05, new Rotation2d(0)))),
+                            goToTransform(
+                                drive,
+                                targetTransform.plus(
+                                    new Transform2d(0.55, -0.05, new Rotation2d(0)))),
+                            Commands.runOnce(drive::stop),
+                            new InstantCommand(
+                                () -> {
+                                  elevator.raiseElevator(0);
+                                }),
+                            Commands.waitSeconds(
+                                needsLongerDelay
+                                    ? Constants.SECONDS_TO_SCORE.get() - 0.9
+                                    : Constants.SECONDS_TO_SCORE.get() - 1.4),
+                            goToTransform(drive, targetTransform)),
+                        // not close enough to the offset final pose
+                        new SequentialCommandGroup(
+                            new InstantCommand(
+                                () -> {
+                                  toRumble
+                                      .getHID()
+                                      .setRumble(GenericHID.RumbleType.kLeftRumble, 1.0);
+                                  toRumble
+                                      .getHID()
+                                      .setRumble(GenericHID.RumbleType.kRightRumble, 1.0);
+                                }),
+                            new WaitCommand(0.5),
+                            new InstantCommand(
+                                () -> {
+                                  toRumble
+                                      .getHID()
+                                      .setRumble(GenericHID.RumbleType.kLeftRumble, 0.0);
+                                  toRumble
+                                      .getHID()
+                                      .setRumble(GenericHID.RumbleType.kRightRumble, 0.0);
+                                })),
+                        // check
+                        () ->
+                            drive.getPose().getTranslation().getDistance(offsetTransform.getTranslation())
+                                <= 0.04)),
 
                 // too far
                 new SequentialCommandGroup(
@@ -345,7 +380,7 @@ public class InterfaceSubsystem extends SubsystemBase {
                 // condition
                 () ->
                     drive.getPose().getTranslation().getDistance(checkPose.getTranslation())
-                        <= 0.05));
+                        <= 0.1));
 
     CommandScheduler.getInstance().schedule(drive_command);
   }
