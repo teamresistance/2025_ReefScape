@@ -268,24 +268,24 @@ public class InterfaceSubsystem extends SubsystemBase {
       drive_command.cancel();
     }
 
-    Pose2d finalPose = GeomUtil.transformToPose(targetTransform.plus(leftRightOffset));
+    Pose2d checkPose = GeomUtil.transformToPose(targetTransform);
+    Transform2d offsetPose = targetTransform.plus(leftRightOffset);
 
     drive_command =
         new SequentialCommandGroup(
-            // to tag
+            // auto drive
             drive.testingmode
                 ? new InstantCommand(() -> {})
-                : AutoBuilder.pathfindToPose(
-                    GeomUtil.transformToPose(targetTransform), Constants.PATH_CONSTRAINTS, 0.0),
-
-            // offset
-            goToTransform(drive, targetTransform.plus(leftRightOffset)).withTimeout(2),
+                : AutoBuilder.pathfindToPose(checkPose, Constants.PATH_CONSTRAINTS, 0.0),
             Commands.runOnce(drive::stop),
 
-            // dist check (j)
+            // Location check is based off of the first auto-drive-to movement
+            // IF the robot is close enough, it will do the score sequence if NOT, it will rumble
             new ConditionalCommand(
-                // in range: score
+                // close enough
                 new SequentialCommandGroup(
+                    goToTransform(drive, offsetPose).withTimeout(2),
+                    Commands.runOnce(drive::stop),
                     new InstantCommand(
                         () -> {
                           elevator.centererClosePending = false;
@@ -297,12 +297,38 @@ public class InterfaceSubsystem extends SubsystemBase {
                         () -> {
                           elevator.inHoldingState = true;
                           elevator.raiseElevator(level);
+                        }),
+                    new InstantCommand(
+                        () -> {
                           elevator.flipperScore(
                               Constants.SECONDS_TO_SCORE.get() + getExtraScoringTimeForLevel(),
                               getGripperReleaseDelayForLevel());
+                        }),
+                    Commands.waitSeconds(
+                        Constants.SECONDS_TO_RAISE_ELEVATOR.get() + getElevatorRaiseWaitOffset()),
+                    Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() - 1.3),
+                    goToTransform(
+                        drive,
+                        targetTransform.plus(new Transform2d(0.2, -0.05, new Rotation2d(0)))),
+                    goToTransform(
+                        drive,
+                        targetTransform.plus(new Transform2d(0.55, -0.05, new Rotation2d(0)))),
+                    Commands.runOnce(drive::stop),
+                    new InstantCommand(
+                        () -> {
+                          elevator.raiseElevator(0);
+                        }),
+                    Commands.waitSeconds(
+                        needsLongerDelay
+                            ? Constants.SECONDS_TO_SCORE.get() - 0.9
+                            : Constants.SECONDS_TO_SCORE.get() - 1.4),
+                    goToTransform(drive, targetTransform),
+                    new InstantCommand(
+                        () -> {
+                          // done
                         })),
 
-                // out of range: rumble only
+                // too far
                 new SequentialCommandGroup(
                     new InstantCommand(
                         () -> {
@@ -315,9 +341,10 @@ public class InterfaceSubsystem extends SubsystemBase {
                           toRumble.getHID().setRumble(GenericHID.RumbleType.kLeftRumble, 0.0);
                           toRumble.getHID().setRumble(GenericHID.RumbleType.kRightRumble, 0.0);
                         })),
+
                 // condition
                 () ->
-                    drive.getPose().getTranslation().getDistance(finalPose.getTranslation())
+                    drive.getPose().getTranslation().getDistance(checkPose.getTranslation())
                         <= 0.05));
 
     CommandScheduler.getInstance().schedule(drive_command);
