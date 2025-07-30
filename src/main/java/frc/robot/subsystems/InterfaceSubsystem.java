@@ -34,6 +34,7 @@ public class InterfaceSubsystem extends SubsystemBase {
   private boolean executing = false;
   private Transform2d targetTransform = new Transform2d();
   private Transform2d leftRightOffset = new Transform2d();
+  private final Timer offsetTimer = new Timer();
 
   public InterfaceSubsystem(DriveSubsystem drive, FlipEleSubsystem elevator) {
     this.drive = drive;
@@ -266,35 +267,24 @@ public class InterfaceSubsystem extends SubsystemBase {
 
     if (drive_command != null) {
       drive_command.cancel();
+    } else {
+      offsetTimer.restart();
     }
 
     Pose2d checkPose = GeomUtil.transformToPose(targetTransform);
     Transform2d offsetTransform = targetTransform.plus(leftRightOffset);
 
-    /*
-    1. drive to place
-    2. arrive and make sure within 0.1 meter of intended place
-    3. offset to new pose (offset command will auto end)
-    4. score if within 0.05 meter of intended place
-     */
-
     drive_command =
         new SequentialCommandGroup(
-            // auto drive
             drive.testingmode
                 ? new InstantCommand(() -> {})
                 : AutoBuilder.pathfindToPose(checkPose, Constants.PATH_CONSTRAINTS, 0.0),
             Commands.runOnce(drive::stop),
-
-            // Location check is based off of the first auto-drive-to movement
-            // IF the robot is close enough, it will do the score sequence if NOT, it will rumble
             new ConditionalCommand(
-                // close enough pt 1
                 new SequentialCommandGroup(
                     goToTransform(drive, offsetTransform),
                     Commands.runOnce(drive::stop),
                     new ConditionalCommand(
-                            // close enough pt 2
                         new SequentialCommandGroup(
                             new InstantCommand(
                                 () -> {
@@ -337,7 +327,6 @@ public class InterfaceSubsystem extends SubsystemBase {
                                     ? Constants.SECONDS_TO_SCORE.get() - 0.9
                                     : Constants.SECONDS_TO_SCORE.get() - 1.4),
                             goToTransform(drive, targetTransform)),
-                        // not close enough to the offset final pose
                         new SequentialCommandGroup(
                             new InstantCommand(
                                 () -> {
@@ -358,12 +347,13 @@ public class InterfaceSubsystem extends SubsystemBase {
                                       .getHID()
                                       .setRumble(GenericHID.RumbleType.kRightRumble, 0.0);
                                 })),
-                        // check
                         () ->
-                            drive.getPose().getTranslation().getDistance(offsetTransform.getTranslation())
-                                <= 0.04)),
-
-                // too far
+                            drive
+                                        .getPose()
+                                        .getTranslation()
+                                        .getDistance(offsetTransform.getTranslation())
+                                    <= 0.04
+                                && offsetTimer.get() <= 2.0)),
                 new SequentialCommandGroup(
                     new InstantCommand(
                         () -> {
@@ -376,8 +366,6 @@ public class InterfaceSubsystem extends SubsystemBase {
                           toRumble.getHID().setRumble(GenericHID.RumbleType.kLeftRumble, 0.0);
                           toRumble.getHID().setRumble(GenericHID.RumbleType.kRightRumble, 0.0);
                         })),
-
-                // condition
                 () ->
                     drive.getPose().getTranslation().getDistance(checkPose.getTranslation())
                         <= 0.1));
