@@ -264,11 +264,11 @@ public class InterfaceSubsystem extends SubsystemBase {
     boolean needsLongerDelay = "cdghkl".contains(pole);
     Logger.recordOutput("ExtendedDelay", needsLongerDelay);
     SmartDashboard.putBoolean("ExtendedDelay", needsLongerDelay);
+    offsetTimer.start();
 
     if (drive_command != null) {
       drive_command.cancel();
-    } else {
-      offsetTimer.restart();
+      if (!drive_command.isScheduled()) offsetTimer.reset();
     }
 
     Pose2d checkPose = GeomUtil.transformToPose(targetTransform);
