@@ -304,6 +304,8 @@ public class RobotContainer {
         .rightTrigger()
         .whileTrue(new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, driver));
 
+    driver.rightTrigger().onTrue(new InstantCommand(reef::onTrue));
+
     driver
         .rightTrigger()
         .onFalse(new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, driver));

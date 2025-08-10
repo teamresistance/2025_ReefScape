@@ -34,7 +34,7 @@ public class InterfaceSubsystem extends SubsystemBase {
   private boolean executing = false;
   private Transform2d targetTransform = new Transform2d();
   private Transform2d leftRightOffset = new Transform2d();
-  private final Timer offsetTimer = new Timer();
+  private final Timer timer = new Timer();
 
   public InterfaceSubsystem(DriveSubsystem drive, FlipEleSubsystem elevator) {
     this.drive = drive;
@@ -245,6 +245,30 @@ public class InterfaceSubsystem extends SubsystemBase {
     }
   }
 
+  private SequentialCommandGroup rumbleCommand(CommandXboxController toRumble) {
+    return new SequentialCommandGroup(
+        new InstantCommand(
+            () -> {
+              toRumble.getHID().setRumble(GenericHID.RumbleType.kLeftRumble, 1.0);
+              toRumble.getHID().setRumble(GenericHID.RumbleType.kRightRumble, 1.0);
+            }),
+        new WaitCommand(0.5),
+        new InstantCommand(
+            () -> {
+              toRumble.getHID().setRumble(GenericHID.RumbleType.kLeftRumble, 0.0);
+              toRumble.getHID().setRumble(GenericHID.RumbleType.kRightRumble, 0.0);
+            }));
+  }
+
+  public void onTrue() {
+    timer.stop();
+    timer.reset();
+  }
+
+  private void startTimer() {
+    timer.start();
+  }
+
   private void executeDrive2(
       Transform2d targetTransform,
       boolean isRight,
@@ -264,11 +288,9 @@ public class InterfaceSubsystem extends SubsystemBase {
     boolean needsLongerDelay = "cdghkl".contains(pole);
     Logger.recordOutput("ExtendedDelay", needsLongerDelay);
     SmartDashboard.putBoolean("ExtendedDelay", needsLongerDelay);
-    offsetTimer.start();
 
     if (drive_command != null) {
       drive_command.cancel();
-      if (!drive_command.isScheduled()) offsetTimer.reset();
     }
 
     Pose2d checkPose = GeomUtil.transformToPose(targetTransform);
@@ -282,78 +304,48 @@ public class InterfaceSubsystem extends SubsystemBase {
             Commands.runOnce(drive::stop),
             new ConditionalCommand(
                 new SequentialCommandGroup(
-                    goToTransform(drive, offsetTransform),
-                    Commands.runOnce(drive::stop),
+                    Commands.runOnce(this::startTimer),
                     new ConditionalCommand(
-                        new SequentialCommandGroup(
-                            new InstantCommand(
-                                () -> {
-                                  elevator.centererClosePending = false;
-                                  elevator.centerer.set(false);
-                                  elevator.setInScoringMode(true);
-                                }),
-                            Commands.waitSeconds(0.18),
-                            new InstantCommand(
-                                () -> {
-                                  elevator.inHoldingState = true;
-                                  elevator.raiseElevator(level);
-                                }),
-                            new InstantCommand(
-                                () -> {
-                                  elevator.flipperScore(
-                                      Constants.SECONDS_TO_SCORE.get()
-                                          + getExtraScoringTimeForLevel(),
-                                      getGripperReleaseDelayForLevel());
-                                }),
-                            Commands.waitSeconds(
-                                Constants.SECONDS_TO_RAISE_ELEVATOR.get()
-                                    + getElevatorRaiseWaitOffset()),
-                            Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() - 1.3),
-                            goToTransform(
-                                drive,
-                                targetTransform.plus(
-                                    new Transform2d(0.2, -0.05, new Rotation2d(0)))),
-                            goToTransform(
-                                drive,
-                                targetTransform.plus(
-                                    new Transform2d(0.55, -0.05, new Rotation2d(0)))),
-                            Commands.runOnce(drive::stop),
-                            new InstantCommand(
-                                () -> {
-                                  elevator.raiseElevator(0);
-                                }),
-                            Commands.waitSeconds(
-                                needsLongerDelay
-                                    ? Constants.SECONDS_TO_SCORE.get() - 0.9
-                                    : Constants.SECONDS_TO_SCORE.get() - 1.4),
-                            goToTransform(drive, targetTransform)),
-                        new SequentialCommandGroup(
-                            new InstantCommand(
-                                () -> {
-                                  toRumble
-                                      .getHID()
-                                      .setRumble(GenericHID.RumbleType.kLeftRumble, 1.0);
-                                  toRumble
-                                      .getHID()
-                                      .setRumble(GenericHID.RumbleType.kRightRumble, 1.0);
-                                }),
-                            new WaitCommand(0.5),
-                            new InstantCommand(
-                                () -> {
-                                  toRumble
-                                      .getHID()
-                                      .setRumble(GenericHID.RumbleType.kLeftRumble, 0.0);
-                                  toRumble
-                                      .getHID()
-                                      .setRumble(GenericHID.RumbleType.kRightRumble, 0.0);
-                                })),
-                        () ->
-                            drive
-                                        .getPose()
-                                        .getTranslation()
-                                        .getDistance(offsetTransform.getTranslation())
-                                    <= 0.04
-                                && offsetTimer.get() <= 2.0)),
+                        goToTransform(drive, offsetTransform)
+                            .andThen(drive::stop), // drive while timer less 2
+                        rumbleCommand(toRumble), // rumble if timer more/equal 2
+                        () -> timer.get() >= 2.0),
+                    new SequentialCommandGroup(
+                        new InstantCommand(
+                            () -> {
+                              elevator.centererClosePending = false;
+                              elevator.centerer.set(false);
+                              elevator.setInScoringMode(true);
+                            }),
+                        Commands.waitSeconds(0.18),
+                        new InstantCommand(
+                            () -> {
+                              elevator.inHoldingState = true;
+                              elevator.raiseElevator(level);
+                            }),
+                        new InstantCommand(
+                            () -> {
+                              elevator.flipperScore(
+                                  Constants.SECONDS_TO_SCORE.get() + getExtraScoringTimeForLevel(),
+                                  getGripperReleaseDelayForLevel());
+                            }),
+                        Commands.waitSeconds(
+                            Constants.SECONDS_TO_RAISE_ELEVATOR.get()
+                                + getElevatorRaiseWaitOffset()),
+                        Commands.waitSeconds(Constants.SECONDS_TO_SCORE.get() - 1.3),
+                        goToTransform(
+                            drive,
+                            targetTransform.plus(new Transform2d(0.2, -0.05, new Rotation2d(0)))),
+                        goToTransform(
+                            drive,
+                            targetTransform.plus(new Transform2d(0.55, -0.05, new Rotation2d(0)))),
+                        Commands.runOnce(drive::stop),
+                        new InstantCommand(() -> elevator.raiseElevator(0)),
+                        Commands.waitSeconds(
+                            needsLongerDelay
+                                ? Constants.SECONDS_TO_SCORE.get() - 0.9
+                                : Constants.SECONDS_TO_SCORE.get() - 1.4),
+                        goToTransform(drive, targetTransform))),
                 new SequentialCommandGroup(
                     new InstantCommand(
                         () -> {
@@ -368,7 +360,7 @@ public class InterfaceSubsystem extends SubsystemBase {
                         })),
                 () ->
                     drive.getPose().getTranslation().getDistance(checkPose.getTranslation())
-                        <= 0.1));
+                        <= 0.9));
 
     CommandScheduler.getInstance().schedule(drive_command);
   }
