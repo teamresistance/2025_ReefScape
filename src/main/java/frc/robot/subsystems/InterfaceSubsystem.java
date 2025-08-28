@@ -58,8 +58,30 @@ public class InterfaceSubsystem extends SubsystemBase {
         FieldConstants.getOffsetApriltagFromTree(allianceplace).getRotation());
   }
 
+  private Transform2d getClosestPole(DriveSubsystem drive) {
+    Translation2d now = drive.getPose().getTranslation();
+    Place[] available = {
+            Place.A_TREE, Place.B_TREE, Place.C_TREE, Place.D_TREE,
+            Place.E_TREE, Place.F_TREE, Place.G_TREE, Place.H_TREE,
+            Place.I_TREE, Place.J_TREE, Place.K_TREE, Place.L_TREE
+    };
+
+    Place closestPlace = available[0];
+    double min = now.getDistance(getTranslationFromPlace(available[0]).getTranslation());
+
+    for (Place check : available) {
+      double dist = now.getDistance(getTranslationFromPlace(check).getTranslation());
+      if (dist < min) {
+        min = dist;
+        closestPlace = check;
+      }
+    }
+
+    return getTranslationFromPlace(closestPlace);
+  }
+
   private void executeDrive(
-      Transform2d targetTransform, boolean isRight, boolean useOffset, InterfaceActionCmd stuff) {
+      Transform2d targetTransform, boolean isRight, boolean useOffset) {
     if (useOffset) {
       if (isRight) {
         leftRightOffset = new Transform2d(0.50, -0.24, new Rotation2d(Units.degreesToRadians(0.0)));
@@ -118,104 +140,18 @@ public class InterfaceSubsystem extends SubsystemBase {
     boolean isRight = false;
     switch (loc) {
       case REEF:
-        switch (pole) {
-          case "a":
-            targetTransform = getTranslationFromPlace(Place.A_TREE);
-            break;
-          case "b":
-            targetTransform = getTranslationFromPlace(Place.B_TREE);
-            isRight = true;
-            break;
-          case "c":
-            targetTransform = getTranslationFromPlace(Place.C_TREE);
-            break;
-          case "d":
-            targetTransform = getTranslationFromPlace(Place.D_TREE);
-            isRight = true;
-            break;
-          case "e":
-            targetTransform = getTranslationFromPlace(Place.E_TREE);
-            break;
-          case "f":
-            targetTransform = getTranslationFromPlace(Place.F_TREE);
-            isRight = true;
-            break;
-          case "g":
-            targetTransform = getTranslationFromPlace(Place.G_TREE);
-            break;
-          case "h":
-            targetTransform = getTranslationFromPlace(Place.H_TREE);
-            isRight = true;
-            break;
-          case "i":
-            targetTransform = getTranslationFromPlace(Place.I_TREE);
-            break;
-          case "j":
-            targetTransform = getTranslationFromPlace(Place.J_TREE);
-            isRight = true;
-            break;
-          case "k":
-            targetTransform = getTranslationFromPlace(Place.K_TREE);
-            break;
-          case "l":
-            targetTransform = getTranslationFromPlace(Place.L_TREE);
-            isRight = true;
-            break;
-        }
-        executeDrive(targetTransform, isRight, true, stuff);
+        targetTransform = getClosestPole(drive);
+        executeDrive(targetTransform, isRight, true);
         break;
 
       case ALGEE:
-        switch (pole) {
-          case "a":
-            targetTransform = getTranslationFromPlace(Place.A_TREE);
-            break;
-          case "b":
-            targetTransform = getTranslationFromPlace(Place.B_TREE);
-            isRight = true;
-            break;
-          case "c":
-            targetTransform = getTranslationFromPlace(Place.C_TREE);
-            break;
-          case "d":
-            targetTransform = getTranslationFromPlace(Place.D_TREE);
-            isRight = true;
-            break;
-          case "e":
-            targetTransform = getTranslationFromPlace(Place.E_TREE);
-            break;
-          case "f":
-            targetTransform = getTranslationFromPlace(Place.F_TREE);
-            isRight = true;
-            break;
-          case "g":
-            targetTransform = getTranslationFromPlace(Place.G_TREE);
-            break;
-          case "h":
-            targetTransform = getTranslationFromPlace(Place.H_TREE);
-            isRight = true;
-            break;
-          case "i":
-            targetTransform = getTranslationFromPlace(Place.I_TREE);
-            break;
-          case "j":
-            targetTransform = getTranslationFromPlace(Place.J_TREE);
-            isRight = true;
-            break;
-          case "k":
-            targetTransform = getTranslationFromPlace(Place.K_TREE);
-            break;
-          case "l":
-            targetTransform = getTranslationFromPlace(Place.L_TREE);
-            isRight = true;
-            break;
-        }
-        executeDrive(targetTransform, isRight, false, stuff);
+        targetTransform = getClosestPole(drive);
+        executeDrive(targetTransform, isRight, false);
         break;
 
       case CORAL:
         targetTransform = getTranslationFromPlace(Place.LEFT_CORAL_STATION);
-        executeDrive(targetTransform, false, false, stuff);
+        executeDrive(targetTransform, false, false);
         break;
 
       case DISABLE:
@@ -225,7 +161,7 @@ public class InterfaceSubsystem extends SubsystemBase {
 
       case CLIMBER:
         targetTransform = getTranslationFromPlace(Place.MIDDLE_CAGE);
-        executeDrive(targetTransform, false, false, stuff);
+        executeDrive(targetTransform, false, false);
         break;
 
       case EXECUTE:
@@ -242,7 +178,7 @@ public class InterfaceSubsystem extends SubsystemBase {
   }
 
   private void executeDrive2(
-      Transform2d targetTransform, boolean isRight, boolean useOffset, InterfaceActionCmd2 stuff) {
+      Transform2d targetTransform, boolean isRight, boolean useOffset) {
     if (useOffset) {
       if (isRight) {
         leftRightOffset = new Transform2d(0.52, -0.24, new Rotation2d(Units.degreesToRadians(0.0)));
@@ -330,103 +266,17 @@ public class InterfaceSubsystem extends SubsystemBase {
     boolean isRight = false;
     switch (loc) {
       case REEF:
-        switch (pole) {
-          case "a":
-            targetTransform = getTranslationFromPlace(Place.A_TREE);
-            break;
-          case "b":
-            targetTransform = getTranslationFromPlace(Place.B_TREE);
-            isRight = true;
-            break;
-          case "c":
-            targetTransform = getTranslationFromPlace(Place.C_TREE);
-            break;
-          case "d":
-            targetTransform = getTranslationFromPlace(Place.D_TREE);
-            isRight = true;
-            break;
-          case "e":
-            targetTransform = getTranslationFromPlace(Place.E_TREE);
-            break;
-          case "f":
-            targetTransform = getTranslationFromPlace(Place.F_TREE);
-            isRight = true;
-            break;
-          case "g":
-            targetTransform = getTranslationFromPlace(Place.G_TREE);
-            break;
-          case "h":
-            targetTransform = getTranslationFromPlace(Place.H_TREE);
-            isRight = true;
-            break;
-          case "i":
-            targetTransform = getTranslationFromPlace(Place.I_TREE);
-            break;
-          case "j":
-            targetTransform = getTranslationFromPlace(Place.J_TREE);
-            isRight = true;
-            break;
-          case "k":
-            targetTransform = getTranslationFromPlace(Place.K_TREE);
-            break;
-          case "l":
-            targetTransform = getTranslationFromPlace(Place.L_TREE);
-            isRight = true;
-            break;
-        }
-        executeDrive2(targetTransform, isRight, true, stuff);
+        targetTransform = getClosestPole(drive);
+        executeDrive2(targetTransform, isRight, true);
         break;
 
       case ALGEE:
-        switch (pole) {
-          case "a":
-            targetTransform = getTranslationFromPlace(Place.A_TREE);
-            break;
-          case "b":
-            targetTransform = getTranslationFromPlace(Place.B_TREE);
-            isRight = true;
-            break;
-          case "c":
-            targetTransform = getTranslationFromPlace(Place.C_TREE);
-            break;
-          case "d":
-            targetTransform = getTranslationFromPlace(Place.D_TREE);
-            isRight = true;
-            break;
-          case "e":
-            targetTransform = getTranslationFromPlace(Place.E_TREE);
-            break;
-          case "f":
-            targetTransform = getTranslationFromPlace(Place.F_TREE);
-            isRight = true;
-            break;
-          case "g":
-            targetTransform = getTranslationFromPlace(Place.G_TREE);
-            break;
-          case "h":
-            targetTransform = getTranslationFromPlace(Place.H_TREE);
-            isRight = true;
-            break;
-          case "i":
-            targetTransform = getTranslationFromPlace(Place.I_TREE);
-            break;
-          case "j":
-            targetTransform = getTranslationFromPlace(Place.J_TREE);
-            isRight = true;
-            break;
-          case "k":
-            targetTransform = getTranslationFromPlace(Place.K_TREE);
-            break;
-          case "l":
-            targetTransform = getTranslationFromPlace(Place.L_TREE);
-            isRight = true;
-            break;
-        }
-        executeDrive2(targetTransform, isRight, false, stuff);
+        targetTransform = getClosestPole(drive);
+        executeDrive2(targetTransform, isRight, false);
         break;
       case CORAL:
         targetTransform = getTranslationFromPlace(Place.LEFT_CORAL_STATION);
-        executeDrive2(targetTransform, false, false, stuff);
+        executeDrive2(targetTransform, false, false);
         break;
       case DISABLE:
         drive_command.cancel();
@@ -435,7 +285,7 @@ public class InterfaceSubsystem extends SubsystemBase {
         break;
       case CLIMBER:
         targetTransform = getTranslationFromPlace(Place.MIDDLE_CAGE);
-        executeDrive2(targetTransform, false, false, stuff);
+        executeDrive2(targetTransform, false, false);
         break;
       case EXECUTE:
         if (!executing) {
