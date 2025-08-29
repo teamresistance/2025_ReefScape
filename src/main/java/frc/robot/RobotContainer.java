@@ -408,13 +408,13 @@ public class RobotContainer {
 
     // left l2
     driver
-            .leftTrigger()
+            .povRight()
             .whileTrue(
                     new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, 2, false)
                             .andThen(
                                     () -> {})); // When right trigger is pressed, drive to the location selected
     driver
-            .leftTrigger()
+            .a()
             .onFalse(new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, false));
 
     // algae removal

@@ -59,7 +59,7 @@ public class InterfaceSubsystem extends SubsystemBase {
         FieldConstants.getOffsetApriltagFromTree(allianceplace).getRotation());
   }
 
-  private Place getClosestPoleGivenRightness(DriveSubsystem drive, boolean isRight) {
+  private Transform2d getTargetTransformAutomatically(DriveSubsystem drive) {
     Translation2d now = drive.getPose().getTranslation();
     Pose2d[] available = {
       FieldConstants.OFFSET_TAG_7, // Tag 7
@@ -88,32 +88,10 @@ public class InterfaceSubsystem extends SubsystemBase {
       }
     }
 
-    if (closestTag.equals(FieldConstants.OFFSET_TAG_7)) {
-      return isRight ? Place.B_TREE : Place.A_TREE;
-    } else if (closestTag.equals(FieldConstants.OFFSET_TAG_8)) {
-      return isRight ? Place.D_TREE : Place.C_TREE;
-    } else if (closestTag.equals(FieldConstants.OFFSET_TAG_9)) {
-      return isRight ? Place.F_TREE : Place.E_TREE;
-    } else if (closestTag.equals(FieldConstants.OFFSET_TAG_10)) {
-      return isRight ? Place.H_TREE : Place.G_TREE;
-    } else if (closestTag.equals(FieldConstants.OFFSET_TAG_11)) {
-      return isRight ? Place.J_TREE : Place.I_TREE;
-    } else if (closestTag.equals(FieldConstants.OFFSET_TAG_6)) {
-      return isRight ? Place.L_TREE : Place.K_TREE;
-    } else if (closestTag.equals(FieldConstants.OFFSET_TAG_18)) {
-      return isRight ? Place.B_TREE : Place.A_TREE;
-    } else if (closestTag.equals(FieldConstants.OFFSET_TAG_17)) {
-      return isRight ? Place.D_TREE : Place.C_TREE;
-    } else if (closestTag.equals(FieldConstants.OFFSET_TAG_22)) {
-      return isRight ? Place.F_TREE : Place.E_TREE;
-    } else if (closestTag.equals(FieldConstants.OFFSET_TAG_21)) {
-      return isRight ? Place.H_TREE : Place.G_TREE;
-    } else if (closestTag.equals(FieldConstants.OFFSET_TAG_20)) {
-      return isRight ? Place.J_TREE : Place.I_TREE;
-    } else if (closestTag.equals(FieldConstants.OFFSET_TAG_19)) {
-      return isRight ? Place.L_TREE : Place.K_TREE;
-    }
-    return null;
+    return new Transform2d(
+            new Translation2d(closestTag.getX(), closestTag.getY()),
+            closestTag.getRotation()
+    );
   }
 
   private void executeDrive(Transform2d targetTransform, boolean isRight, boolean useOffset) {
@@ -173,15 +151,15 @@ public class InterfaceSubsystem extends SubsystemBase {
 
   public void driveToLoc(
       InterfaceExecuteMode loc, InterfaceActionCmd stuff, int lvl, boolean isRight) {
-    if (lvl != -1) level = lvl - 1;
+    if (lvl != -1) level = lvl;
     switch (loc) {
       case REEF:
-        targetTransform = getTranslationFromPlace(getClosestPoleGivenRightness(drive, isRight));
+        targetTransform = getTargetTransformAutomatically(drive);
         executeDrive(targetTransform, isRight, true);
         break;
 
       case ALGEE:
-        targetTransform = getTranslationFromPlace(getClosestPoleGivenRightness(drive, isRight));
+        targetTransform = getTargetTransformAutomatically(drive);
         executeDrive(targetTransform, isRight, false);
         break;
 
@@ -299,15 +277,15 @@ public class InterfaceSubsystem extends SubsystemBase {
 
   public void driveToLoc2(
       InterfaceExecuteMode loc, InterfaceActionCmd2 stuff, int lvl, boolean isRight) {
-    if (lvl != -1) level = lvl - 1;
+    if (lvl != -1) level = lvl;
     switch (loc) {
       case REEF:
-        targetTransform = getTranslationFromPlace(getClosestPoleGivenRightness(drive, isRight));
+        targetTransform = getTargetTransformAutomatically(drive);
         executeDrive2(targetTransform, isRight, true);
         break;
 
       case ALGEE:
-        targetTransform = getTranslationFromPlace(getClosestPoleGivenRightness(drive, isRight));
+        targetTransform = getTargetTransformAutomatically(drive);
         executeDrive2(targetTransform, isRight, false);
         break;
       case CORAL:
