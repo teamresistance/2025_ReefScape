@@ -225,7 +225,8 @@ public class RobotContainer {
             drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> -driver.getRightX()));
 
     // Switch to X pattern when X button is pressed
-    driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    // driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive)); // TODO: did this actually have
+    // a use
 
     // Squeeze + grip
     //    driver.leftBumper().onTrue(new FlipperGripperCmd(elevator));
@@ -267,6 +268,7 @@ public class RobotContainer {
                                   .cancel();
                             })));
 
+    // climb
     driver.start().onTrue(new ActivateClimberCommand(climber));
     driver
         .leftTrigger()
@@ -288,8 +290,10 @@ public class RobotContainer {
 
     // driver.povUp().onTrue(new PickupStationCmd(0)); // Change to upper
     // driver.povDown().onTrue(new PickupStationCmd(1)); // Change to lower
-    driver.povLeft().onTrue(new PickupStationCmd(2)); // Change to left
-    driver.povRight().onTrue(new PickupStationCmd(3)); // Change to right
+    //    driver.povLeft().onTrue(new PickupStationCmd(2)); // Change to left
+    //    driver.povRight().onTrue(new PickupStationCmd(3)); // Change to right
+    // TODO: this is only a todo so its highlighted but these were removed because apparently never
+    // used
 
     //    driver
     //        .rightTrigger()
@@ -300,30 +304,134 @@ public class RobotContainer {
     // selected
     //    driver.rightTrigger().onFalse(new InterfaceActionCmd(reef, InterfaceExecuteMode.DISABLE));
 
+    // manual elevator control
+    driver
+        .povUp()
+        .onTrue(
+            new InstantCommand(
+                    () -> {
+                      elevator.centererClosePending = false;
+                      elevator.centerer.set(false);
+                      elevator.setInScoringMode(true);
+                    })
+                .andThen(Commands.waitSeconds(0.18))
+                .andThen(
+                    () -> {
+                      elevator.inHoldingState = true;
+                      elevator.raiseElevator(4);
+                    }));
+    driver
+        .povLeft()
+        .onTrue(
+            new InstantCommand(
+                    () -> {
+                      elevator.centererClosePending = false;
+                      elevator.centerer.set(false);
+                      elevator.setInScoringMode(true);
+                    })
+                .andThen(Commands.waitSeconds(0.18))
+                .andThen(
+                    () -> {
+                      elevator.inHoldingState = true;
+                      elevator.raiseElevator(3);
+                    }));
+    driver
+        .povDown()
+        .onTrue(
+            new InstantCommand(
+                    () -> {
+                      elevator.centererClosePending = false;
+                      elevator.centerer.set(false);
+                      elevator.setInScoringMode(true);
+                    })
+                .andThen(Commands.waitSeconds(0.18))
+                .andThen(
+                    () -> {
+                      elevator.inHoldingState = true;
+                      elevator.raiseElevator(2);
+                    }));
+
+    // right l3
     driver
         .rightTrigger()
         .whileTrue(
-            new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF)
+            new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, 3, true)
                 .andThen(
                     () -> {})); // When right trigger is pressed, drive to the location selected
-    driver.rightTrigger().onFalse(new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE));
+    driver
+        .rightTrigger()
+        .onFalse(new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, true));
 
+    // right l4
     driver
         .rightBumper()
         .whileTrue(
-            new InterfaceActionCmd(reef, InterfaceExecuteMode.ALGEE)
+            new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, 4, true)
                 .andThen(
                     () -> {})); // When right trigger is pressed, drive to the location selected
-    driver.rightBumper().onFalse(new InterfaceActionCmd(reef, InterfaceExecuteMode.DISABLE));
+    driver
+        .rightBumper()
+        .onFalse(new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, true));
 
-    driver.b().onTrue(new FlipperScoreCmd(elevator, 1.0));
+    // left l3
+    driver
+        .leftTrigger()
+        .whileTrue(
+            new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, 3, false)
+                .andThen(
+                    () -> {})); // When right trigger is pressed, drive to the location selected
+    driver
+        .leftTrigger()
+        .onFalse(new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, false));
 
-    // We need to find an available button for the gripper toggle command
-    // Since X is already used for X pattern and we want to keep B for scoring
-    // The D-pad is used for pickup station selection
-    // Let's use a button chord (simultaneous button press) combination
+    // left l4
     driver
         .leftBumper()
+        .whileTrue(
+            new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, 4, false)
+                .andThen(
+                    () -> {})); // When right trigger is pressed, drive to the location selected
+    driver
+        .leftBumper()
+        .onFalse(new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, false));
+
+    // right l2
+    driver
+            .rightBumper()
+            .whileTrue(
+                    new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, 2, true)
+                            .andThen(
+                                    () -> {})); // When right trigger is pressed, drive to the location selected
+    driver
+            .rightBumper()
+            .onFalse(new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, true));
+
+    // left l2
+    driver
+            .leftTrigger()
+            .whileTrue(
+                    new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, 2, false)
+                            .andThen(
+                                    () -> {})); // When right trigger is pressed, drive to the location selected
+    driver
+            .leftTrigger()
+            .onFalse(new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, false));
+
+    // algae removal
+    driver
+        .y()
+        .whileTrue(
+            new InterfaceActionCmd(reef, InterfaceExecuteMode.ALGEE, -1, false)
+                .andThen(
+                    () -> {})); // When right trigger is pressed, drive to the location selected
+    driver.y().onFalse(new InterfaceActionCmd(reef, InterfaceExecuteMode.DISABLE, -1, false));
+
+    // manual drop coral
+    driver.b().onTrue(new FlipperScoreCmd(elevator, 1.0));
+
+    // un-grip
+    driver
+        .x()
         .onTrue(
             new GripperToggleCmd(
                 elevator, true)); // Use B+LB to toggle gripper and reset holding state

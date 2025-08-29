@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import static frc.robot.commands.DriveCommands.goToTransform;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -58,30 +59,64 @@ public class InterfaceSubsystem extends SubsystemBase {
         FieldConstants.getOffsetApriltagFromTree(allianceplace).getRotation());
   }
 
-  private Transform2d getClosestPole(DriveSubsystem drive) {
+  private Place getClosestPoleGivenRightness(DriveSubsystem drive, boolean isRight) {
     Translation2d now = drive.getPose().getTranslation();
-    Place[] available = {
-            Place.A_TREE, Place.B_TREE, Place.C_TREE, Place.D_TREE,
-            Place.E_TREE, Place.F_TREE, Place.G_TREE, Place.H_TREE,
-            Place.I_TREE, Place.J_TREE, Place.K_TREE, Place.L_TREE
+    Pose2d[] available = {
+      FieldConstants.OFFSET_TAG_7, // Tag 7
+      FieldConstants.OFFSET_TAG_8, // Tag 8
+      FieldConstants.OFFSET_TAG_9, // Tag 9
+      FieldConstants.OFFSET_TAG_10, // Tag 10
+      FieldConstants.OFFSET_TAG_11, // Tag 11
+      FieldConstants.OFFSET_TAG_6, // Tag 6
+      FieldConstants.OFFSET_TAG_18, // Tag 18
+      FieldConstants.OFFSET_TAG_17, // Tag 17
+      FieldConstants.OFFSET_TAG_22, // Tag 22
+      FieldConstants.OFFSET_TAG_21, // Tag 21
+      FieldConstants.OFFSET_TAG_20, // Tag 20
+      FieldConstants.OFFSET_TAG_19 // Tag 19
     };
 
-    Place closestPlace = available[0];
-    double min = now.getDistance(getTranslationFromPlace(available[0]).getTranslation());
+    Pose2d closestTag = available[0];
+    double minDistance = now.getDistance(available[0].getTranslation());
 
-    for (Place check : available) {
-      double dist = now.getDistance(getTranslationFromPlace(check).getTranslation());
-      if (dist < min) {
-        min = dist;
-        closestPlace = check;
+    // Find the closest offset tag
+    for (Pose2d tag : available) {
+      double distance = now.getDistance(tag.getTranslation());
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestTag = tag;
       }
     }
 
-    return getTranslationFromPlace(closestPlace);
+    if (closestTag.equals(FieldConstants.OFFSET_TAG_7)) {
+      return isRight ? Place.B_TREE : Place.A_TREE;
+    } else if (closestTag.equals(FieldConstants.OFFSET_TAG_8)) {
+      return isRight ? Place.D_TREE : Place.C_TREE;
+    } else if (closestTag.equals(FieldConstants.OFFSET_TAG_9)) {
+      return isRight ? Place.F_TREE : Place.E_TREE;
+    } else if (closestTag.equals(FieldConstants.OFFSET_TAG_10)) {
+      return isRight ? Place.H_TREE : Place.G_TREE;
+    } else if (closestTag.equals(FieldConstants.OFFSET_TAG_11)) {
+      return isRight ? Place.J_TREE : Place.I_TREE;
+    } else if (closestTag.equals(FieldConstants.OFFSET_TAG_6)) {
+      return isRight ? Place.L_TREE : Place.K_TREE;
+    } else if (closestTag.equals(FieldConstants.OFFSET_TAG_18)) {
+      return isRight ? Place.B_TREE : Place.A_TREE;
+    } else if (closestTag.equals(FieldConstants.OFFSET_TAG_17)) {
+      return isRight ? Place.D_TREE : Place.C_TREE;
+    } else if (closestTag.equals(FieldConstants.OFFSET_TAG_22)) {
+      return isRight ? Place.F_TREE : Place.E_TREE;
+    } else if (closestTag.equals(FieldConstants.OFFSET_TAG_21)) {
+      return isRight ? Place.H_TREE : Place.G_TREE;
+    } else if (closestTag.equals(FieldConstants.OFFSET_TAG_20)) {
+      return isRight ? Place.J_TREE : Place.I_TREE;
+    } else if (closestTag.equals(FieldConstants.OFFSET_TAG_19)) {
+      return isRight ? Place.L_TREE : Place.K_TREE;
+    }
+    return null;
   }
 
-  private void executeDrive(
-      Transform2d targetTransform, boolean isRight, boolean useOffset) {
+  private void executeDrive(Transform2d targetTransform, boolean isRight, boolean useOffset) {
     if (useOffset) {
       if (isRight) {
         leftRightOffset = new Transform2d(0.50, -0.24, new Rotation2d(Units.degreesToRadians(0.0)));
@@ -136,16 +171,17 @@ public class InterfaceSubsystem extends SubsystemBase {
     CommandScheduler.getInstance().schedule(drive_command);
   }
 
-  public void driveToLoc(InterfaceExecuteMode loc, InterfaceActionCmd stuff) {
-    boolean isRight = false;
+  public void driveToLoc(
+      InterfaceExecuteMode loc, InterfaceActionCmd stuff, int lvl, boolean isRight) {
+    if (lvl != -1) level = lvl - 1;
     switch (loc) {
       case REEF:
-        targetTransform = getClosestPole(drive);
+        targetTransform = getTranslationFromPlace(getClosestPoleGivenRightness(drive, isRight));
         executeDrive(targetTransform, isRight, true);
         break;
 
       case ALGEE:
-        targetTransform = getClosestPole(drive);
+        targetTransform = getTranslationFromPlace(getClosestPoleGivenRightness(drive, isRight));
         executeDrive(targetTransform, isRight, false);
         break;
 
@@ -177,8 +213,7 @@ public class InterfaceSubsystem extends SubsystemBase {
     }
   }
 
-  private void executeDrive2(
-      Transform2d targetTransform, boolean isRight, boolean useOffset) {
+  private void executeDrive2(Transform2d targetTransform, boolean isRight, boolean useOffset) {
     if (useOffset) {
       if (isRight) {
         leftRightOffset = new Transform2d(0.52, -0.24, new Rotation2d(Units.degreesToRadians(0.0)));
@@ -262,16 +297,17 @@ public class InterfaceSubsystem extends SubsystemBase {
     CommandScheduler.getInstance().schedule(drive_command);
   }
 
-  public void driveToLoc2(InterfaceExecuteMode loc, InterfaceActionCmd2 stuff) {
-    boolean isRight = false;
+  public void driveToLoc2(
+      InterfaceExecuteMode loc, InterfaceActionCmd2 stuff, int lvl, boolean isRight) {
+    if (lvl != -1) level = lvl - 1;
     switch (loc) {
       case REEF:
-        targetTransform = getClosestPole(drive);
+        targetTransform = getTranslationFromPlace(getClosestPoleGivenRightness(drive, isRight));
         executeDrive2(targetTransform, isRight, true);
         break;
 
       case ALGEE:
-        targetTransform = getClosestPole(drive);
+        targetTransform = getTranslationFromPlace(getClosestPoleGivenRightness(drive, isRight));
         executeDrive2(targetTransform, isRight, false);
         break;
       case CORAL:
