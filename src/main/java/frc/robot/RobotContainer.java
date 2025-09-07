@@ -419,11 +419,11 @@ public class RobotContainer {
         .rightTrigger()
         .onFalse(new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, true));
 
-    // right l4
+    // right l3
     driver
         .rightBumper()
         .whileTrue(
-            new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, 4, true)
+            new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, 3, true)
                 .andThen(
                     () -> {})); // When right trigger is pressed, drive to the location selected
     driver
@@ -452,11 +452,11 @@ public class RobotContainer {
         .leftBumper()
         .onFalse(new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, false));
 
-    // right l2
+    // right l4
     driver
         .rightBumper()
         .whileTrue(
-            new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, 2, true)
+            new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, 4, true)
                 .andThen(
                     () -> {})); // When right trigger is pressed, drive to the location selected
     driver
@@ -468,6 +468,16 @@ public class RobotContainer {
         .povRight()
         .whileTrue(
             new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, 2, false)
+                .andThen(
+                    () -> {})); // When right trigger is pressed, drive to the location selected
+    driver
+        .povRight()
+        .onFalse(new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, false));
+    // right l2
+    driver
+        .a()
+        .whileTrue(
+            new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, 2, true)
                 .andThen(
                     () -> {})); // When right trigger is pressed, drive to the location selected
     driver.a().onFalse(new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, false));
