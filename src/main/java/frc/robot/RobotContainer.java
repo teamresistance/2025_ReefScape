@@ -342,17 +342,17 @@ public class RobotContainer {
 
     // air pressure (these do NOT lock, they only run when others are not running)
     new Trigger(() -> (drive.getPressurePSI() < 40))
-        .onTrue(
+        .whileTrue(
             Commands.runOnce(
                 () ->
                     leds.setMode(Constants.LEDMode.AIR_BAD, false, (int) drive.getPressurePSI())));
     new Trigger(() -> (drive.getPressurePSI() >= 40 && drive.getPressurePSI() < 70))
-        .onTrue(
+        .whileTrue(
             Commands.runOnce(
                 () ->
                     leds.setMode(Constants.LEDMode.AIR_LOW, false, (int) drive.getPressurePSI())));
     new Trigger(() -> (drive.getPressurePSI() >= 70))
-        .onTrue(
+        .whileTrue(
             Commands.runOnce(
                 () ->
                     leds.setMode(Constants.LEDMode.AIR_GOOD, false, (int) drive.getPressurePSI())));
