@@ -339,7 +339,7 @@ public class RobotContainer {
 
     // rainbow when climbed
     new Trigger(climber::getClimberUsed)
-        .onTrue(Commands.runOnce(() -> leds.setMode(Constants.LEDMode.CLIMBING, true)));
+        .onTrue(Commands.runOnce(() -> leds.setMode(Constants.LEDMode.RAINBOW, true)));
 
     // air pressure (these do NOT lock, they only run when others are not running)
     new Trigger(() -> (drive.getPressurePSI() < 40))

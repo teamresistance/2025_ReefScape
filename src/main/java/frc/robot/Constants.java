@@ -78,7 +78,7 @@ public final class Constants {
     AIR_BAD,
     AIR_LOW,
     AIR_GOOD,
-    CLIMBING,
+    RAINBOW,
     WHITE
   }
 }
