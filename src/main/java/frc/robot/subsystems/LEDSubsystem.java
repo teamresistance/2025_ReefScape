@@ -67,21 +67,25 @@ public class LEDSubsystem extends SubsystemBase {
         break;
       case RAINBOW:
         candle.setControl(new RainbowAnimation(LED_START_INDEX, LED_END_INDEX).withFrameRate(60));
+        break;
       case AIR_GOOD: // >70
         candle.setControl(
             new SingleFadeAnimation(LED_START_INDEX, LED_END_INDEX)
                 .withColor(new RGBWColor(186, 85, 211))
                 .withFrameRate(2 * psi));
+        break;
       case AIR_LOW: // 40-70
         candle.setControl(
             new SingleFadeAnimation(LED_START_INDEX, LED_END_INDEX)
                 .withColor(new RGBWColor(255, 255, 0))
                 .withFrameRate(4 * psi));
+        break;
       case AIR_BAD: // <40
         candle.setControl(
             new SingleFadeAnimation(LED_START_INDEX, LED_END_INDEX)
                 .withColor(new RGBWColor(200, 0, 0))
                 .withFrameRate(8 * psi));
+        break;
     }
   }
 }
