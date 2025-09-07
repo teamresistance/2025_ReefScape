@@ -30,7 +30,6 @@ import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.GeomUtil;
 import java.io.IOException;
-import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.photonvision.PhotonCamera;
 
@@ -273,23 +272,25 @@ public class RobotContainer {
 
     // climb
     driver.start().onTrue(new ActivateClimberCommand(climber));
-    driver
-        .leftTrigger()
-        .whileTrue(
-            new DeferredCommand(
-                () -> {
-                  Logger.recordOutput("stationOffset", stationOffsetTransform);
-                  return DriveCommands.goToTransformWithPathFinderPlusOffset(
-                          drive,
-                          stationTargetTransform,
-                          new Transform2d(0.25, 0.0, new Rotation2d(0.0)))
-                      .beforeStarting(
-                          () -> {
-                            DriveCommands.goToTransform(drive, stationTargetTransform).cancel();
-                            DriveCommands.goToTransformWithPathFinder(drive, stationTargetTransform)
-                                .cancel();
-                          });
-                }));
+    //    driver
+    //        .leftTrigger()
+    //        .whileTrue(
+    //            new DeferredCommand(
+    //                () -> {
+    //                  Logger.recordOutput("stationOffset", stationOffsetTransform);
+    //                  return DriveCommands.goToTransformWithPathFinderPlusOffset(
+    //                          drive,
+    //                          stationTargetTransform,
+    //                          new Transform2d(0.25, 0.0, new Rotation2d(0.0)))
+    //                      .beforeStarting(
+    //                          () -> {
+    //                            DriveCommands.goToTransform(drive,
+    // stationTargetTransform).cancel();
+    //                            DriveCommands.goToTransformWithPathFinder(drive,
+    // stationTargetTransform)
+    //                                .cancel();
+    //                          });
+    //                }));
 
     // driver.povUp().onTrue(new PickupStationCmd(0)); // Change to upper
     // driver.povDown().onTrue(new PickupStationCmd(1)); // Change to lower
