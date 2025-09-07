@@ -197,7 +197,7 @@ public class DriveSubsystem extends SubsystemBase {
     };
   }
 
-  private double getPressurePSI() {
+  public double getPressurePSI() {
     double voltage = pressureSensor.getVoltage();
     return (250 * (voltage / 5.0)) - 25; // Example conversion
   }

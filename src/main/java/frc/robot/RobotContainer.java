@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.InterfaceExecuteMode;
 import frc.robot.commands.*;
@@ -24,6 +25,7 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.FlipEleSubsystem;
 import frc.robot.subsystems.InterfaceSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.GeomUtil;
@@ -53,6 +55,7 @@ public class RobotContainer {
   public final ClimberSubsystem climber = new ClimberSubsystem();
   //   private final PressureSubsystem pressure = new PressureSubsystem();
   final FlipEleSubsystem elevator = new FlipEleSubsystem();
+  final LEDSubsystem leds = new LEDSubsystem();
   private final Alert cameraFailureAlert;
   // Subsystems
   private final DriveSubsystem drive;
@@ -304,6 +307,60 @@ public class RobotContainer {
     // selected
     //    driver.rightTrigger().onFalse(new InterfaceActionCmd(reef, InterfaceExecuteMode.DISABLE));
 
+    /*
+        ---- LED TRIGGERS ----
+    */
+
+    // flash white for 1s when a coral is obtained
+    new Trigger(elevator::hasObtainedCoral)
+        .onTrue(
+            Commands.runOnce(() -> leds.setMode(Constants.LEDMode.CORAL_IN, true))
+                .andThen(Commands.waitSeconds(1))
+                .andThen(Commands.runOnce(leds::unlock)));
+
+    // flash blue while taking out algae
+    driver.y().whileTrue(Commands.runOnce(() -> leds.setMode(Constants.LEDMode.ALGAE_OUT, true)));
+    driver.y().onFalse(Commands.runOnce(leds::unlock));
+
+    // flash green while scoring
+    driver
+        .rightTrigger()
+        .or(driver.leftTrigger())
+        .or(driver.leftBumper())
+        .or(driver.rightBumper())
+        .whileTrue(Commands.runOnce(() -> leds.setMode(Constants.LEDMode.CORAL_OUT, true)));
+    driver
+        .rightTrigger()
+        .or(driver.leftTrigger())
+        .or(driver.leftBumper())
+        .or(driver.rightBumper())
+        .onFalse(Commands.runOnce(leds::unlock));
+
+    // rainbow when climbed
+    new Trigger(climber::getClimberUsed)
+        .onTrue(Commands.runOnce(() -> leds.setMode(Constants.LEDMode.CLIMBING, true)));
+
+    // air pressure (these do NOT lock, they only run when others are not running)
+    new Trigger(() -> (drive.getPressurePSI() < 40))
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    leds.setMode(Constants.LEDMode.AIR_BAD, false, (int) drive.getPressurePSI())));
+    new Trigger(() -> (drive.getPressurePSI() >= 40 && drive.getPressurePSI() < 70))
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    leds.setMode(Constants.LEDMode.AIR_LOW, false, (int) drive.getPressurePSI())));
+    new Trigger(() -> (drive.getPressurePSI() >= 70))
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    leds.setMode(Constants.LEDMode.AIR_GOOD, false, (int) drive.getPressurePSI())));
+
+    /*
+       ---- DRIVER CONTROLS ----
+    */
+
     // manual elevator control
     driver
         .povUp()
@@ -397,25 +454,23 @@ public class RobotContainer {
 
     // right l2
     driver
-            .rightBumper()
-            .whileTrue(
-                    new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, 2, true)
-                            .andThen(
-                                    () -> {})); // When right trigger is pressed, drive to the location selected
+        .rightBumper()
+        .whileTrue(
+            new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, 2, true)
+                .andThen(
+                    () -> {})); // When right trigger is pressed, drive to the location selected
     driver
-            .rightBumper()
-            .onFalse(new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, true));
+        .rightBumper()
+        .onFalse(new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, true));
 
     // left l2
     driver
-            .povRight()
-            .whileTrue(
-                    new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, 2, false)
-                            .andThen(
-                                    () -> {})); // When right trigger is pressed, drive to the location selected
-    driver
-            .a()
-            .onFalse(new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, false));
+        .povRight()
+        .whileTrue(
+            new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, 2, false)
+                .andThen(
+                    () -> {})); // When right trigger is pressed, drive to the location selected
+    driver.a().onFalse(new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, false));
 
     // algae removal
     driver

@@ -9,11 +9,6 @@ import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.LoggedTunableNumber;
 
-/**
- * This class defines the runtime mode used by AdvantageKit. The mode is always "real" when running
- * on a roboRIO. Change the value of "simMode" to switch between "sim" (physics sim) and "replay"
- * (log replay from a file).
- */
 public final class Constants {
   public static final Mode CURRENT_MODE = RobotBase.isReal() ? Mode.REAL : Mode.SIM;
   public static final boolean TUNING_MODE = false;
@@ -60,6 +55,11 @@ public final class Constants {
     ALGEE
   }
 
+  /**
+   * This class defines the runtime mode used by AdvantageKit. The mode is always "real" when running
+   * on a roboRIO. Change the value of "simMode" to switch between "sim" (physics sim) and "replay"
+   * (log replay from a file).
+   */
   public enum Mode {
     /** Running on a real robot. */
     REAL,
@@ -69,5 +69,16 @@ public final class Constants {
 
     /** Replaying from a log file. */
     REPLAY
+  }
+
+  public enum LEDMode {
+    CORAL_OUT,
+    ALGAE_OUT,
+    CORAL_IN,
+    AIR_BAD,
+    AIR_LOW,
+    AIR_GOOD,
+    CLIMBING,
+    WHITE
   }
 }

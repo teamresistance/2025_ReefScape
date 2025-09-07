@@ -89,9 +89,7 @@ public class InterfaceSubsystem extends SubsystemBase {
     }
 
     return new Transform2d(
-            new Translation2d(closestTag.getX(), closestTag.getY()),
-            closestTag.getRotation()
-    );
+        new Translation2d(closestTag.getX(), closestTag.getY()), closestTag.getRotation());
   }
 
   private void executeDrive(Transform2d targetTransform, boolean isRight, boolean useOffset) {
