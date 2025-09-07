@@ -17,7 +17,7 @@ public class LEDSubsystem extends SubsystemBase {
   private final int LED_END_INDEX = 67;
   private final CANdle candle = new CANdle(60); // TODO: correct port
   private int psi = 120;
-  private LEDMode mode = LEDMode.WHITE;
+  private LEDMode mode = LEDMode.CLIMBING;
   private boolean isLocked = false;
 
   public void setMode(LEDMode newMode, boolean lock) {
