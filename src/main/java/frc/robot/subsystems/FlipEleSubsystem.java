@@ -84,6 +84,10 @@ public class FlipEleSubsystem extends SubsystemBase {
     elevatorPusher2.set(false);
   }
 
+  public boolean hasObtainedCoral() {
+    return coralDetector1.get() || coralDetector2.get();
+  }
+
   /**
    * This method is called when the FlipperGripperCmd runs. It now just detects banner sensors and
    * sets flags for the periodic method to handle.
