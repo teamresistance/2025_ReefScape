@@ -22,6 +22,76 @@ import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.util.GeomUtil;
 import org.littletonrobotics.junction.Logger;
 
+/**
+ * Utility class for auto alignment to reef.
+ * Contains closest-face and left/right inversion in the constructor
+ * */
+class AutoAlignParams {
+
+  Transform2d targetTransform;
+  boolean isRight;
+
+  AutoAlignParams(DriveSubsystem drive, boolean right) {
+
+    Translation2d now = drive.getPose().getTranslation();
+
+    // compensate for velocity (although x side is closer, it may be faster
+    // to get to y side depending on the robot already moving that way, not
+    // needing to change direction)
+    now =
+        now.plus(
+            drive
+                .getVelocity()
+                .getTranslation()
+                .times(
+                    0.15));
+
+    Pose2d[] available = {
+      FieldConstants.OFFSET_TAG_7, // Tag 7 --0
+      FieldConstants.OFFSET_TAG_8, // Tag 8 --1
+      FieldConstants.OFFSET_TAG_9, // Tag 9 Inverted right index 2
+      FieldConstants.OFFSET_TAG_10, // Tag 10 Inverted right index 3
+      FieldConstants.OFFSET_TAG_11, // Tag 11 Inverted right index 4
+      FieldConstants.OFFSET_TAG_6, // Tag 6 --5
+      FieldConstants.OFFSET_TAG_18, // Tag 18 --6
+      FieldConstants.OFFSET_TAG_17, // Tag 17 --7
+      FieldConstants.OFFSET_TAG_22, // Tag 22 Inverted right --8
+      FieldConstants.OFFSET_TAG_21, // Tag 21 Inverted right --9
+      FieldConstants.OFFSET_TAG_20, // Tag 20 Inverted right --10
+      FieldConstants.OFFSET_TAG_19 // Tag 19 --11
+    };
+
+    Pose2d closestTag = available[0];
+    double minDistance = now.getDistance(available[0].getTranslation());
+
+    // Find the closest offset tag
+    for (Pose2d tag : available) {
+      double distance = now.getDistance(tag.getTranslation());
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestTag = tag;
+      }
+    }
+
+    // construct transform
+    targetTransform =
+        new Transform2d(
+            new Translation2d(closestTag.getX(), closestTag.getY()), closestTag.getRotation());
+
+    // check if the transform matches the far-side transforms
+    // if so, invert the isRight value
+    // keeps the left/right selection driver-relative instead of robot-relative
+    isRight =
+        (closestTag == available[2]
+                || closestTag == available[3]
+                || closestTag == available[4]
+                || closestTag == available[8]
+                || closestTag == available[9]
+                || closestTag == available[10])
+            != right;
+  }
+}
+
 public class InterfaceSubsystem extends SubsystemBase {
 
   private final DriveSubsystem drive;
@@ -57,39 +127,6 @@ public class InterfaceSubsystem extends SubsystemBase {
             FieldConstants.getOffsetApriltagFromTree(allianceplace).getX(),
             FieldConstants.getOffsetApriltagFromTree(allianceplace).getY()),
         FieldConstants.getOffsetApriltagFromTree(allianceplace).getRotation());
-  }
-
-  private Transform2d getTargetTransformAutomatically(DriveSubsystem drive) {
-    Translation2d now = drive.getPose().getTranslation();
-    Pose2d[] available = {
-      FieldConstants.OFFSET_TAG_7, // Tag 7
-      FieldConstants.OFFSET_TAG_8, // Tag 8
-      FieldConstants.OFFSET_TAG_9, // Tag 9
-      FieldConstants.OFFSET_TAG_10, // Tag 10
-      FieldConstants.OFFSET_TAG_11, // Tag 11
-      FieldConstants.OFFSET_TAG_6, // Tag 6
-      FieldConstants.OFFSET_TAG_18, // Tag 18
-      FieldConstants.OFFSET_TAG_17, // Tag 17
-      FieldConstants.OFFSET_TAG_22, // Tag 22
-      FieldConstants.OFFSET_TAG_21, // Tag 21
-      FieldConstants.OFFSET_TAG_20, // Tag 20
-      FieldConstants.OFFSET_TAG_19 // Tag 19
-    };
-
-    Pose2d closestTag = available[0];
-    double minDistance = now.getDistance(available[0].getTranslation());
-
-    // Find the closest offset tag
-    for (Pose2d tag : available) {
-      double distance = now.getDistance(tag.getTranslation());
-      if (distance < minDistance) {
-        minDistance = distance;
-        closestTag = tag;
-      }
-    }
-
-    return new Transform2d(
-        new Translation2d(closestTag.getX(), closestTag.getY()), closestTag.getRotation());
   }
 
   private void executeDrive(Transform2d targetTransform, boolean isRight, boolean useOffset) {
@@ -150,15 +187,14 @@ public class InterfaceSubsystem extends SubsystemBase {
   public void driveToLoc(
       InterfaceExecuteMode loc, InterfaceActionCmd stuff, int lvl, boolean isRight) {
     if (lvl != -1) level = lvl;
+    AutoAlignParams params = new AutoAlignParams(drive, isRight);
     switch (loc) {
       case REEF:
-        targetTransform = getTargetTransformAutomatically(drive);
-        executeDrive(targetTransform, isRight, true);
+        executeDrive(params.targetTransform, params.isRight, true);
         break;
 
       case ALGEE:
-        targetTransform = getTargetTransformAutomatically(drive);
-        executeDrive(targetTransform, isRight, false);
+        executeDrive(params.targetTransform, params.isRight, false);
         break;
 
       case CORAL:
@@ -276,15 +312,14 @@ public class InterfaceSubsystem extends SubsystemBase {
   public void driveToLoc2(
       InterfaceExecuteMode loc, InterfaceActionCmd2 stuff, int lvl, boolean isRight) {
     if (lvl != -1) level = lvl;
+    AutoAlignParams params = new AutoAlignParams(drive, isRight);
     switch (loc) {
       case REEF:
-        targetTransform = getTargetTransformAutomatically(drive);
-        executeDrive2(targetTransform, isRight, true);
+        executeDrive2(params.targetTransform, params.isRight, true);
         break;
 
       case ALGEE:
-        targetTransform = getTargetTransformAutomatically(drive);
-        executeDrive2(targetTransform, isRight, false);
+        executeDrive2(params.targetTransform, params.isRight, false);
         break;
       case CORAL:
         targetTransform = getTranslationFromPlace(Place.LEFT_CORAL_STATION);

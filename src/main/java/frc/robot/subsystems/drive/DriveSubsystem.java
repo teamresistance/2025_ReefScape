@@ -16,10 +16,7 @@ import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Twist2d;
+import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -200,6 +197,14 @@ public class DriveSubsystem extends SubsystemBase {
   public double getPressurePSI() {
     double voltage = pressureSensor.getVoltage();
     return (250 * (voltage / 5.0)) - 25; // Example conversion
+  }
+
+  public Transform2d getVelocity() {
+    final var chassisSpeeds = kinematics.toChassisSpeeds(getModuleStates());
+    return new Transform2d(
+        chassisSpeeds.vxMetersPerSecond,
+        chassisSpeeds.vyMetersPerSecond,
+        new Rotation2d(chassisSpeeds.omegaRadiansPerSecond));
   }
 
   @Override
