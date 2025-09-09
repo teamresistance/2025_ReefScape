@@ -204,9 +204,10 @@ public class DriveSubsystem extends SubsystemBase {
         DriverStation.getAlliance().isPresent()
             && DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
     // convert to field relative
-    ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(
-        kinematics.toChassisSpeeds(getModuleStates()),
-        isFlipped ? getRotation().plus(new Rotation2d(Math.PI)) : getRotation());
+    ChassisSpeeds chassisSpeeds =
+        ChassisSpeeds.fromRobotRelativeSpeeds(
+            kinematics.toChassisSpeeds(getModuleStates()),
+            isFlipped ? getRotation().plus(new Rotation2d(Math.PI)) : getRotation());
     return new Transform2d(
         chassisSpeeds.vxMetersPerSecond,
         chassisSpeeds.vyMetersPerSecond,
@@ -215,6 +216,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    SmartDashboard.putString("Velocity", getVelocity().toString());
     Command currentCommand = this.getCurrentCommand();
     Logger.recordOutput(
         "current Command", currentCommand != null ? currentCommand.getName() : "None");
