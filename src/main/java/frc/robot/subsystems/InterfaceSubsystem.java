@@ -23,9 +23,9 @@ import frc.robot.util.GeomUtil;
 import org.littletonrobotics.junction.Logger;
 
 /**
- * Utility class for auto alignment to reef.
- * Contains closest-face and left/right inversion in the constructor
- * */
+ * Utility class for auto alignment to reef. Contains closest-face and left/right inversion in the
+ * constructor
+ */
 class AutoAlignParams {
 
   Transform2d targetTransform;
@@ -38,13 +38,7 @@ class AutoAlignParams {
     // compensate for velocity (although x side is closer, it may be faster
     // to get to y side depending on the robot already moving that way, not
     // needing to change direction)
-    now =
-        now.plus(
-            drive
-                .getVelocity()
-                .getTranslation()
-                .times(
-                    0.15));
+    now = now.plus(drive.getVelocity().getTranslation().times(0.15));
 
     Pose2d[] available = {
       FieldConstants.OFFSET_TAG_7, // Tag 7 --0
