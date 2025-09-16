@@ -52,7 +52,7 @@ public final class Constants {
     CLIMBER,
     EXECUTE,
     DISABLE,
-    ALGEE
+    ALGAE
   }
 
   /**

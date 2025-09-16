@@ -364,7 +364,7 @@ public class RobotContainer {
     driver
         .rightBumper()
         .whileTrue(
-            new InterfaceActionCmd(reef, InterfaceExecuteMode.ALGEE)
+            new InterfaceActionCmd(reef, InterfaceExecuteMode.ALGAE)
                 .andThen(
                     () -> {})); // When right trigger is pressed, drive to the location selected
     driver.rightBumper().onFalse(new InterfaceActionCmd(reef, InterfaceExecuteMode.DISABLE));

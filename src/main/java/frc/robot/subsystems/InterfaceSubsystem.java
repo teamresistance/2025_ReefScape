@@ -165,7 +165,7 @@ public class InterfaceSubsystem extends SubsystemBase {
         executeDrive(targetTransform, isRight, true, stuff);
         break;
 
-      case ALGEE:
+      case ALGAE:
         switch (pole) {
           case "a":
             targetTransform = getTranslationFromPlace(Place.A_TREE);
@@ -377,7 +377,7 @@ public class InterfaceSubsystem extends SubsystemBase {
         executeDrive2(targetTransform, isRight, true, stuff);
         break;
 
-      case ALGEE:
+      case ALGAE:
         switch (pole) {
           case "a":
             targetTransform = getTranslationFromPlace(Place.A_TREE);
