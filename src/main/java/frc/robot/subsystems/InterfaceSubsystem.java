@@ -3,7 +3,6 @@ package frc.robot.subsystems;
 import static frc.robot.commands.DriveCommands.goToTransform;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -21,70 +20,6 @@ import frc.robot.commands.InterfaceActionCmd2;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.util.GeomUtil;
 import org.littletonrobotics.junction.Logger;
-
-/**
- * Utility class for auto alignment to reef. Contains closest-face and left/right inversion in the
- * constructor
- */
-class AutoAlignParams {
-
-  Transform2d targetTransform;
-  boolean isRight;
-
-  AutoAlignParams(DriveSubsystem drive, boolean right) {
-
-    Translation2d now = drive.getPose().getTranslation();
-
-    // compensate for velocity (although x side is closer, it may be faster
-    // to get to y side depending on the robot already moving that way, not
-    // needing to change direction)
-    now = now.plus(drive.getVelocity().getTranslation().times(0.15));
-
-    Pose2d[] available = {
-      FieldConstants.OFFSET_TAG_7, // Tag 7 --0
-      FieldConstants.OFFSET_TAG_8, // Tag 8 --1
-      FieldConstants.OFFSET_TAG_9, // Tag 9 Inverted right index 2
-      FieldConstants.OFFSET_TAG_10, // Tag 10 Inverted right index 3
-      FieldConstants.OFFSET_TAG_11, // Tag 11 Inverted right index 4
-      FieldConstants.OFFSET_TAG_6, // Tag 6 --5
-      FieldConstants.OFFSET_TAG_18, // Tag 18 --6
-      FieldConstants.OFFSET_TAG_17, // Tag 17 --7
-      FieldConstants.OFFSET_TAG_22, // Tag 22 Inverted right --8
-      FieldConstants.OFFSET_TAG_21, // Tag 21 Inverted right --9
-      FieldConstants.OFFSET_TAG_20, // Tag 20 Inverted right --10
-      FieldConstants.OFFSET_TAG_19 // Tag 19 --11
-    };
-
-    Pose2d closestTag = available[0];
-    double minDistance = now.getDistance(available[0].getTranslation());
-
-    // Find the closest offset tag
-    for (Pose2d tag : available) {
-      double distance = now.getDistance(tag.getTranslation());
-      if (distance < minDistance) {
-        minDistance = distance;
-        closestTag = tag;
-      }
-    }
-
-    // construct transform
-    targetTransform =
-        new Transform2d(
-            new Translation2d(closestTag.getX(), closestTag.getY()), closestTag.getRotation());
-
-    // check if the transform matches the far-side transforms
-    // if so, invert the isRight value
-    // keeps the left/right selection driver-relative instead of robot-relative
-    isRight =
-        (closestTag == available[2]
-                || closestTag == available[3]
-                || closestTag == available[4]
-                || closestTag == available[8]
-                || closestTag == available[9]
-                || closestTag == available[10])
-            != right;
-  }
-}
 
 public class InterfaceSubsystem extends SubsystemBase {
 
@@ -123,7 +58,8 @@ public class InterfaceSubsystem extends SubsystemBase {
         FieldConstants.getOffsetApriltagFromTree(allianceplace).getRotation());
   }
 
-  private void executeDrive(Transform2d targetTransform, boolean isRight, boolean useOffset) {
+  private void executeDrive(
+      Transform2d targetTransform, boolean isRight, boolean useOffset, InterfaceActionCmd stuff) {
     if (useOffset) {
       if (isRight) {
         leftRightOffset = new Transform2d(0.50, -0.24, new Rotation2d(Units.degreesToRadians(0.0)));
@@ -178,22 +114,108 @@ public class InterfaceSubsystem extends SubsystemBase {
     CommandScheduler.getInstance().schedule(drive_command);
   }
 
-  public void driveToLoc(
-      InterfaceExecuteMode loc, InterfaceActionCmd stuff, int lvl, boolean isRight) {
-    if (lvl != -1) level = lvl;
-    AutoAlignParams params = new AutoAlignParams(drive, isRight);
+  public void driveToLoc(InterfaceExecuteMode loc, InterfaceActionCmd stuff) {
+    boolean isRight = false;
     switch (loc) {
       case REEF:
-        executeDrive(params.targetTransform, params.isRight, true);
+        switch (pole) {
+          case "a":
+            targetTransform = getTranslationFromPlace(Place.A_TREE);
+            break;
+          case "b":
+            targetTransform = getTranslationFromPlace(Place.B_TREE);
+            isRight = true;
+            break;
+          case "c":
+            targetTransform = getTranslationFromPlace(Place.C_TREE);
+            break;
+          case "d":
+            targetTransform = getTranslationFromPlace(Place.D_TREE);
+            isRight = true;
+            break;
+          case "e":
+            targetTransform = getTranslationFromPlace(Place.E_TREE);
+            break;
+          case "f":
+            targetTransform = getTranslationFromPlace(Place.F_TREE);
+            isRight = true;
+            break;
+          case "g":
+            targetTransform = getTranslationFromPlace(Place.G_TREE);
+            break;
+          case "h":
+            targetTransform = getTranslationFromPlace(Place.H_TREE);
+            isRight = true;
+            break;
+          case "i":
+            targetTransform = getTranslationFromPlace(Place.I_TREE);
+            break;
+          case "j":
+            targetTransform = getTranslationFromPlace(Place.J_TREE);
+            isRight = true;
+            break;
+          case "k":
+            targetTransform = getTranslationFromPlace(Place.K_TREE);
+            break;
+          case "l":
+            targetTransform = getTranslationFromPlace(Place.L_TREE);
+            isRight = true;
+            break;
+        }
+        executeDrive(targetTransform, isRight, true, stuff);
         break;
 
       case ALGEE:
-        executeDrive(params.targetTransform, params.isRight, false);
+        switch (pole) {
+          case "a":
+            targetTransform = getTranslationFromPlace(Place.A_TREE);
+            break;
+          case "b":
+            targetTransform = getTranslationFromPlace(Place.B_TREE);
+            isRight = true;
+            break;
+          case "c":
+            targetTransform = getTranslationFromPlace(Place.C_TREE);
+            break;
+          case "d":
+            targetTransform = getTranslationFromPlace(Place.D_TREE);
+            isRight = true;
+            break;
+          case "e":
+            targetTransform = getTranslationFromPlace(Place.E_TREE);
+            break;
+          case "f":
+            targetTransform = getTranslationFromPlace(Place.F_TREE);
+            isRight = true;
+            break;
+          case "g":
+            targetTransform = getTranslationFromPlace(Place.G_TREE);
+            break;
+          case "h":
+            targetTransform = getTranslationFromPlace(Place.H_TREE);
+            isRight = true;
+            break;
+          case "i":
+            targetTransform = getTranslationFromPlace(Place.I_TREE);
+            break;
+          case "j":
+            targetTransform = getTranslationFromPlace(Place.J_TREE);
+            isRight = true;
+            break;
+          case "k":
+            targetTransform = getTranslationFromPlace(Place.K_TREE);
+            break;
+          case "l":
+            targetTransform = getTranslationFromPlace(Place.L_TREE);
+            isRight = true;
+            break;
+        }
+        executeDrive(targetTransform, isRight, false, stuff);
         break;
 
       case CORAL:
         targetTransform = getTranslationFromPlace(Place.LEFT_CORAL_STATION);
-        executeDrive(targetTransform, false, false);
+        executeDrive(targetTransform, false, false, stuff);
         break;
 
       case DISABLE:
@@ -203,7 +225,7 @@ public class InterfaceSubsystem extends SubsystemBase {
 
       case CLIMBER:
         targetTransform = getTranslationFromPlace(Place.MIDDLE_CAGE);
-        executeDrive(targetTransform, false, false);
+        executeDrive(targetTransform, false, false, stuff);
         break;
 
       case EXECUTE:
@@ -219,7 +241,8 @@ public class InterfaceSubsystem extends SubsystemBase {
     }
   }
 
-  private void executeDrive2(Transform2d targetTransform, boolean isRight, boolean useOffset) {
+  private void executeDrive2(
+      Transform2d targetTransform, boolean isRight, boolean useOffset, InterfaceActionCmd2 stuff) {
     if (useOffset) {
       if (isRight) {
         leftRightOffset = new Transform2d(0.52, -0.24, new Rotation2d(Units.degreesToRadians(0.0)));
@@ -303,21 +326,107 @@ public class InterfaceSubsystem extends SubsystemBase {
     CommandScheduler.getInstance().schedule(drive_command);
   }
 
-  public void driveToLoc2(
-      InterfaceExecuteMode loc, InterfaceActionCmd2 stuff, int lvl, boolean isRight) {
-    if (lvl != -1) level = lvl;
-    AutoAlignParams params = new AutoAlignParams(drive, isRight);
+  public void driveToLoc2(InterfaceExecuteMode loc, InterfaceActionCmd2 stuff) {
+    boolean isRight = false;
     switch (loc) {
       case REEF:
-        executeDrive2(params.targetTransform, params.isRight, true);
+        switch (pole) {
+          case "a":
+            targetTransform = getTranslationFromPlace(Place.A_TREE);
+            break;
+          case "b":
+            targetTransform = getTranslationFromPlace(Place.B_TREE);
+            isRight = true;
+            break;
+          case "c":
+            targetTransform = getTranslationFromPlace(Place.C_TREE);
+            break;
+          case "d":
+            targetTransform = getTranslationFromPlace(Place.D_TREE);
+            isRight = true;
+            break;
+          case "e":
+            targetTransform = getTranslationFromPlace(Place.E_TREE);
+            break;
+          case "f":
+            targetTransform = getTranslationFromPlace(Place.F_TREE);
+            isRight = true;
+            break;
+          case "g":
+            targetTransform = getTranslationFromPlace(Place.G_TREE);
+            break;
+          case "h":
+            targetTransform = getTranslationFromPlace(Place.H_TREE);
+            isRight = true;
+            break;
+          case "i":
+            targetTransform = getTranslationFromPlace(Place.I_TREE);
+            break;
+          case "j":
+            targetTransform = getTranslationFromPlace(Place.J_TREE);
+            isRight = true;
+            break;
+          case "k":
+            targetTransform = getTranslationFromPlace(Place.K_TREE);
+            break;
+          case "l":
+            targetTransform = getTranslationFromPlace(Place.L_TREE);
+            isRight = true;
+            break;
+        }
+        executeDrive2(targetTransform, isRight, true, stuff);
         break;
 
       case ALGEE:
-        executeDrive2(params.targetTransform, params.isRight, false);
+        switch (pole) {
+          case "a":
+            targetTransform = getTranslationFromPlace(Place.A_TREE);
+            break;
+          case "b":
+            targetTransform = getTranslationFromPlace(Place.B_TREE);
+            isRight = true;
+            break;
+          case "c":
+            targetTransform = getTranslationFromPlace(Place.C_TREE);
+            break;
+          case "d":
+            targetTransform = getTranslationFromPlace(Place.D_TREE);
+            isRight = true;
+            break;
+          case "e":
+            targetTransform = getTranslationFromPlace(Place.E_TREE);
+            break;
+          case "f":
+            targetTransform = getTranslationFromPlace(Place.F_TREE);
+            isRight = true;
+            break;
+          case "g":
+            targetTransform = getTranslationFromPlace(Place.G_TREE);
+            break;
+          case "h":
+            targetTransform = getTranslationFromPlace(Place.H_TREE);
+            isRight = true;
+            break;
+          case "i":
+            targetTransform = getTranslationFromPlace(Place.I_TREE);
+            break;
+          case "j":
+            targetTransform = getTranslationFromPlace(Place.J_TREE);
+            isRight = true;
+            break;
+          case "k":
+            targetTransform = getTranslationFromPlace(Place.K_TREE);
+            break;
+          case "l":
+            targetTransform = getTranslationFromPlace(Place.L_TREE);
+            isRight = true;
+            break;
+        }
+        executeDrive2(targetTransform, isRight, false, stuff);
         break;
       case CORAL:
         targetTransform = getTranslationFromPlace(Place.LEFT_CORAL_STATION);
-        executeDrive2(targetTransform, false, false);
+        executeDrive2(targetTransform, false, false, stuff);
         break;
       case DISABLE:
         drive_command.cancel();
@@ -326,7 +435,7 @@ public class InterfaceSubsystem extends SubsystemBase {
         break;
       case CLIMBER:
         targetTransform = getTranslationFromPlace(Place.MIDDLE_CAGE);
-        executeDrive2(targetTransform, false, false);
+        executeDrive2(targetTransform, false, false, stuff);
         break;
       case EXECUTE:
         if (!executing) {

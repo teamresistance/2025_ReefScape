@@ -30,6 +30,7 @@ import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.GeomUtil;
 import java.io.IOException;
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.photonvision.PhotonCamera;
 
@@ -54,7 +55,7 @@ public class RobotContainer {
   public final ClimberSubsystem climber = new ClimberSubsystem();
   //   private final PressureSubsystem pressure = new PressureSubsystem();
   final FlipEleSubsystem elevator = new FlipEleSubsystem();
-  final LEDSubsystem leds = new LEDSubsystem();
+  private final LEDSubsystem leds = new LEDSubsystem();
   private final Alert cameraFailureAlert;
   // Subsystems
   private final DriveSubsystem drive;
@@ -226,88 +227,6 @@ public class RobotContainer {
         DriveCommands.joystickDrive(
             drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> -driver.getRightX()));
 
-    // Switch to X pattern when X button is pressed
-    // driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive)); // TODO: did this actually have
-    // a use
-
-    // Squeeze + grip
-    //    driver.leftBumper().onTrue(new FlipperGripperCmd(elevator));
-
-    driver.y().onTrue(new CageSelectCmd.CycleCageCmd()); // cycles location of cage
-
-    // Climbing sequence
-    driver
-        .back()
-        .whileTrue(
-            new DeferredCommand(
-                () ->
-                    new InstantCommand(() -> ForceClimberUp = true)
-                        .andThen(
-                            DriveCommands.goToTransformWithPathFinder(
-                                drive, GeomUtil.poseToTransform(climbTargetTransform)))
-                        .andThen(
-                            DriveCommands.goToTransformClimb(
-                                drive,
-                                GeomUtil.poseToTransform(climbTargetTransform)
-                                    .plus(new Transform2d(0.0, 1.0, new Rotation2d(0.0)))))
-                        .andThen(Commands.runOnce(drive::stop, drive))
-                        .andThen(Commands.waitSeconds(1.0))
-                        .andThen(
-                            DriveCommands.goToTransformClimb(
-                                drive,
-                                GeomUtil.poseToTransform(climbTargetTransform)
-                                    .plus(new Transform2d(0.0, 0.8, new Rotation2d(0.0)))))
-                        .andThen(Commands.runOnce(drive::stop, drive))
-                        .andThen(Commands.waitSeconds(2.0))
-                        .andThen(new ActivateClimberCommand(climber))
-                        .beforeStarting(
-                            () -> {
-                              DriveCommands.goToTransformClimb(
-                                      drive, GeomUtil.poseToTransform(climbTargetTransform))
-                                  .cancel();
-                              DriveCommands.goToTransformWithPathFinder(
-                                      drive, GeomUtil.poseToTransform(climbTargetTransform))
-                                  .cancel();
-                            })));
-
-    // climb
-    driver.start().onTrue(new ActivateClimberCommand(climber));
-    //    driver
-    //        .leftTrigger()
-    //        .whileTrue(
-    //            new DeferredCommand(
-    //                () -> {
-    //                  Logger.recordOutput("stationOffset", stationOffsetTransform);
-    //                  return DriveCommands.goToTransformWithPathFinderPlusOffset(
-    //                          drive,
-    //                          stationTargetTransform,
-    //                          new Transform2d(0.25, 0.0, new Rotation2d(0.0)))
-    //                      .beforeStarting(
-    //                          () -> {
-    //                            DriveCommands.goToTransform(drive,
-    // stationTargetTransform).cancel();
-    //                            DriveCommands.goToTransformWithPathFinder(drive,
-    // stationTargetTransform)
-    //                                .cancel();
-    //                          });
-    //                }));
-
-    // driver.povUp().onTrue(new PickupStationCmd(0)); // Change to upper
-    // driver.povDown().onTrue(new PickupStationCmd(1)); // Change to lower
-    //    driver.povLeft().onTrue(new PickupStationCmd(2)); // Change to left
-    //    driver.povRight().onTrue(new PickupStationCmd(3)); // Change to right
-    // TODO: this is only a todo so its highlighted but these were removed because apparently never
-    // used
-
-    //    driver
-    //        .rightTrigger()
-    //        .whileTrue(
-    //            new InterfaceActionCmd(reef, InterfaceExecuteMode.REEF)
-    //                .andThen(
-    //                    () -> {})); // When right trigger is pressed, drive to the location
-    // selected
-    //    driver.rightTrigger().onFalse(new InterfaceActionCmd(reef, InterfaceExecuteMode.DISABLE));
-
     /*
         ---- LED TRIGGERS ----
     */
@@ -358,146 +277,106 @@ public class RobotContainer {
                 () ->
                     leds.setMode(Constants.LEDMode.AIR_GOOD, false, (int) drive.getPressurePSI())));
 
-    /*
-       ---- DRIVER CONTROLS ----
-    */
+    // Switch to X pattern when X button is pressed
+    driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
-    // manual elevator control
-    driver
-        .povUp()
-        .onTrue(
-            new InstantCommand(
-                    () -> {
-                      elevator.centererClosePending = false;
-                      elevator.centerer.set(false);
-                      elevator.setInScoringMode(true);
-                    })
-                .andThen(Commands.waitSeconds(0.18))
-                .andThen(
-                    () -> {
-                      elevator.inHoldingState = true;
-                      elevator.raiseElevator(4);
-                    }));
-    driver
-        .povLeft()
-        .onTrue(
-            new InstantCommand(
-                    () -> {
-                      elevator.centererClosePending = false;
-                      elevator.centerer.set(false);
-                      elevator.setInScoringMode(true);
-                    })
-                .andThen(Commands.waitSeconds(0.18))
-                .andThen(
-                    () -> {
-                      elevator.inHoldingState = true;
-                      elevator.raiseElevator(3);
-                    }));
-    driver
-        .povDown()
-        .onTrue(
-            new InstantCommand(
-                    () -> {
-                      elevator.centererClosePending = false;
-                      elevator.centerer.set(false);
-                      elevator.setInScoringMode(true);
-                    })
-                .andThen(Commands.waitSeconds(0.18))
-                .andThen(
-                    () -> {
-                      elevator.inHoldingState = true;
-                      elevator.raiseElevator(2);
-                    }));
+    // Squeeze + grip
+    //    driver.leftBumper().onTrue(new FlipperGripperCmd(elevator));
 
-    // right l3
+    driver.y().onTrue(new CageSelectCmd.CycleCageCmd()); // cycles location of cage
+
+    // Climbing sequence
     driver
-        .rightTrigger()
+        .back()
         .whileTrue(
-            new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, 3, true)
-                .andThen(
-                    () -> {})); // When right trigger is pressed, drive to the location selected
-    driver
-        .rightTrigger()
-        .onFalse(new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, true));
+            new DeferredCommand(
+                () ->
+                    new InstantCommand(() -> ForceClimberUp = true)
+                        .andThen(
+                            DriveCommands.goToTransformWithPathFinder(
+                                drive, GeomUtil.poseToTransform(climbTargetTransform)))
+                        .andThen(
+                            DriveCommands.goToTransformClimb(
+                                drive,
+                                GeomUtil.poseToTransform(climbTargetTransform)
+                                    .plus(new Transform2d(0.0, 1.0, new Rotation2d(0.0)))))
+                        .andThen(Commands.runOnce(drive::stop, drive))
+                        .andThen(Commands.waitSeconds(1.0))
+                        .andThen(
+                            DriveCommands.goToTransformClimb(
+                                drive,
+                                GeomUtil.poseToTransform(climbTargetTransform)
+                                    .plus(new Transform2d(0.0, 0.8, new Rotation2d(0.0)))))
+                        .andThen(Commands.runOnce(drive::stop, drive))
+                        .andThen(Commands.waitSeconds(2.0))
+                        .andThen(new ActivateClimberCommand(climber))
+                        .beforeStarting(
+                            () -> {
+                              DriveCommands.goToTransformClimb(
+                                      drive, GeomUtil.poseToTransform(climbTargetTransform))
+                                  .cancel();
+                              DriveCommands.goToTransformWithPathFinder(
+                                      drive, GeomUtil.poseToTransform(climbTargetTransform))
+                                  .cancel();
+                            })));
 
-    // right l3
-    driver
-        .rightBumper()
-        .whileTrue(
-            new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, 3, true)
-                .andThen(
-                    () -> {})); // When right trigger is pressed, drive to the location selected
-    driver
-        .rightBumper()
-        .onFalse(new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, true));
-
-    // left l3
+    driver.start().onTrue(new ActivateClimberCommand(climber));
     driver
         .leftTrigger()
         .whileTrue(
-            new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, 3, false)
-                .andThen(
-                    () -> {})); // When right trigger is pressed, drive to the location selected
-    driver
-        .leftTrigger()
-        .onFalse(new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, false));
+            new DeferredCommand(
+                () -> {
+                  Logger.recordOutput("stationOffset", stationOffsetTransform);
+                  return DriveCommands.goToTransformWithPathFinderPlusOffset(
+                          drive,
+                          stationTargetTransform,
+                          new Transform2d(0.25, 0.0, new Rotation2d(0.0)))
+                      .beforeStarting(
+                          () -> {
+                            DriveCommands.goToTransform(drive, stationTargetTransform).cancel();
+                            DriveCommands.goToTransformWithPathFinder(drive, stationTargetTransform)
+                                .cancel();
+                          });
+                }));
 
-    // left l4
+    // driver.povUp().onTrue(new PickupStationCmd(0)); // Change to upper
+    // driver.povDown().onTrue(new PickupStationCmd(1)); // Change to lower
+    driver.povLeft().onTrue(new PickupStationCmd(2)); // Change to left
+    driver.povRight().onTrue(new PickupStationCmd(3)); // Change to right
+
+    //    driver
+    //        .rightTrigger()
+    //        .whileTrue(
+    //            new InterfaceActionCmd(reef, InterfaceExecuteMode.REEF)
+    //                .andThen(
+    //                    () -> {})); // When right trigger is pressed, drive to the location
+    // selected
+    //    driver.rightTrigger().onFalse(new InterfaceActionCmd(reef, InterfaceExecuteMode.DISABLE));
+
     driver
-        .leftBumper()
+        .rightTrigger()
         .whileTrue(
-            new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, 4, false)
+            new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF)
                 .andThen(
                     () -> {})); // When right trigger is pressed, drive to the location selected
-    driver
-        .leftBumper()
-        .onFalse(new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, false));
+    driver.rightTrigger().onFalse(new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE));
 
-    // right l4
     driver
         .rightBumper()
         .whileTrue(
-            new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, 4, true)
+            new InterfaceActionCmd(reef, InterfaceExecuteMode.ALGEE)
                 .andThen(
                     () -> {})); // When right trigger is pressed, drive to the location selected
-    driver
-        .rightBumper()
-        .onFalse(new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, true));
+    driver.rightBumper().onFalse(new InterfaceActionCmd(reef, InterfaceExecuteMode.DISABLE));
 
-    // left l2
-    driver
-        .povRight()
-        .whileTrue(
-            new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, 2, false)
-                .andThen(
-                    () -> {})); // When right trigger is pressed, drive to the location selected
-    driver
-        .povRight()
-        .onFalse(new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, false));
-    // right l2
-    driver
-        .a()
-        .whileTrue(
-            new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, 2, true)
-                .andThen(
-                    () -> {})); // When right trigger is pressed, drive to the location selected
-    driver.a().onFalse(new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, false));
-
-    // algae removal
-    driver
-        .y()
-        .whileTrue(
-            new InterfaceActionCmd(reef, InterfaceExecuteMode.ALGEE, -1, false)
-                .andThen(
-                    () -> {})); // When right trigger is pressed, drive to the location selected
-    driver.y().onFalse(new InterfaceActionCmd(reef, InterfaceExecuteMode.DISABLE, -1, false));
-
-    // manual drop coral
     driver.b().onTrue(new FlipperScoreCmd(elevator, 1.0));
 
-    // un-grip
+    // We need to find an available button for the gripper toggle command
+    // Since X is already used for X pattern and we want to keep B for scoring
+    // The D-pad is used for pickup station selection
+    // Let's use a button chord (simultaneous button press) combination
     driver
-        .x()
+        .leftBumper()
         .onTrue(
             new GripperToggleCmd(
                 elevator, true)); // Use B+LB to toggle gripper and reset holding state
