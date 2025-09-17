@@ -239,21 +239,15 @@ public class RobotContainer {
                 .andThen(Commands.runOnce(leds::unlock)));
 
     // flash blue while taking out algae
-    driver.y().whileTrue(Commands.runOnce(() -> leds.setMode(Constants.LEDMode.ALGAE_OUT, true)));
-    driver.y().onFalse(Commands.runOnce(leds::unlock));
+    driver.rightBumper().whileTrue(Commands.runOnce(() -> leds.setMode(Constants.LEDMode.ALGAE_OUT, true)));
+    driver.rightBumper().onFalse(Commands.runOnce(leds::unlock));
 
     // flash green while scoring
     driver
         .rightTrigger()
-        .or(driver.leftTrigger())
-        .or(driver.leftBumper())
-        .or(driver.rightBumper())
         .whileTrue(Commands.runOnce(() -> leds.setMode(Constants.LEDMode.CORAL_OUT, true)));
     driver
         .rightTrigger()
-        .or(driver.leftTrigger())
-        .or(driver.leftBumper())
-        .or(driver.rightBumper())
         .onFalse(Commands.runOnce(leds::unlock));
 
     // rainbow when climbed
