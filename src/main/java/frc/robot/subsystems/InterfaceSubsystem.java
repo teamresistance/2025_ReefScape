@@ -444,9 +444,81 @@ public class InterfaceSubsystem extends SubsystemBase {
           forceStopExecution();
         }
         break;
+      case BRUSH:
+        switch (pole) {
+          case "a":
+            targetTransform = getTranslationFromPlace(Place.A_TREE);
+            break;
+          case "b":
+            targetTransform = getTranslationFromPlace(Place.B_TREE);
+            break;
+          case "c":
+            targetTransform = getTranslationFromPlace(Place.C_TREE);
+            break;
+          case "d":
+            targetTransform = getTranslationFromPlace(Place.D_TREE);
+            break;
+          case "e":
+            targetTransform = getTranslationFromPlace(Place.E_TREE);
+            break;
+          case "f":
+            targetTransform = getTranslationFromPlace(Place.F_TREE);
+            break;
+          case "g":
+            targetTransform = getTranslationFromPlace(Place.G_TREE);
+            break;
+          case "h":
+            targetTransform = getTranslationFromPlace(Place.H_TREE);
+            break;
+          case "i":
+            targetTransform = getTranslationFromPlace(Place.I_TREE);
+            break;
+          case "j":
+            targetTransform = getTranslationFromPlace(Place.J_TREE);
+            break;
+          case "k":
+            targetTransform = getTranslationFromPlace(Place.K_TREE);
+            break;
+          case "l":
+            targetTransform = getTranslationFromPlace(Place.L_TREE);
+            break;
+        }
+        executeBrush(targetTransform);
+        break;
       default:
         // Do nothing
     }
+  }
+
+  private void executeBrush(Transform2d targetTransform) {
+    if (drive_command != null) {
+      drive_command.cancel();
+    }
+
+    drive_command =
+        (!drive.testingmode
+                ? AutoBuilder.pathfindToPose(
+                    GeomUtil.transformToPose(targetTransform), Constants.PATH_CONSTRAINTS, 0.5)
+                : new InstantCommand(() -> {}))
+            .andThen(
+                AutoBuilder.pathfindToPose(
+                    GeomUtil.transformToPose(
+                        targetTransform.plus(
+                            new Transform2d(
+                                1.42, -0.24, new Rotation2d(Units.degreesToRadians(0.0))))),
+                    Constants.PATH_CONSTRAINTS,
+                    0.0))
+            .andThen(
+                AutoBuilder.pathfindToPose(
+                    GeomUtil.transformToPose(
+                        targetTransform.plus(
+                            new Transform2d(
+                                -0.5, -0.24, new Rotation2d(Units.degreesToRadians(0.0))))),
+                    Constants.PATH_CONSTRAINTS,
+                    0.))
+            .andThen(Commands.none());
+
+    CommandScheduler.getInstance().schedule(drive_command);
   }
 
   public void forceStopExecution() {

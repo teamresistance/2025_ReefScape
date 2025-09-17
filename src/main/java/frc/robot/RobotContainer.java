@@ -321,23 +321,25 @@ public class RobotContainer {
                             })));
 
     driver.start().onTrue(new ActivateClimberCommand(climber));
-    driver
-        .leftTrigger()
-        .whileTrue(
-            new DeferredCommand(
-                () -> {
-                  Logger.recordOutput("stationOffset", stationOffsetTransform);
-                  return DriveCommands.goToTransformWithPathFinderPlusOffset(
-                          drive,
-                          stationTargetTransform,
-                          new Transform2d(0.25, 0.0, new Rotation2d(0.0)))
-                      .beforeStarting(
-                          () -> {
-                            DriveCommands.goToTransform(drive, stationTargetTransform).cancel();
-                            DriveCommands.goToTransformWithPathFinder(drive, stationTargetTransform)
-                                .cancel();
-                          });
-                }));
+//    driver
+//        .leftTrigger()
+//        .whileTrue(
+//            new DeferredCommand(
+//                () -> {
+//                  Logger.recordOutput("stationOffset", stationOffsetTransform);
+//                  return DriveCommands.goToTransformWithPathFinderPlusOffset(
+//                          drive,
+//                          stationTargetTransform,
+//                          new Transform2d(0.25, 0.0, new Rotation2d(0.0)))
+//                      .beforeStarting(
+//                          () -> {
+//                            DriveCommands.goToTransform(drive, stationTargetTransform).cancel();
+//                            DriveCommands.goToTransformWithPathFinder(drive, stationTargetTransform)
+//                                .cancel();
+//                          });
+//                }));
+    driver.leftTrigger().whileTrue(new InterfaceActionCmd2(reef, InterfaceExecuteMode.BRUSH));
+    driver.leftTrigger().onFalse(new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE));
 
     // driver.povUp().onTrue(new PickupStationCmd(0)); // Change to upper
     // driver.povDown().onTrue(new PickupStationCmd(1)); // Change to lower

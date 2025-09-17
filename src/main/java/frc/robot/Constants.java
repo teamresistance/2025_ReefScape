@@ -52,7 +52,8 @@ public final class Constants {
     CLIMBER,
     EXECUTE,
     DISABLE,
-    ALGAE
+    ALGAE,
+    BRUSH
   }
 
   /**
