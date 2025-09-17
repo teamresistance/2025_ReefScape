@@ -30,7 +30,6 @@ import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.GeomUtil;
 import java.io.IOException;
-import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.photonvision.PhotonCamera;
 
@@ -239,16 +238,16 @@ public class RobotContainer {
                 .andThen(Commands.runOnce(leds::unlock)));
 
     // flash blue while taking out algae
-    driver.rightBumper().whileTrue(Commands.runOnce(() -> leds.setMode(Constants.LEDMode.ALGAE_OUT, true)));
+    driver
+        .rightBumper()
+        .whileTrue(Commands.runOnce(() -> leds.setMode(Constants.LEDMode.ALGAE_OUT, true)));
     driver.rightBumper().onFalse(Commands.runOnce(leds::unlock));
 
     // flash green while scoring
     driver
         .rightTrigger()
         .whileTrue(Commands.runOnce(() -> leds.setMode(Constants.LEDMode.CORAL_OUT, true)));
-    driver
-        .rightTrigger()
-        .onFalse(Commands.runOnce(leds::unlock));
+    driver.rightTrigger().onFalse(Commands.runOnce(leds::unlock));
 
     // rainbow when climbed
     new Trigger(climber::getClimberUsed)
@@ -315,23 +314,25 @@ public class RobotContainer {
                             })));
 
     driver.start().onTrue(new ActivateClimberCommand(climber));
-//    driver
-//        .leftTrigger()
-//        .whileTrue(
-//            new DeferredCommand(
-//                () -> {
-//                  Logger.recordOutput("stationOffset", stationOffsetTransform);
-//                  return DriveCommands.goToTransformWithPathFinderPlusOffset(
-//                          drive,
-//                          stationTargetTransform,
-//                          new Transform2d(0.25, 0.0, new Rotation2d(0.0)))
-//                      .beforeStarting(
-//                          () -> {
-//                            DriveCommands.goToTransform(drive, stationTargetTransform).cancel();
-//                            DriveCommands.goToTransformWithPathFinder(drive, stationTargetTransform)
-//                                .cancel();
-//                          });
-//                }));
+    //    driver
+    //        .leftTrigger()
+    //        .whileTrue(
+    //            new DeferredCommand(
+    //                () -> {
+    //                  Logger.recordOutput("stationOffset", stationOffsetTransform);
+    //                  return DriveCommands.goToTransformWithPathFinderPlusOffset(
+    //                          drive,
+    //                          stationTargetTransform,
+    //                          new Transform2d(0.25, 0.0, new Rotation2d(0.0)))
+    //                      .beforeStarting(
+    //                          () -> {
+    //                            DriveCommands.goToTransform(drive,
+    // stationTargetTransform).cancel();
+    //                            DriveCommands.goToTransformWithPathFinder(drive,
+    // stationTargetTransform)
+    //                                .cancel();
+    //                          });
+    //                }));
     driver.leftTrigger().whileTrue(new InterfaceActionCmd2(reef, InterfaceExecuteMode.BRUSH));
     driver.leftTrigger().onFalse(new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE));
 
