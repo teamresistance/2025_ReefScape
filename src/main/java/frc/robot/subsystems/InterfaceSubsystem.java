@@ -167,51 +167,8 @@ public class InterfaceSubsystem extends SubsystemBase {
         break;
 
       case ALGAE:
-        switch (pole) {
-          case "a":
-            targetTransform = getTranslationFromPlace(Place.A_TREE);
-            break;
-          case "b":
-            targetTransform = getTranslationFromPlace(Place.B_TREE);
-            isRight = true;
-            break;
-          case "c":
-            targetTransform = getTranslationFromPlace(Place.C_TREE);
-            break;
-          case "d":
-            targetTransform = getTranslationFromPlace(Place.D_TREE);
-            isRight = true;
-            break;
-          case "e":
-            targetTransform = getTranslationFromPlace(Place.E_TREE);
-            break;
-          case "f":
-            targetTransform = getTranslationFromPlace(Place.F_TREE);
-            isRight = true;
-            break;
-          case "g":
-            targetTransform = getTranslationFromPlace(Place.G_TREE);
-            break;
-          case "h":
-            targetTransform = getTranslationFromPlace(Place.H_TREE);
-            isRight = true;
-            break;
-          case "i":
-            targetTransform = getTranslationFromPlace(Place.I_TREE);
-            break;
-          case "j":
-            targetTransform = getTranslationFromPlace(Place.J_TREE);
-            isRight = true;
-            break;
-          case "k":
-            targetTransform = getTranslationFromPlace(Place.K_TREE);
-            break;
-          case "l":
-            targetTransform = getTranslationFromPlace(Place.L_TREE);
-            isRight = true;
-            break;
-        }
-        executeDrive(targetTransform, isRight, false, stuff);
+        targetTransform = getClosestOffsetTag(drive);
+        executeDrive(targetTransform, false, false, stuff);
         break;
 
       case CORAL:
@@ -460,7 +417,7 @@ public class InterfaceSubsystem extends SubsystemBase {
       // compensate for velocity (although x side is closer, it may be faster
       // to get to y side depending on the robot already moving that way, not
       // needing to change direction)
-      now = now.plus(drive.getVelocity().getTranslation().times(0.15));
+//      now = now.plus(drive.getVelocity().getTranslation().times(0.15));
 
       Pose2d[] available = {
               FieldConstants.OFFSET_TAG_7,
