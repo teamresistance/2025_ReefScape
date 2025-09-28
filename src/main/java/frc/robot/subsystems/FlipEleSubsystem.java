@@ -88,8 +88,7 @@ public class FlipEleSubsystem extends SubsystemBase {
   }
 
   public boolean hasObtainedCoral() {
-    // return coralDetector1.get() || coralDetector2.get();
-    return false;
+    return (coralDetector1.get() || coralDetector2.get()) && !centerer.get();
   }
 
   /**

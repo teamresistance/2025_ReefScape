@@ -321,50 +321,65 @@ public class RobotContainer {
     */
 
     // flash white for 1s when a coral is obtained
-    new Trigger(elevator::hasObtainedCoral)
-        .onTrue(
-            Commands.runOnce(() -> leds.setMode(Constants.LEDMode.CORAL_IN, true))
-                .andThen(Commands.waitSeconds(1))
-                .andThen(Commands.runOnce(leds::unlock)));
+    Command ledCmdWhite =
+        Commands.runOnce(() -> leds.setMode(Constants.LEDMode.CORAL_IN, true))
+            .andThen(Commands.waitSeconds(1))
+            .andThen(Commands.runOnce(leds::unlock));
+    ledCmdWhite.addRequirements(leds);
+    new Trigger(elevator::hasObtainedCoral).onTrue(ledCmdWhite);
 
     // flash blue while taking out algae
-    driver.y().whileTrue(Commands.runOnce(() -> leds.setMode(Constants.LEDMode.ALGAE_OUT, true)));
-    driver.y().onFalse(Commands.runOnce(leds::unlock));
+    Command ledCmdBlue =
+        Commands.runOnce(() -> leds.setMode(Constants.LEDMode.ALGAE_OUT, true))
+            .andThen(Commands.waitSeconds(1))
+            .andThen(Commands.runOnce(leds::unlock));
+    ledCmdBlue.addRequirements(leds);
+    driver.y().onTrue(ledCmdBlue);
 
     // flash green while scoring
+    Command ledCmdGreen =
+        Commands.runOnce(() -> leds.setMode(Constants.LEDMode.CORAL_OUT, true))
+            .andThen(Commands.waitSeconds(1))
+            .andThen(Commands.runOnce(leds::unlock));
+    ledCmdGreen.addRequirements(leds);
     driver
         .rightTrigger()
         .or(driver.leftTrigger())
         .or(driver.leftBumper())
         .or(driver.rightBumper())
-        .whileTrue(Commands.runOnce(() -> leds.setMode(Constants.LEDMode.CORAL_OUT, true)));
-    driver
-        .rightTrigger()
-        .or(driver.leftTrigger())
-        .or(driver.leftBumper())
-        .or(driver.rightBumper())
-        .onFalse(Commands.runOnce(leds::unlock));
+        .onTrue(ledCmdGreen);
 
-    // rainbow when climbed
-    new Trigger(climber::getClimberUsed)
-        .onTrue(Commands.runOnce(() -> leds.setMode(Constants.LEDMode.RAINBOW, true)));
+    // flash rainbow when climbed
+    Command ledCmdRainbow =
+        Commands.runOnce(() -> leds.setMode(Constants.LEDMode.RAINBOW, true))
+            .andThen(Commands.waitSeconds(1))
+            .andThen(Commands.runOnce(leds::unlock));
+    ledCmdRainbow.addRequirements(leds);
+    new Trigger(climber::getClimberUsed).onTrue(ledCmdRainbow);
 
-    // air pressure (these do NOT lock, they only run when others are not running)
-    new Trigger(() -> (drive.getPressurePSI() < 40))
-        .whileTrue(
-            Commands.runOnce(
-                () ->
-                    leds.setMode(Constants.LEDMode.AIR_BAD, false, (int) drive.getPressurePSI())));
-    new Trigger(() -> (drive.getPressurePSI() >= 40 && drive.getPressurePSI() < 70))
-        .whileTrue(
-            Commands.runOnce(
-                () ->
-                    leds.setMode(Constants.LEDMode.AIR_LOW, false, (int) drive.getPressurePSI())));
-    new Trigger(() -> (drive.getPressurePSI() >= 70))
-        .whileTrue(
-            Commands.runOnce(
-                () ->
-                    leds.setMode(Constants.LEDMode.AIR_GOOD, false, (int) drive.getPressurePSI())));
+    Command ledCmdAir = new InstantCommand((() -> leds.setPSI(drive.getPressurePSI())));
+    ledCmdAir.addRequirements(leds);
+    leds.setDefaultCommand(ledCmdAir);
+
+    //    // air pressure (these do NOT lock, they only run when others are not running)
+    //    new Trigger(() -> (drive.getPressurePSI() < 40))
+    //        .whileTrue(
+    //            Commands.run(
+    //                () ->
+    //                    leds.setMode(Constants.LEDMode.AIR_BAD, false, (int)
+    // drive.getPressurePSI())));
+    //    new Trigger(() -> (drive.getPressurePSI() >= 40 && drive.getPressurePSI() < 70))
+    //        .whileTrue(
+    //            Commands.run(
+    //                () ->
+    //                    leds.setMode(Constants.LEDMode.AIR_LOW, false, (int)
+    // drive.getPressurePSI())));
+    //    new Trigger(() -> (drive.getPressurePSI() >= 70))
+    //        .whileTrue(
+    //            Commands.run(
+    //                () ->
+    //                    leds.setMode(Constants.LEDMode.AIR_GOOD, false, (int)
+    // drive.getPressurePSI())));
 
     /*
        ---- DRIVER CONTROLS ----
