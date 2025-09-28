@@ -14,9 +14,9 @@ public class LEDSubsystem extends SubsystemBase {
 
   public LEDSubsystem() {}
 
-  private final int LED_START_INDEX = 8;
+  private final int LED_START_INDEX = 0;
   private final int LED_END_INDEX = 67;
-  private final CANdle candle = new CANdle(60); // TODO: correct port
+  private final CANdle candle = new CANdle(60);
   private int psi = 120;
   private LEDMode mode = LEDMode.RAINBOW;
   private boolean isLocked = false;

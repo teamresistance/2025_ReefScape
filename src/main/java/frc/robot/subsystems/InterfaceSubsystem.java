@@ -306,7 +306,11 @@ public class InterfaceSubsystem extends SubsystemBase {
   }
 
   public boolean safeToUngrip() {
-    return drive.getPose().getTranslation().getDistance(targetTransform.getTranslation()) < 0.05;
+    return drive
+            .getPose()
+            .getTranslation()
+            .getDistance(targetTransform.plus(leftRightOffset).getTranslation())
+        < 0.05;
   }
 
   public void driveToLoc2(

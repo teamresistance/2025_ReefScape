@@ -54,13 +54,13 @@ public class RobotContainer {
   public final ClimberSubsystem climber = new ClimberSubsystem();
   //   private final PressureSubsystem pressure = new PressureSubsystem();
   final FlipEleSubsystem elevator = new FlipEleSubsystem();
-  final LEDSubsystem leds = new LEDSubsystem();
+  static final LEDSubsystem leds = new LEDSubsystem();
   private final Alert cameraFailureAlert;
   // Subsystems
   private final DriveSubsystem drive;
   public final InterfaceSubsystem reef;
   // Controller
-  private final CommandXboxController driver = new CommandXboxController(0);
+  private static final CommandXboxController driver = new CommandXboxController(0);
   private final Joystick cojoystick = new Joystick(1);
   // There are two codriver joystick ports because only 12 buttons can be detected, and just the
   // branch select is 12 buttons.
@@ -70,8 +70,8 @@ public class RobotContainer {
   private final LoggedDashboardChooser<Command> autoChooser;
   public LoggedDashboardChooser<Integer> cageChooser;
 
-  public LoggedDashboardChooser<Boolean> controlChooser =
-      new LoggedDashboardChooser<Boolean>("Single Driver?");
+  public LoggedDashboardChooser<String> controlChooser =
+      new LoggedDashboardChooser<String>("Single Driver?");
   public boolean singleDriver = true;
 
   public boolean testingmode = false;
@@ -84,6 +84,10 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+
+    controlChooser.addOption("Single Driver", "a");
+    controlChooser.addOption("Two Driver", "b");
+
     drive = configureDrive();
     reef = configureInterface();
     aprilTagVision = configureAprilTagVision();
@@ -594,7 +598,18 @@ public class RobotContainer {
     new CageSelectCmd(selectedCage).schedule();
   }
 
+  public static CommandXboxController getController() {
+    return driver;
+  }
+
   public void updateControlSchemeFromChooser() {
-    singleDriver = controlChooser.get();
+    String chosen = controlChooser.get();
+    if (chosen != null) {
+      singleDriver = chosen.equals("a");
+    }
+  }
+
+  public static LEDSubsystem getLEDSubsystem() {
+    return leds;
   }
 }

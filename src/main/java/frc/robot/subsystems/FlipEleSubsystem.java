@@ -1,14 +1,14 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import org.littletonrobotics.junction.Logger;
 
 public class FlipEleSubsystem extends SubsystemBase {
@@ -88,7 +88,8 @@ public class FlipEleSubsystem extends SubsystemBase {
   }
 
   public boolean hasObtainedCoral() {
-    return coralDetector1.get() || coralDetector2.get();
+    // return coralDetector1.get() || coralDetector2.get();
+    return false;
   }
 
   /**
@@ -261,7 +262,23 @@ public class FlipEleSubsystem extends SubsystemBase {
       if (interfaceSubsystem.safeToUngrip()) {
         gripper.set(false);
         gripperReleaseDelayActive = false;
-      } else {}
+      } else {
+        CommandXboxController toRumble = RobotContainer.getController();
+        CommandScheduler.getInstance()
+            .schedule(
+                new SequentialCommandGroup(
+                    new InstantCommand(
+                        () -> {
+                          toRumble.getHID().setRumble(GenericHID.RumbleType.kLeftRumble, 1.0);
+                          toRumble.getHID().setRumble(GenericHID.RumbleType.kRightRumble, 1.0);
+                        }),
+                    new WaitCommand(0.5),
+                    new InstantCommand(
+                        () -> {
+                          toRumble.getHID().setRumble(GenericHID.RumbleType.kLeftRumble, 0.0);
+                          toRumble.getHID().setRumble(GenericHID.RumbleType.kRightRumble, 0.0);
+                        })));
+      }
     }
 
     if (gripperDelayActive && gripperDelayTimer.hasElapsed(0.5)) {
@@ -282,6 +299,13 @@ public class FlipEleSubsystem extends SubsystemBase {
       if (bannerSensorTriggered) {
         if (centererDelayActive && centererTimer.hasElapsed(0.3)) {
           if (centererClosePending) {
+            //            LEDSubsystem leds = RobotContainer.getLEDSubsystem();
+            //            CommandScheduler.getInstance()
+            //                .schedule(
+            //                    Commands.runOnce(() -> leds.setMode(Constants.LEDMode.CORAL_IN,
+            // true))
+            //                        .andThen(Commands.waitSeconds(1))
+            //                        .andThen(Commands.runOnce(leds::unlock)));
             centerer.set(true);
             centererClosePending = false;
             if (gripperClosePending && !gripperDelayActive) {
