@@ -304,39 +304,166 @@ public class InterfaceSubsystem extends SubsystemBase {
   }
 
   public void driveToLoc2(
-      InterfaceExecuteMode loc, InterfaceActionCmd2 stuff, int lvl, boolean isRight) {
-    if (lvl != -1) level = lvl;
-    AutoAlignParams params = new AutoAlignParams(drive, isRight);
-    switch (loc) {
-      case REEF:
-        executeDrive2(params.targetTransform, params.isRight, true);
-        break;
+      InterfaceExecuteMode loc,
+      InterfaceActionCmd2 stuff,
+      int lvl,
+      boolean isRight,
+      boolean singleDriver) {
+    if (singleDriver) {
+      if (lvl != -1) level = lvl;
+      AutoAlignParams params = new AutoAlignParams(drive, isRight);
+      switch (loc) {
+        case REEF:
+          executeDrive2(params.targetTransform, params.isRight, true);
+          break;
 
-      case ALGEE:
-        executeDrive2(params.targetTransform, params.isRight, false);
-        break;
-      case CORAL:
-        targetTransform = getTranslationFromPlace(Place.LEFT_CORAL_STATION);
-        executeDrive2(targetTransform, false, false);
-        break;
-      case DISABLE:
-        drive_command.cancel();
-        elevator.raiseElevator(0);
-        elevator.resetAutoscoreState();
-        break;
-      case CLIMBER:
-        targetTransform = getTranslationFromPlace(Place.MIDDLE_CAGE);
-        executeDrive2(targetTransform, false, false);
-        break;
-      case EXECUTE:
-        if (!executing) {
-          executeSelected();
-        } else {
-          forceStopExecution();
-        }
-        break;
-      default:
-        // Do nothing
+        case ALGEE:
+          executeDrive2(params.targetTransform, params.isRight, false);
+          break;
+        case CORAL:
+          targetTransform = getTranslationFromPlace(Place.LEFT_CORAL_STATION);
+          executeDrive2(targetTransform, false, false);
+          break;
+        case DISABLE:
+          drive_command.cancel();
+          elevator.raiseElevator(0);
+          elevator.resetAutoscoreState();
+          break;
+        case CLIMBER:
+          targetTransform = getTranslationFromPlace(Place.MIDDLE_CAGE);
+          executeDrive2(targetTransform, false, false);
+          break;
+        case EXECUTE:
+          if (!executing) {
+            executeSelected();
+          } else {
+            forceStopExecution();
+          }
+          break;
+        default:
+          // Do nothing
+      }
+    } else {
+      boolean isRighty = false;
+      switch (loc) {
+        case REEF:
+          switch (pole) {
+            case "a":
+              targetTransform = getTranslationFromPlace(Place.A_TREE);
+              break;
+            case "b":
+              targetTransform = getTranslationFromPlace(Place.B_TREE);
+              isRighty = true;
+              break;
+            case "c":
+              targetTransform = getTranslationFromPlace(Place.C_TREE);
+              break;
+            case "d":
+              targetTransform = getTranslationFromPlace(Place.D_TREE);
+              isRighty = true;
+              break;
+            case "e":
+              targetTransform = getTranslationFromPlace(Place.E_TREE);
+              break;
+            case "f":
+              targetTransform = getTranslationFromPlace(Place.F_TREE);
+              isRighty = true;
+              break;
+            case "g":
+              targetTransform = getTranslationFromPlace(Place.G_TREE);
+              break;
+            case "h":
+              targetTransform = getTranslationFromPlace(Place.H_TREE);
+              isRighty = true;
+              break;
+            case "i":
+              targetTransform = getTranslationFromPlace(Place.I_TREE);
+              break;
+            case "j":
+              targetTransform = getTranslationFromPlace(Place.J_TREE);
+              isRighty = true;
+              break;
+            case "k":
+              targetTransform = getTranslationFromPlace(Place.K_TREE);
+              break;
+            case "l":
+              targetTransform = getTranslationFromPlace(Place.L_TREE);
+              isRighty = true;
+              break;
+          }
+          executeDrive2(targetTransform, isRighty, true);
+          break;
+
+        case ALGEE:
+          switch (pole) {
+            case "a":
+              targetTransform = getTranslationFromPlace(Place.A_TREE);
+              break;
+            case "b":
+              targetTransform = getTranslationFromPlace(Place.B_TREE);
+              isRighty = true;
+              break;
+            case "c":
+              targetTransform = getTranslationFromPlace(Place.C_TREE);
+              break;
+            case "d":
+              targetTransform = getTranslationFromPlace(Place.D_TREE);
+              isRighty = true;
+              break;
+            case "e":
+              targetTransform = getTranslationFromPlace(Place.E_TREE);
+              break;
+            case "f":
+              targetTransform = getTranslationFromPlace(Place.F_TREE);
+              isRighty = true;
+              break;
+            case "g":
+              targetTransform = getTranslationFromPlace(Place.G_TREE);
+              break;
+            case "h":
+              targetTransform = getTranslationFromPlace(Place.H_TREE);
+              isRighty = true;
+              break;
+            case "i":
+              targetTransform = getTranslationFromPlace(Place.I_TREE);
+              break;
+            case "j":
+              targetTransform = getTranslationFromPlace(Place.J_TREE);
+              isRighty = true;
+              break;
+            case "k":
+              targetTransform = getTranslationFromPlace(Place.K_TREE);
+              break;
+            case "l":
+              targetTransform = getTranslationFromPlace(Place.L_TREE);
+              isRighty = true;
+              break;
+          }
+          executeDrive2(targetTransform, isRighty, false);
+          break;
+        case CORAL:
+          targetTransform = getTranslationFromPlace(Place.LEFT_CORAL_STATION);
+          executeDrive2(targetTransform, false, false);
+          break;
+        case DISABLE:
+          drive_command.cancel();
+          elevator.raiseElevator(0);
+          elevator.resetAutoscoreState();
+          break;
+        case CLIMBER:
+          targetTransform = getTranslationFromPlace(Place.MIDDLE_CAGE);
+          executeDrive2(targetTransform, false, false);
+          break;
+        case EXECUTE:
+          if (!executing) {
+            executeSelected();
+          } else {
+            forceStopExecution();
+          }
+          break;
+        default:
+          // Do nothing
+      }
     }
   }
 

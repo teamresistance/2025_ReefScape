@@ -71,6 +71,11 @@ public final class Constants {
     REPLAY
   }
 
+  public enum ControlMode {
+    SOLO,
+    DOUBLE
+  }
+
   public enum LEDMode {
     CORAL_OUT,
     ALGAE_OUT,
