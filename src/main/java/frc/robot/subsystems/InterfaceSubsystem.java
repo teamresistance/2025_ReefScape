@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import static frc.robot.commands.DriveCommands.goToTransform;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -165,52 +166,9 @@ public class InterfaceSubsystem extends SubsystemBase {
         executeDrive(targetTransform, isRight, true, stuff);
         break;
 
-      case ALGEE:
-        switch (pole) {
-          case "a":
-            targetTransform = getTranslationFromPlace(Place.A_TREE);
-            break;
-          case "b":
-            targetTransform = getTranslationFromPlace(Place.B_TREE);
-            isRight = true;
-            break;
-          case "c":
-            targetTransform = getTranslationFromPlace(Place.C_TREE);
-            break;
-          case "d":
-            targetTransform = getTranslationFromPlace(Place.D_TREE);
-            isRight = true;
-            break;
-          case "e":
-            targetTransform = getTranslationFromPlace(Place.E_TREE);
-            break;
-          case "f":
-            targetTransform = getTranslationFromPlace(Place.F_TREE);
-            isRight = true;
-            break;
-          case "g":
-            targetTransform = getTranslationFromPlace(Place.G_TREE);
-            break;
-          case "h":
-            targetTransform = getTranslationFromPlace(Place.H_TREE);
-            isRight = true;
-            break;
-          case "i":
-            targetTransform = getTranslationFromPlace(Place.I_TREE);
-            break;
-          case "j":
-            targetTransform = getTranslationFromPlace(Place.J_TREE);
-            isRight = true;
-            break;
-          case "k":
-            targetTransform = getTranslationFromPlace(Place.K_TREE);
-            break;
-          case "l":
-            targetTransform = getTranslationFromPlace(Place.L_TREE);
-            isRight = true;
-            break;
-        }
-        executeDrive(targetTransform, isRight, false, stuff);
+      case ALGAE:
+        targetTransform = getClosestOffsetTag(drive);
+        executeDrive(targetTransform, false, false, stuff);
         break;
 
       case CORAL:
@@ -377,7 +335,7 @@ public class InterfaceSubsystem extends SubsystemBase {
         executeDrive2(targetTransform, isRight, true, stuff);
         break;
 
-      case ALGEE:
+      case ALGAE:
         switch (pole) {
           case "a":
             targetTransform = getTranslationFromPlace(Place.A_TREE);
@@ -444,9 +402,83 @@ public class InterfaceSubsystem extends SubsystemBase {
           forceStopExecution();
         }
         break;
+      case BRUSH:
+        targetTransform = getClosestOffsetTag(drive);
+        executeBrush(targetTransform);
+        break;
       default:
         // Do nothing
     }
+  }
+
+  private Transform2d getClosestOffsetTag(DriveSubsystem drive) {
+    Translation2d now = drive.getPose().getTranslation();
+
+    // compensate for velocity (although x side is closer, it may be faster
+    // to get to y side depending on the robot already moving that way, not
+    // needing to change direction)
+    //      now = now.plus(drive.getVelocity().getTranslation().times(0.15));
+
+    Pose2d[] available = {
+      FieldConstants.OFFSET_TAG_7,
+      FieldConstants.OFFSET_TAG_8,
+      FieldConstants.OFFSET_TAG_9,
+      FieldConstants.OFFSET_TAG_10,
+      FieldConstants.OFFSET_TAG_11,
+      FieldConstants.OFFSET_TAG_6,
+      FieldConstants.OFFSET_TAG_18,
+      FieldConstants.OFFSET_TAG_17,
+      FieldConstants.OFFSET_TAG_22,
+      FieldConstants.OFFSET_TAG_21,
+      FieldConstants.OFFSET_TAG_20,
+      FieldConstants.OFFSET_TAG_19
+    };
+
+    Pose2d closestTag = available[0];
+    double minDistance = now.getDistance(available[0].getTranslation());
+
+    // Find the closest offset tag
+    for (Pose2d tag : available) {
+      double distance = now.getDistance(tag.getTranslation());
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestTag = tag;
+      }
+    }
+
+    // construct transform
+    return GeomUtil.poseToTransform(closestTag);
+  }
+
+  private void executeBrush(Transform2d targetTransform) {
+    if (drive_command != null) {
+      drive_command.cancel();
+    }
+
+    drive_command =
+        (!drive.testingmode
+                ? AutoBuilder.pathfindToPose(
+                    GeomUtil.transformToPose(targetTransform), Constants.PATH_CONSTRAINTS, 0.5)
+                : new InstantCommand(() -> {}))
+            .andThen(
+                AutoBuilder.pathfindToPose(
+                    GeomUtil.transformToPose(
+                        targetTransform.plus(
+                            new Transform2d(
+                                1.42, -0.24, new Rotation2d(Units.degreesToRadians(0.0))))),
+                    Constants.PATH_CONSTRAINTS,
+                    0.0))
+            .andThen(
+                AutoBuilder.pathfindToPose(
+                    GeomUtil.transformToPose(
+                        targetTransform.plus(
+                            new Transform2d(
+                                -0.5, -0.24, new Rotation2d(Units.degreesToRadians(0.0))))),
+                    Constants.PATH_CONSTRAINTS,
+                    0.))
+            .andThen(Commands.none());
+
+    CommandScheduler.getInstance().schedule(drive_command);
   }
 
   public void forceStopExecution() {
