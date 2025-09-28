@@ -158,7 +158,8 @@ public class InterfaceSubsystem extends SubsystemBase {
                               useOffset
                                   ? Constants.SECONDS_TO_SCORE.get()
                                   : Constants.SECONDS_TO_SCORE.get() + 2,
-                              getGripperReleaseDelayForLevel());
+                              getGripperReleaseDelayForLevel(),
+                              this);
                         }))
             .andThen(
                 useOffset
@@ -268,7 +269,8 @@ public class InterfaceSubsystem extends SubsystemBase {
                   // updated flipperScore call
                   elevator.flipperScore(
                       Constants.SECONDS_TO_SCORE.get() + getExtraScoringTimeForLevel(),
-                      getGripperReleaseDelayForLevel());
+                      getGripperReleaseDelayForLevel(),
+                      this);
                 })
             .andThen(goToTransform(drive, targetTransform.plus(leftRightOffset)))
             .andThen(Commands.runOnce(drive::stop))
@@ -303,6 +305,10 @@ public class InterfaceSubsystem extends SubsystemBase {
     CommandScheduler.getInstance().schedule(drive_command);
   }
 
+  public boolean safeToUngrip() {
+    return drive.getPose().getTranslation().getDistance(targetTransform.getTranslation()) < 0.05;
+  }
+
   public void driveToLoc2(
       InterfaceExecuteMode loc,
       InterfaceActionCmd2 stuff,
@@ -312,6 +318,7 @@ public class InterfaceSubsystem extends SubsystemBase {
     if (singleDriver) {
       if (lvl != -1) level = lvl;
       AutoAlignParams params = new AutoAlignParams(drive, isRight);
+      targetTransform = params.targetTransform;
       switch (loc) {
         case REEF:
           executeDrive2(params.targetTransform, params.isRight, true);
@@ -475,7 +482,7 @@ public class InterfaceSubsystem extends SubsystemBase {
 
   public void executeSelected() {
     Timer.delay(Constants.SECONDS_TO_RAISE_ELEVATOR.get());
-    elevator.flipperScore(Constants.SECONDS_TO_SCORE.get(), getGripperReleaseDelayForLevel());
+    elevator.flipperScore(Constants.SECONDS_TO_SCORE.get(), getGripperReleaseDelayForLevel(), this);
     Timer.delay(Constants.SECONDS_TO_SCORE.get() + 0.1);
     elevator.raiseElevator(0);
   }

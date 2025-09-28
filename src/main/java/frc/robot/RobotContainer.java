@@ -58,7 +58,7 @@ public class RobotContainer {
   private final Alert cameraFailureAlert;
   // Subsystems
   private final DriveSubsystem drive;
-  private final InterfaceSubsystem reef;
+  public final InterfaceSubsystem reef;
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
   private final Joystick cojoystick = new Joystick(1);
@@ -506,7 +506,7 @@ public class RobotContainer {
     driver.y().onFalse(new InterfaceActionCmd(reef, InterfaceExecuteMode.DISABLE, -1, false));
 
     // manual drop coral
-    driver.b().onTrue(new FlipperScoreCmd(elevator, 1.0));
+    driver.b().onTrue(new FlipperScoreCmd(elevator, 1.0, reef));
 
     // un-grip
     driver

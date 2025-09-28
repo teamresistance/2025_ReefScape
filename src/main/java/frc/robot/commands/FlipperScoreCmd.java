@@ -2,15 +2,19 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.FlipEleSubsystem;
+import frc.robot.subsystems.InterfaceSubsystem;
 
 public class FlipperScoreCmd extends Command {
 
   private final FlipEleSubsystem subsystem;
   private final double flipperDelay;
+  private final InterfaceSubsystem intrfcss;
 
-  public FlipperScoreCmd(FlipEleSubsystem subsystem, double flipperDelay) {
+  public FlipperScoreCmd(
+      FlipEleSubsystem subsystem, double flipperDelay, InterfaceSubsystem intrfcss) {
     this.subsystem = subsystem;
     this.flipperDelay = flipperDelay;
+    this.intrfcss = intrfcss;
     addRequirements(subsystem);
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -22,7 +26,7 @@ public class FlipperScoreCmd extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    subsystem.flipperScore(flipperDelay, 0.5);
+    subsystem.flipperScore(flipperDelay, 0.5, intrfcss);
   }
 
   // Called once the command ends or is interrupted.

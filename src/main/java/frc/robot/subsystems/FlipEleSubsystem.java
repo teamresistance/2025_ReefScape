@@ -12,6 +12,9 @@ import frc.robot.Constants;
 import org.littletonrobotics.junction.Logger;
 
 public class FlipEleSubsystem extends SubsystemBase {
+
+  private InterfaceSubsystem interfaceSubsystem;
+
   static Solenoid elevatorPusher1 =
       new Solenoid(2, Constants.SOLENOID_MODULE_TYPE, Constants.ELEVATOR_SOLENOID1_CHANNEL);
   static Solenoid elevatorPusher2 =
@@ -255,8 +258,10 @@ public class FlipEleSubsystem extends SubsystemBase {
 
     // Process gripper release delay timer using configurable gripperReleaseDelay
     if (gripperReleaseDelayActive && gripperReleaseTimer.hasElapsed(gripperReleaseDelay)) {
-      gripper.set(false);
-      gripperReleaseDelayActive = false;
+      if (interfaceSubsystem.safeToUngrip()) {
+        gripper.set(false);
+        gripperReleaseDelayActive = false;
+      } else {}
     }
 
     if (gripperDelayActive && gripperDelayTimer.hasElapsed(0.5)) {
@@ -336,12 +341,16 @@ public class FlipEleSubsystem extends SubsystemBase {
    * @param flipperDelay seconds to hold the flipper out
    * @param gripperReleaseDelay seconds to wait before releasing the gripper
    */
-  public void flipperScore(double flipperDelay, double gripperReleaseDelay) {
+  public void flipperScore(
+      double flipperDelay, double gripperReleaseDelay, InterfaceSubsystem interfaceSubsystema) {
     this.gripperReleaseDelay = gripperReleaseDelay;
-    CommandScheduler.getInstance().schedule(getFlipperCommand(flipperDelay, gripperReleaseDelay));
+    CommandScheduler.getInstance()
+        .schedule(getFlipperCommand(flipperDelay, gripperReleaseDelay, interfaceSubsystema));
   }
 
-  public Command getFlipperCommand(double flipperDelay_, double gripperReleaseDelay_) {
+  public Command getFlipperCommand(
+      double flipperDelay_, double gripperReleaseDelay_, InterfaceSubsystem interfaceSubsystem) {
+    this.interfaceSubsystem = interfaceSubsystem;
     return new InstantCommand(
         () -> {
           flipper.set(true);

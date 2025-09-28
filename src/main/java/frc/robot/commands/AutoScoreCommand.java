@@ -78,7 +78,7 @@ public class AutoScoreCommand extends SequentialCommandGroup {
         new InstantCommand(() -> elevator.raiseElevator(reef.getLevel())),
         new InstantCommand(
             () -> {
-              elevator.flipperScore(Constants.SECONDS_TO_SCORE.get() + 1.0, 1.3);
+              elevator.flipperScore(Constants.SECONDS_TO_SCORE.get() + 1.0, 1.3, reef);
             }),
         // 3. Drive to a pose adjusted by the left/right offset
         DriveCommands.goToTransform(drive, targetTransform.plus(leftRightOffset)),
