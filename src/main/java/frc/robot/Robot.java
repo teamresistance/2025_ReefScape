@@ -6,6 +6,7 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerMotorArrangement;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.LEDMode;
 import frc.robot.generated.TunerConstants;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -110,6 +111,8 @@ public class Robot extends LoggedRobot {
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
+    RobotContainer.getLEDSubsystem().unlock();
+    RobotContainer.getLEDSubsystem().setMode(LEDMode.DISABLED, true);
     if (robotContainer.ForceClimberUp) robotContainer.climber.activateClimber();
   }
 
@@ -122,6 +125,7 @@ public class Robot extends LoggedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    RobotContainer.getLEDSubsystem().unlock();
     autonomousCommand = robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
@@ -142,6 +146,8 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
+
+    RobotContainer.getLEDSubsystem().unlock();
 
     robotContainer.elevator.raiseElevator(0);
 

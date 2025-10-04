@@ -84,6 +84,7 @@ public final class Constants {
     AIR_LOW,
     AIR_GOOD,
     RAINBOW,
-    WHITE
+    WHITE,
+    DISABLED
   }
 }
