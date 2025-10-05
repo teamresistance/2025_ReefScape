@@ -306,11 +306,31 @@ public class InterfaceSubsystem extends SubsystemBase {
   }
 
   public boolean safeToUngrip() {
+    //    System.out.println(
+    //        drive
+    //                .getPose()
+    //                .getTranslation()
+    //                .getDistance(targetTransform.plus(leftRightOffset).getTranslation())
+    //            + " is distance from target+offset");
+    //    System.out.println(
+    //        drive.getPose().getTranslation().getDistance(targetTransform.getTranslation())
+    //            + " is distance from target with no offset");
+    //    System.out.println(
+    //        drive
+    //            .getPose()
+    //            .getTranslation()
+    //            .getDistance(targetTransform.plus(leftRightOffset).getTranslation()));
+    //    System.out.println(
+    //        drive
+    //                .getPose()
+    //                .getTranslation()
+    //                .getDistance(targetTransform.plus(leftRightOffset).getTranslation())
+    //            < 0.05);
     return drive
             .getPose()
             .getTranslation()
             .getDistance(targetTransform.plus(leftRightOffset).getTranslation())
-        < 0.05;
+        < 0.07;
   }
 
   public void driveToLoc2(

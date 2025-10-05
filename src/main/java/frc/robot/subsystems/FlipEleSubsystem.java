@@ -262,6 +262,7 @@ public class FlipEleSubsystem extends SubsystemBase {
         gripper.set(false);
         gripperReleaseDelayActive = false;
       } else {
+        gripperReleaseDelayActive = false;
         CommandXboxController toRumble = RobotContainer.getController();
         CommandScheduler.getInstance()
             .schedule(
