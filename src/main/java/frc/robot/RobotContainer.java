@@ -57,7 +57,7 @@ public class RobotContainer {
   static final LEDSubsystem leds = new LEDSubsystem();
   private final Alert cameraFailureAlert;
   // Subsystems
-  private final DriveSubsystem drive;
+  private static DriveSubsystem drive;
   public final InterfaceSubsystem reef;
   // Controller
   private static final CommandXboxController driver = new CommandXboxController(0);
@@ -71,7 +71,7 @@ public class RobotContainer {
   public LoggedDashboardChooser<Integer> cageChooser;
 
   public LoggedDashboardChooser<String> controlChooser =
-      new LoggedDashboardChooser<String>("Single Driver?");
+      new LoggedDashboardChooser<>("Single Driver?");
   public boolean singleDriver = true;
 
   public boolean testingmode = false;
@@ -347,6 +347,8 @@ public class RobotContainer {
         .or(driver.leftTrigger())
         .or(driver.leftBumper())
         .or(driver.rightBumper())
+        .or(driver.a())
+        .or(driver.povRight())
         .onTrue(ledCmdGreen);
 
     // flash rainbow when climbed
@@ -626,5 +628,9 @@ public class RobotContainer {
 
   public static LEDSubsystem getLEDSubsystem() {
     return leds;
+  }
+
+  public static double getPressureProxy() {
+    return drive.getPressurePSI();
   }
 }

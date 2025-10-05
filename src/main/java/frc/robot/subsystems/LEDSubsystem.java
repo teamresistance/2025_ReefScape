@@ -16,7 +16,7 @@ public class LEDSubsystem extends SubsystemBase {
   public LEDSubsystem() {}
 
   private final int LED_START_INDEX = 0;
-  private final int LED_END_INDEX = 67;
+  private final int LED_END_INDEX = 46;
   private final CANdle candle = new CANdle(60);
   private double psi = 120;
   private LEDMode mode = LEDMode.RAINBOW;
@@ -87,24 +87,27 @@ public class LEDSubsystem extends SubsystemBase {
       case AIR_GOOD: // >70
         candle.setControl(
             new SingleFadeAnimation(LED_START_INDEX, LED_END_INDEX)
-                .withColor(new RGBWColor(186, 85, 211))
-                .withFrameRate(2 * psi));
+                .withColor(new RGBWColor(146, 65, 211))
+                .withFrameRate(psi * 3));
         break;
       case AIR_LOW: // 40-70
         candle.setControl(
             new SingleFadeAnimation(LED_START_INDEX, LED_END_INDEX)
                 .withColor(new RGBWColor(255, 255, 0))
-                .withFrameRate(4 * psi));
+                .withFrameRate(psi * 3));
         break;
       case AIR_BAD: // <40
         candle.setControl(
             new SingleFadeAnimation(LED_START_INDEX, LED_END_INDEX)
                 .withColor(new RGBWColor(200, 0, 0))
-                .withFrameRate(8 * psi));
+                .withFrameRate(psi * 3));
         break;
-      case DISABLED:
-        candle.setControl(
-            new SolidColor(LED_START_INDEX, LED_END_INDEX).withColor(new RGBWColor(255, 127, 80)));
+        //      case DISABLED:
+        //        candle.setControl(
+        //            new StrobeAnimation(LED_START_INDEX, LED_END_INDEX)
+        //                .withFrameRate(4)
+        //                .withColor(new RGBWColor(150, 50, 50, 0)));
+        //        break;
     }
   }
 }
