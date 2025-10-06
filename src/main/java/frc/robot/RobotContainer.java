@@ -236,11 +236,14 @@ public class RobotContainer {
             drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> -driver.getRightX()));
 
     // Switch to X pattern when X button is pressed
-    driver.x().and(() -> !singleDriver).onTrue(Commands.runOnce(drive::stopWithX, drive)); // TODO: did this actually have
+    driver
+        .x()
+        .and(() -> !singleDriver)
+        .onTrue(Commands.runOnce(drive::stopWithX, drive)); // TODO: did this actually have
     // a use
 
     // Squeeze + grip
-        driver.leftBumper().and(() -> !singleDriver).onTrue(new FlipperGripperCmd(elevator));
+    driver.leftBumper().and(() -> !singleDriver).onTrue(new FlipperGripperCmd(elevator));
 
     driver.y().onTrue(new CageSelectCmd.CycleCageCmd()); // cycles location of cage
 
@@ -281,26 +284,24 @@ public class RobotContainer {
 
     // climb
     driver.start().onTrue(new ActivateClimberCommand(climber));
-        driver
-            .leftTrigger()
-                .and(() -> singleDriver)
-            .whileTrue(
-                new DeferredCommand(
-                    () -> {
-                      Logger.recordOutput("stationOffset", stationOffsetTransform);
-                      return DriveCommands.goToTransformWithPathFinderPlusOffset(
-                              drive,
-                              stationTargetTransform,
-                              new Transform2d(0.25, 0.0, new Rotation2d(0.0)))
-                          .beforeStarting(
-                              () -> {
-                                DriveCommands.goToTransform(drive,
-     stationTargetTransform).cancel();
-                                DriveCommands.goToTransformWithPathFinder(drive,
-     stationTargetTransform)
-                                    .cancel();
-                              });
-                    }));
+    driver
+        .leftTrigger()
+        .and(() -> singleDriver)
+        .whileTrue(
+            new DeferredCommand(
+                () -> {
+                  Logger.recordOutput("stationOffset", stationOffsetTransform);
+                  return DriveCommands.goToTransformWithPathFinderPlusOffset(
+                          drive,
+                          stationTargetTransform,
+                          new Transform2d(0.25, 0.0, new Rotation2d(0.0)))
+                      .beforeStarting(
+                          () -> {
+                            DriveCommands.goToTransform(drive, stationTargetTransform).cancel();
+                            DriveCommands.goToTransformWithPathFinder(drive, stationTargetTransform)
+                                .cancel();
+                          });
+                }));
 
     // driver.povUp().onTrue(new PickupStationCmd(0)); // Change to upper
     // driver.povDown().onTrue(new PickupStationCmd(1)); // Change to lower
@@ -309,23 +310,30 @@ public class RobotContainer {
     // TODO: this is only a todo so its highlighted but these were removed because apparently never
     // used
 
-        driver
-            .rightTrigger()
-                .and(() -> !singleDriver)
-            .whileTrue(
-                new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, -1, false, singleDriver)
-                    .andThen(
-                        () -> {})); // When right trigger is pressed, drive to the location selected
-        driver.rightTrigger().and(() -> !singleDriver).onFalse(new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, false, singleDriver));
+    driver
+        .rightTrigger()
+        .and(() -> !singleDriver)
+        .whileTrue(
+            new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, -1, false, singleDriver)
+                .andThen(
+                    () -> {})); // When right trigger is pressed, drive to the location selected
+    driver
+        .rightTrigger()
+        .and(() -> !singleDriver)
+        .onFalse(
+            new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, false, singleDriver));
 
-      driver
-              .rightBumper()
-              .and(() -> !singleDriver)
-              .whileTrue(
-                      new InterfaceActionCmd(reef, InterfaceExecuteMode.ALGEE, -1, false)
-                              .andThen(
-                                      () -> {})); // When right trigger is pressed, drive to the location selected
-      driver.rightTrigger().and(() -> !singleDriver).onFalse(new InterfaceActionCmd(reef, InterfaceExecuteMode.DISABLE, -1, false));
+    driver
+        .rightBumper()
+        .and(() -> !singleDriver)
+        .whileTrue(
+            new InterfaceActionCmd(reef, InterfaceExecuteMode.ALGEE, -1, false)
+                .andThen(
+                    () -> {})); // When right trigger is pressed, drive to the location selected
+    driver
+        .rightTrigger()
+        .and(() -> !singleDriver)
+        .onFalse(new InterfaceActionCmd(reef, InterfaceExecuteMode.DISABLE, -1, false));
 
     /*
         ---- LED TRIGGERS ----
