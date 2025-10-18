@@ -307,8 +307,6 @@ public class RobotContainer {
     // driver.povDown().onTrue(new PickupStationCmd(1)); // Change to lower
     //    driver.povLeft().onTrue(new PickupStationCmd(2)); // Change to left
     //    driver.povRight().onTrue(new PickupStationCmd(3)); // Change to right
-    // TODO: this is only a todo so its highlighted but these were removed because apparently never
-    // used
 
     driver
         .rightTrigger()
@@ -363,6 +361,7 @@ public class RobotContainer {
     ledCmdGreen.addRequirements(leds);
     driver
         .rightTrigger()
+            .and(() -> singleDriver)
         .or(driver.leftTrigger())
         .or(driver.leftBumper())
         .or(driver.rightBumper())
@@ -409,6 +408,7 @@ public class RobotContainer {
     // manual elevator control
     driver
         .povUp()
+            .and(() -> singleDriver)
         .onTrue(
             new InstantCommand(
                     () -> {
@@ -424,6 +424,7 @@ public class RobotContainer {
                     }));
     driver
         .povLeft()
+            .and(() -> singleDriver)
         .onTrue(
             new InstantCommand(
                     () -> {
@@ -439,6 +440,7 @@ public class RobotContainer {
                     }));
     driver
         .povDown()
+            .and(() -> singleDriver)
         .onTrue(
             new InstantCommand(
                     () -> {
@@ -456,94 +458,109 @@ public class RobotContainer {
     // right l3
     driver
         .rightTrigger()
+            .and(() -> singleDriver)
         .whileTrue(
             new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, 3, true, singleDriver)
                 .andThen(
                     () -> {})); // When right trigger is pressed, drive to the location selected
     driver
         .rightTrigger()
+            .and(() -> singleDriver)
         .onFalse(
             new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, true, singleDriver));
 
     // right l3
     driver
         .rightBumper()
+            .and(() -> singleDriver)
         .whileTrue(
             new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, 3, true, singleDriver)
                 .andThen(
                     () -> {})); // When right trigger is pressed, drive to the location selected
     driver
         .rightBumper()
+            .and(() -> singleDriver)
         .onFalse(
             new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, true, singleDriver));
 
     // left l3
     driver
         .leftTrigger()
+            .and(() -> singleDriver)
         .whileTrue(
             new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, 3, false, singleDriver)
                 .andThen(
                     () -> {})); // When right trigger is pressed, drive to the location selected
     driver
         .leftTrigger()
+            .and(() -> singleDriver)
         .onFalse(
             new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, false, singleDriver));
 
     // left l4
     driver
         .leftBumper()
+            .and(() -> singleDriver)
         .whileTrue(
             new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, 4, false, singleDriver)
                 .andThen(
                     () -> {})); // When right trigger is pressed, drive to the location selected
     driver
         .leftBumper()
+            .and(() -> singleDriver)
         .onFalse(
             new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, false, singleDriver));
 
     // right l4
     driver
         .rightBumper()
+            .and(() -> singleDriver)
         .whileTrue(
             new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, 4, true, singleDriver)
                 .andThen(
                     () -> {})); // When right trigger is pressed, drive to the location selected
     driver
         .rightBumper()
+            .and(() -> singleDriver)
         .onFalse(
             new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, true, singleDriver));
 
     // left l2
     driver
         .povRight()
+            .and(() -> singleDriver)
         .whileTrue(
             new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, 2, false, singleDriver)
                 .andThen(
                     () -> {})); // When right trigger is pressed, drive to the location selected
     driver
         .povRight()
+            .and(() -> singleDriver)
         .onFalse(
             new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, false, singleDriver));
     // right l2
     driver
         .a()
+            .and(() -> singleDriver)
         .whileTrue(
             new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, 2, true, singleDriver)
                 .andThen(
                     () -> {})); // When right trigger is pressed, drive to the location selected
     driver
         .a()
+            .and(() -> singleDriver)
         .onFalse(
             new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, false, singleDriver));
 
     // algae removal
     driver
         .y()
+            .and(() -> singleDriver)
         .whileTrue(
             new InterfaceActionCmd(reef, InterfaceExecuteMode.ALGEE, -1, false)
                 .andThen(
                     () -> {})); // When right trigger is pressed, drive to the location selected
-    driver.y().onFalse(new InterfaceActionCmd(reef, InterfaceExecuteMode.DISABLE, -1, false));
+    driver.y().and(() -> singleDriver).onFalse(new InterfaceActionCmd(reef, InterfaceExecuteMode.DISABLE, -1, false));
 
     // manual drop coral
     driver.b().onTrue(new FlipperScoreCmd(elevator, 1.0, reef));
