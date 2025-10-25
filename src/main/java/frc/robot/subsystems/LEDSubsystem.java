@@ -102,12 +102,6 @@ public class LEDSubsystem extends SubsystemBase {
                 .withColor(new RGBWColor(200, 0, 0))
                 .withFrameRate(psi * 3));
         break;
-        //      case DISABLED:
-        //        candle.setControl(
-        //            new StrobeAnimation(LED_START_INDEX, LED_END_INDEX)
-        //                .withFrameRate(4)
-        //                .withColor(new RGBWColor(150, 50, 50, 0)));
-        //        break;
     }
   }
 }

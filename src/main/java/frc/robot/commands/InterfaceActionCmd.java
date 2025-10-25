@@ -32,7 +32,7 @@ public class InterfaceActionCmd extends Command {
   @Override
   public void execute() {
     //    Logger.recordOutput("finished work", false);
-    subsystem.driveToLoc(loc, this, level, right);
+    subsystem.driveToLoc(loc, level, right);
   }
 
   // Called once the command ends or is interrupted.

@@ -38,10 +38,10 @@ public final class Constants {
   public static final int GRIPPER_SOLENOID_CHANNEL = 3;
   public static final int FLIPPER_SOLENOID_CHANNEL = 4;
   public static final int CLIMBER_SOLENOID_CHANNEL = 5;
-  public static PathConstraints PATH_CONSTRAINTS =
+  public static final PathConstraints PATH_CONSTRAINTS =
       new PathConstraints(
-          TunerConstants.kSpeedAt12Volts.in(MetersPerSecond), // TODO: CHANGE BACK
-          5.0, // TODO: CHANGE BACK
+          TunerConstants.kSpeedAt12Volts.in(MetersPerSecond),
+          5.0,
           Units.degreesToRadians(540),
           Units.degreesToRadians(400));
 
@@ -52,7 +52,7 @@ public final class Constants {
     CLIMBER,
     EXECUTE,
     DISABLE,
-    ALGEE
+    ALGAE
   }
 
   /**
@@ -69,11 +69,6 @@ public final class Constants {
 
     /** Replaying from a log file. */
     REPLAY
-  }
-
-  public enum ControlMode {
-    SOLO,
-    DOUBLE
   }
 
   public enum LEDMode {

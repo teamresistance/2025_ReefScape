@@ -5,12 +5,9 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -30,17 +27,12 @@ import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.GeomUtil;
 import java.io.IOException;
-import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.photonvision.PhotonCamera;
 
-/**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
- * subsystems, commands, and button mappings) should be declared here.
- */
 public class RobotContainer {
+
+  //
   private static Pose2d climbTargetTransform =
       new Pose2d(7.736 + 0.15, 7.254 + 0.05, Rotation2d.fromDegrees(-90.0));
   private static Transform2d stationTargetTransform =
@@ -62,26 +54,20 @@ public class RobotContainer {
   public final InterfaceSubsystem reef;
   // Controller
   private static final CommandXboxController driver = new CommandXboxController(0);
-  private final Joystick cojoystick = new Joystick(1);
-  // There are two codriver joystick ports because only 12 buttons can be detected, and just the
-  // branch select is 12 buttons.
+  // Button Box (split between 12x position and 4x level buttons, too big for one HID)
   private final Joystick codriverInterfaceBranch = new Joystick(2);
   private final Joystick codriverInterfaceOther = new Joystick(3);
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
   public LoggedDashboardChooser<Integer> cageChooser;
 
-  public LoggedDashboardChooser<String> controlChooser =
+  public final LoggedDashboardChooser<String> controlChooser =
       new LoggedDashboardChooser<>("Single Driver?");
-  public boolean singleDriver = true;
+  private boolean singleDriver = true;
 
   public boolean testingmode = false;
   public Vision aprilTagVision;
   public boolean ForceClimberUp = false;
-
-  Translation2d targetTranslation = new Translation2d(12.225, 2.474); // X = 14, Y = 4
-  Rotation2d targetRotation = new Rotation2d(Units.degreesToRadians(60.0)); // No rotation
-  Transform2d targetTransform = new Transform2d(targetTranslation, targetRotation);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -119,6 +105,7 @@ public class RobotContainer {
     climbTargetTransform = _targetTransform;
   }
 
+  /** sets up named commands for pathplanner to use */
   private void configureNamedCommands() {
     NamedCommands.registerCommand("grip", new FlipperGripperCmd(elevator));
     NamedCommands.registerCommand("A Branch", new InterfaceVarsCmd(reef, "a", 0, true, false));
@@ -143,7 +130,9 @@ public class RobotContainer {
         "autoScore", new DeferredCommand(() -> new AutoScoreCommand(reef, drive, elevator)));
   }
 
+  /** returns the now set-up auto selector */
   private LoggedDashboardChooser<Command> configureAutos() {
+
     // Set up auto routines
     LoggedDashboardChooser<Command> autoChooser =
         new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -177,9 +166,6 @@ public class RobotContainer {
               frontCenterCamera,
               backLeftCamera);
 
-      //   backLeftCamera,
-      //   backRightCamera,
-      //   frontCenterCamera
     } catch (IOException e) {
       assert cameraFailureAlert != null;
       cameraFailureAlert.set(true);
@@ -193,9 +179,7 @@ public class RobotContainer {
   }
 
   private DriveSubsystem configureDrive() {
-    // Real robot, instantiate hardware IO implementations
-    // Sim robot, instantiate physics sim IO implementations
-    // Replayed robot, disable IO implementations
+
     return switch (Constants.CURRENT_MODE) {
       case REAL ->
           // Real robot, instantiate hardware IO implementations
@@ -224,23 +208,12 @@ public class RobotContainer {
     };
   }
 
-  /**
-   * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link Joystick} or {@link
-   * XboxController}), and then passing it to a {@link JoystickButton}.
-   */
   private void configureButtonBindings() {
+
     // Normal field-relative drive
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> -driver.getRightX()));
-
-    // Switch to X pattern when X button is pressed
-    driver
-        .x()
-        .and(() -> !singleDriver)
-        .onTrue(Commands.runOnce(drive::stopWithX, drive)); // TODO: did this actually have
-    // a use
 
     // Squeeze + grip
     driver.leftBumper().and(() -> !singleDriver).onTrue(new FlipperGripperCmd(elevator));
@@ -284,29 +257,6 @@ public class RobotContainer {
 
     // climb
     driver.start().onTrue(new ActivateClimberCommand(climber));
-    driver
-        .leftTrigger()
-        .and(() -> singleDriver)
-        .whileTrue(
-            new DeferredCommand(
-                () -> {
-                  Logger.recordOutput("stationOffset", stationOffsetTransform);
-                  return DriveCommands.goToTransformWithPathFinderPlusOffset(
-                          drive,
-                          stationTargetTransform,
-                          new Transform2d(0.25, 0.0, new Rotation2d(0.0)))
-                      .beforeStarting(
-                          () -> {
-                            DriveCommands.goToTransform(drive, stationTargetTransform).cancel();
-                            DriveCommands.goToTransformWithPathFinder(drive, stationTargetTransform)
-                                .cancel();
-                          });
-                }));
-
-    // driver.povUp().onTrue(new PickupStationCmd(0)); // Change to upper
-    // driver.povDown().onTrue(new PickupStationCmd(1)); // Change to lower
-    //    driver.povLeft().onTrue(new PickupStationCmd(2)); // Change to left
-    //    driver.povRight().onTrue(new PickupStationCmd(3)); // Change to right
 
     driver
         .rightTrigger()
@@ -325,7 +275,7 @@ public class RobotContainer {
         .rightBumper()
         .and(() -> !singleDriver)
         .whileTrue(
-            new InterfaceActionCmd(reef, InterfaceExecuteMode.ALGEE, -1, false)
+            new InterfaceActionCmd(reef, InterfaceExecuteMode.ALGAE, -1, false)
                 .andThen(
                     () -> {})); // When right trigger is pressed, drive to the location selected
     driver
@@ -380,26 +330,6 @@ public class RobotContainer {
     Command ledCmdAir = new InstantCommand((() -> leds.setPSI(drive.getPressurePSI())));
     ledCmdAir.addRequirements(leds);
     leds.setDefaultCommand(ledCmdAir);
-
-    //    // air pressure (these do NOT lock, they only run when others are not running)
-    //    new Trigger(() -> (drive.getPressurePSI() < 40))
-    //        .whileTrue(
-    //            Commands.run(
-    //                () ->
-    //                    leds.setMode(Constants.LEDMode.AIR_BAD, false, (int)
-    // drive.getPressurePSI())));
-    //    new Trigger(() -> (drive.getPressurePSI() >= 40 && drive.getPressurePSI() < 70))
-    //        .whileTrue(
-    //            Commands.run(
-    //                () ->
-    //                    leds.setMode(Constants.LEDMode.AIR_LOW, false, (int)
-    // drive.getPressurePSI())));
-    //    new Trigger(() -> (drive.getPressurePSI() >= 70))
-    //        .whileTrue(
-    //            Commands.run(
-    //                () ->
-    //                    leds.setMode(Constants.LEDMode.AIR_GOOD, false, (int)
-    // drive.getPressurePSI())));
 
     /*
        ---- DRIVER CONTROLS ----
@@ -557,7 +487,7 @@ public class RobotContainer {
         .y()
         .and(() -> singleDriver)
         .whileTrue(
-            new InterfaceActionCmd(reef, InterfaceExecuteMode.ALGEE, -1, false)
+            new InterfaceActionCmd(reef, InterfaceExecuteMode.ALGAE, -1, false)
                 .andThen(
                     () -> {})); // When right trigger is pressed, drive to the location selected
     driver
@@ -574,21 +504,6 @@ public class RobotContainer {
         .onTrue(
             new GripperToggleCmd(
                 elevator, true)); // Use B+LB to toggle gripper and reset holding state
-
-    // Add elevator toggle button for testing
-    //    driver
-    //        .x()
-    //        .onTrue(
-    //            new ElevatorToggleCmd(elevator)); // Press left stick to toggle elevator between 0
-    // and 2
-    //            new ElevatorCmd(elevator, 2, true)
-    //                .andThen(new FlipperScoreCmd(flipper, 1.0))
-    //                .andThen(
-    //                    new ElevatorCmd(
-    //                        elevator, 0,
-    //                        false))); // TODO: CLEAN UP INTO INTERFACE COMMAND, this is meant to
-    // raise
-    // elevator to selected level and actuate flipper
 
     //    Codriver Bindings
     //

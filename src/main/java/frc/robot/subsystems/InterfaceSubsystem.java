@@ -16,8 +16,6 @@ import frc.robot.Constants.InterfaceExecuteMode;
 import frc.robot.FieldConstants;
 import frc.robot.FieldConstants.AllianceTreePlace;
 import frc.robot.FieldConstants.Place;
-import frc.robot.commands.InterfaceActionCmd;
-import frc.robot.commands.InterfaceActionCmd2;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.util.GeomUtil;
 import org.littletonrobotics.junction.Logger;
@@ -179,8 +177,7 @@ public class InterfaceSubsystem extends SubsystemBase {
     CommandScheduler.getInstance().schedule(drive_command);
   }
 
-  public void driveToLoc(
-      InterfaceExecuteMode loc, InterfaceActionCmd stuff, int lvl, boolean isRight) {
+  public void driveToLoc(InterfaceExecuteMode loc, int lvl, boolean isRight) {
     if (lvl != -1) level = lvl;
     AutoAlignParams params = new AutoAlignParams(drive, isRight);
     switch (loc) {
@@ -188,7 +185,7 @@ public class InterfaceSubsystem extends SubsystemBase {
         executeDrive(params.targetTransform, params.isRight, true);
         break;
 
-      case ALGEE:
+      case ALGAE:
         executeDrive(params.targetTransform, params.isRight, false);
         break;
 
@@ -306,26 +303,6 @@ public class InterfaceSubsystem extends SubsystemBase {
   }
 
   public boolean safeToUngrip() {
-    //    System.out.println(
-    //        drive
-    //                .getPose()
-    //                .getTranslation()
-    //                .getDistance(targetTransform.plus(leftRightOffset).getTranslation())
-    //            + " is distance from target+offset");
-    //    System.out.println(
-    //        drive.getPose().getTranslation().getDistance(targetTransform.getTranslation())
-    //            + " is distance from target with no offset");
-    //    System.out.println(
-    //        drive
-    //            .getPose()
-    //            .getTranslation()
-    //            .getDistance(targetTransform.plus(leftRightOffset).getTranslation()));
-    //    System.out.println(
-    //        drive
-    //                .getPose()
-    //                .getTranslation()
-    //                .getDistance(targetTransform.plus(leftRightOffset).getTranslation())
-    //            < 0.05);
     return drive
             .getPose()
             .getTranslation()
@@ -334,11 +311,7 @@ public class InterfaceSubsystem extends SubsystemBase {
   }
 
   public void driveToLoc2(
-      InterfaceExecuteMode loc,
-      InterfaceActionCmd2 stuff,
-      int lvl,
-      boolean isRight,
-      boolean singleDriver) {
+      InterfaceExecuteMode loc, int lvl, boolean isRight, boolean singleDriver) {
     if (singleDriver) {
       if (lvl != -1) level = lvl;
       AutoAlignParams params = new AutoAlignParams(drive, isRight);
@@ -348,7 +321,7 @@ public class InterfaceSubsystem extends SubsystemBase {
           executeDrive2(params.targetTransform, params.isRight, true);
           break;
 
-        case ALGEE:
+        case ALGAE:
           executeDrive2(params.targetTransform, params.isRight, false);
           break;
         case CORAL:
@@ -425,7 +398,7 @@ public class InterfaceSubsystem extends SubsystemBase {
           executeDrive2(targetTransform, isRighty, true);
           break;
 
-        case ALGEE:
+        case ALGAE:
           switch (pole) {
             case "a":
               targetTransform = getTranslationFromPlace(Place.A_TREE);

@@ -71,21 +71,9 @@ public class Robot extends LoggedRobot {
       }
     }
 
-    // Added USB Cams - JCH
-    //    camera1 = CameraServer.startAutomaticCapture(0);
-    //    camera2 = CameraServer.startAutomaticCapture(1);
-    //    camera1.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
-    //    camera2.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
-
-    // Instantiate our RobotContainer. This will perform all our button bindings,
-    // and put our autonomous chooser on the dashboard.
+    // Instantiate our RobotContainer. This will create all button bindings, set up the drive and
+    // vision subsystems, and create any other triggers.
     robotContainer = new RobotContainer();
-
-    // USB cameras added
-    // camera1 = CameraServer.startAutomaticCapture(0);
-    // camera2 = CameraServer.startAutomaticCapture(1);
-    // camera1.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
-    // camera2.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
   }
 
   /** This function is called periodically during all modes. */
