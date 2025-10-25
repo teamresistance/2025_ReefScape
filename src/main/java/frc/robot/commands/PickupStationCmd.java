@@ -42,7 +42,6 @@ public class PickupStationCmd extends Command {
       DriverStation.Alliance team = ally.get();
       Transform2d newTransform;
       switch (id) {
-        // TODO: CHANGE BACK TO 0 1 2 3
         case 2 ->
             newTransform = (team == DriverStation.Alliance.Red) ? redUpperLeft : blueUpperLeft;
         // case 1 ->

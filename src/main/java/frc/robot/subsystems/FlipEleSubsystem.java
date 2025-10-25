@@ -1,17 +1,20 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import org.littletonrobotics.junction.Logger;
 
 public class FlipEleSubsystem extends SubsystemBase {
+
+  private InterfaceSubsystem interfaceSubsystem;
+
   static Solenoid elevatorPusher1 =
       new Solenoid(2, Constants.SOLENOID_MODULE_TYPE, Constants.ELEVATOR_SOLENOID1_CHANNEL);
   static Solenoid elevatorPusher2 =
@@ -85,7 +88,7 @@ public class FlipEleSubsystem extends SubsystemBase {
   }
 
   public boolean hasObtainedCoral() {
-    return coralDetector1.get() || coralDetector2.get();
+    return (coralDetector1.get() || coralDetector2.get()) && !centerer.get();
   }
 
   /**
@@ -255,8 +258,27 @@ public class FlipEleSubsystem extends SubsystemBase {
 
     // Process gripper release delay timer using configurable gripperReleaseDelay
     if (gripperReleaseDelayActive && gripperReleaseTimer.hasElapsed(gripperReleaseDelay)) {
-      gripper.set(false);
-      gripperReleaseDelayActive = false;
+      if (interfaceSubsystem.safeToUngrip()) {
+        gripper.set(false);
+        gripperReleaseDelayActive = false;
+      } else {
+        gripperReleaseDelayActive = false;
+        CommandXboxController toRumble = RobotContainer.getController();
+        CommandScheduler.getInstance()
+            .schedule(
+                new SequentialCommandGroup(
+                    new InstantCommand(
+                        () -> {
+                          toRumble.getHID().setRumble(GenericHID.RumbleType.kLeftRumble, 1.0);
+                          toRumble.getHID().setRumble(GenericHID.RumbleType.kRightRumble, 1.0);
+                        }),
+                    new WaitCommand(0.5),
+                    new InstantCommand(
+                        () -> {
+                          toRumble.getHID().setRumble(GenericHID.RumbleType.kLeftRumble, 0.0);
+                          toRumble.getHID().setRumble(GenericHID.RumbleType.kRightRumble, 0.0);
+                        })));
+      }
     }
 
     if (gripperDelayActive && gripperDelayTimer.hasElapsed(0.5)) {
@@ -277,6 +299,13 @@ public class FlipEleSubsystem extends SubsystemBase {
       if (bannerSensorTriggered) {
         if (centererDelayActive && centererTimer.hasElapsed(0.3)) {
           if (centererClosePending) {
+            //            LEDSubsystem leds = RobotContainer.getLEDSubsystem();
+            //            CommandScheduler.getInstance()
+            //                .schedule(
+            //                    Commands.runOnce(() -> leds.setMode(Constants.LEDMode.CORAL_IN,
+            // true))
+            //                        .andThen(Commands.waitSeconds(1))
+            //                        .andThen(Commands.runOnce(leds::unlock)));
             centerer.set(true);
             centererClosePending = false;
             if (gripperClosePending && !gripperDelayActive) {
@@ -336,12 +365,16 @@ public class FlipEleSubsystem extends SubsystemBase {
    * @param flipperDelay seconds to hold the flipper out
    * @param gripperReleaseDelay seconds to wait before releasing the gripper
    */
-  public void flipperScore(double flipperDelay, double gripperReleaseDelay) {
+  public void flipperScore(
+      double flipperDelay, double gripperReleaseDelay, InterfaceSubsystem interfaceSubsystema) {
     this.gripperReleaseDelay = gripperReleaseDelay;
-    CommandScheduler.getInstance().schedule(getFlipperCommand(flipperDelay, gripperReleaseDelay));
+    CommandScheduler.getInstance()
+        .schedule(getFlipperCommand(flipperDelay, gripperReleaseDelay, interfaceSubsystema));
   }
 
-  public Command getFlipperCommand(double flipperDelay_, double gripperReleaseDelay_) {
+  public Command getFlipperCommand(
+      double flipperDelay_, double gripperReleaseDelay_, InterfaceSubsystem interfaceSubsystem) {
+    this.interfaceSubsystem = interfaceSubsystem;
     return new InstantCommand(
         () -> {
           flipper.set(true);

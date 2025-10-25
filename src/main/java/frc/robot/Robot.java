@@ -71,21 +71,9 @@ public class Robot extends LoggedRobot {
       }
     }
 
-    // Added USB Cams - JCH
-    //    camera1 = CameraServer.startAutomaticCapture(0);
-    //    camera2 = CameraServer.startAutomaticCapture(1);
-    //    camera1.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
-    //    camera2.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
-
-    // Instantiate our RobotContainer. This will perform all our button bindings,
-    // and put our autonomous chooser on the dashboard.
+    // Instantiate our RobotContainer. This will create all button bindings, set up the drive and
+    // vision subsystems, and create any other triggers.
     robotContainer = new RobotContainer();
-
-    // USB cameras added
-    // camera1 = CameraServer.startAutomaticCapture(0);
-    // camera2 = CameraServer.startAutomaticCapture(1);
-    // camera1.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
-    // camera2.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
   }
 
   /** This function is called periodically during all modes. */
@@ -103,11 +91,14 @@ public class Robot extends LoggedRobot {
 
     // Return to normal thread priority
     Threads.setCurrentThreadPriority(false, 10);
+
+    robotContainer.updateControlSchemeFromChooser();
   }
 
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
+    RobotContainer.getLEDSubsystem().unlock();
     if (robotContainer.ForceClimberUp) robotContainer.climber.activateClimber();
   }
 
@@ -115,11 +106,13 @@ public class Robot extends LoggedRobot {
   @Override
   public void disabledPeriodic() {
     if (robotContainer.ForceClimberUp) robotContainer.climber.activateClimber();
+    RobotContainer.getLEDSubsystem().setPSI(RobotContainer.getPressureProxy());
   }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    RobotContainer.getLEDSubsystem().unlock();
     autonomousCommand = robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
@@ -140,6 +133,8 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
+
+    RobotContainer.getLEDSubsystem().unlock();
 
     robotContainer.elevator.raiseElevator(0);
 

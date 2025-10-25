@@ -5,12 +5,9 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -33,13 +30,9 @@ import java.io.IOException;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.photonvision.PhotonCamera;
 
-/**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
- * subsystems, commands, and button mappings) should be declared here.
- */
 public class RobotContainer {
+
+  //
   private static Pose2d climbTargetTransform =
       new Pose2d(7.736 + 0.15, 7.254 + 0.05, Rotation2d.fromDegrees(-90.0));
   private static Transform2d stationTargetTransform =
@@ -54,32 +47,34 @@ public class RobotContainer {
   public final ClimberSubsystem climber = new ClimberSubsystem();
   //   private final PressureSubsystem pressure = new PressureSubsystem();
   final FlipEleSubsystem elevator = new FlipEleSubsystem();
-  private final LEDSubsystem leds = new LEDSubsystem();
+  static final LEDSubsystem leds = new LEDSubsystem();
   private final Alert cameraFailureAlert;
   // Subsystems
-  private final DriveSubsystem drive;
-  private final InterfaceSubsystem reef;
+  private static DriveSubsystem drive;
+  public final InterfaceSubsystem reef;
   // Controller
-  private final CommandXboxController driver = new CommandXboxController(0);
-  private final Joystick cojoystick = new Joystick(1);
-  // There are two codriver joystick ports because only 12 buttons can be detected, and just the
-  // branch select is 12 buttons.
+  private static final CommandXboxController driver = new CommandXboxController(0);
+  // Button Box (split between 12x position and 4x level buttons, too big for one HID)
   private final Joystick codriverInterfaceBranch = new Joystick(2);
   private final Joystick codriverInterfaceOther = new Joystick(3);
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
   public LoggedDashboardChooser<Integer> cageChooser;
 
+  public final LoggedDashboardChooser<String> controlChooser =
+      new LoggedDashboardChooser<>("Single Driver?");
+  private boolean singleDriver = true;
+
   public boolean testingmode = false;
   public Vision aprilTagVision;
   public boolean ForceClimberUp = false;
 
-  Translation2d targetTranslation = new Translation2d(12.225, 2.474); // X = 14, Y = 4
-  Rotation2d targetRotation = new Rotation2d(Units.degreesToRadians(60.0)); // No rotation
-  Transform2d targetTransform = new Transform2d(targetTranslation, targetRotation);
-
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+
+    controlChooser.addOption("Single Driver", "a");
+    controlChooser.addOption("Two Driver", "b");
+
     drive = configureDrive();
     reef = configureInterface();
     aprilTagVision = configureAprilTagVision();
@@ -110,6 +105,7 @@ public class RobotContainer {
     climbTargetTransform = _targetTransform;
   }
 
+  /** sets up named commands for pathplanner to use */
   private void configureNamedCommands() {
     NamedCommands.registerCommand("grip", new FlipperGripperCmd(elevator));
     NamedCommands.registerCommand("A Branch", new InterfaceVarsCmd(reef, "a", 0, true, false));
@@ -134,7 +130,9 @@ public class RobotContainer {
         "autoScore", new DeferredCommand(() -> new AutoScoreCommand(reef, drive, elevator)));
   }
 
+  /** returns the now set-up auto selector */
   private LoggedDashboardChooser<Command> configureAutos() {
+
     // Set up auto routines
     LoggedDashboardChooser<Command> autoChooser =
         new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -168,9 +166,6 @@ public class RobotContainer {
               frontCenterCamera,
               backLeftCamera);
 
-      //   backLeftCamera,
-      //   backRightCamera,
-      //   frontCenterCamera
     } catch (IOException e) {
       assert cameraFailureAlert != null;
       cameraFailureAlert.set(true);
@@ -184,9 +179,7 @@ public class RobotContainer {
   }
 
   private DriveSubsystem configureDrive() {
-    // Real robot, instantiate hardware IO implementations
-    // Sim robot, instantiate physics sim IO implementations
-    // Replayed robot, disable IO implementations
+
     return switch (Constants.CURRENT_MODE) {
       case REAL ->
           // Real robot, instantiate hardware IO implementations
@@ -215,66 +208,15 @@ public class RobotContainer {
     };
   }
 
-  /**
-   * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link Joystick} or {@link
-   * XboxController}), and then passing it to a {@link JoystickButton}.
-   */
   private void configureButtonBindings() {
+
     // Normal field-relative drive
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> -driver.getRightX()));
 
-    /*
-        ---- LED TRIGGERS ----
-    */
-
-    // flash white for 1s when a coral is obtained
-    new Trigger(elevator::hasObtainedCoral)
-        .onTrue(
-            Commands.runOnce(() -> leds.setMode(Constants.LEDMode.CORAL_IN, true))
-                .andThen(Commands.waitSeconds(1))
-                .andThen(Commands.runOnce(leds::unlock)));
-
-    // flash blue while taking out algae
-    driver
-        .rightBumper()
-        .whileTrue(Commands.runOnce(() -> leds.setMode(Constants.LEDMode.ALGAE_OUT, true)));
-    driver.rightBumper().onFalse(Commands.runOnce(leds::unlock));
-
-    // flash green while scoring
-    driver
-        .rightTrigger()
-        .whileTrue(Commands.runOnce(() -> leds.setMode(Constants.LEDMode.CORAL_OUT, true)));
-    driver.rightTrigger().onFalse(Commands.runOnce(leds::unlock));
-
-    // rainbow when climbed
-    new Trigger(climber::getClimberUsed)
-        .onTrue(Commands.runOnce(() -> leds.setMode(Constants.LEDMode.RAINBOW, true)));
-
-    // air pressure (these do NOT lock, they only run when others are not running)
-    new Trigger(() -> (drive.getPressurePSI() < 40))
-        .whileTrue(
-            Commands.runOnce(
-                () ->
-                    leds.setMode(Constants.LEDMode.AIR_BAD, false, (int) drive.getPressurePSI())));
-    new Trigger(() -> (drive.getPressurePSI() >= 40 && drive.getPressurePSI() < 70))
-        .whileTrue(
-            Commands.runOnce(
-                () ->
-                    leds.setMode(Constants.LEDMode.AIR_LOW, false, (int) drive.getPressurePSI())));
-    new Trigger(() -> (drive.getPressurePSI() >= 70))
-        .whileTrue(
-            Commands.runOnce(
-                () ->
-                    leds.setMode(Constants.LEDMode.AIR_GOOD, false, (int) drive.getPressurePSI())));
-
-    // Switch to X pattern when X button is pressed
-    driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
-
     // Squeeze + grip
-    //    driver.leftBumper().onTrue(new FlipperGripperCmd(elevator));
+    driver.leftBumper().and(() -> !singleDriver).onTrue(new FlipperGripperCmd(elevator));
 
     driver.y().onTrue(new CageSelectCmd.CycleCageCmd()); // cycles location of cage
 
@@ -313,85 +255,255 @@ public class RobotContainer {
                                   .cancel();
                             })));
 
+    // climb
     driver.start().onTrue(new ActivateClimberCommand(climber));
-    //    driver
-    //        .leftTrigger()
-    //        .whileTrue(
-    //            new DeferredCommand(
-    //                () -> {
-    //                  Logger.recordOutput("stationOffset", stationOffsetTransform);
-    //                  return DriveCommands.goToTransformWithPathFinderPlusOffset(
-    //                          drive,
-    //                          stationTargetTransform,
-    //                          new Transform2d(0.25, 0.0, new Rotation2d(0.0)))
-    //                      .beforeStarting(
-    //                          () -> {
-    //                            DriveCommands.goToTransform(drive,
-    // stationTargetTransform).cancel();
-    //                            DriveCommands.goToTransformWithPathFinder(drive,
-    // stationTargetTransform)
-    //                                .cancel();
-    //                          });
-    //                }));
-    driver.leftTrigger().whileTrue(new InterfaceActionCmd2(reef, InterfaceExecuteMode.BRUSH));
-    driver.leftTrigger().onFalse(new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE));
-
-    // driver.povUp().onTrue(new PickupStationCmd(0)); // Change to upper
-    // driver.povDown().onTrue(new PickupStationCmd(1)); // Change to lower
-    driver.povLeft().onTrue(new PickupStationCmd(2)); // Change to left
-    driver.povRight().onTrue(new PickupStationCmd(3)); // Change to right
-
-    //    driver
-    //        .rightTrigger()
-    //        .whileTrue(
-    //            new InterfaceActionCmd(reef, InterfaceExecuteMode.REEF)
-    //                .andThen(
-    //                    () -> {})); // When right trigger is pressed, drive to the location
-    // selected
-    //    driver.rightTrigger().onFalse(new InterfaceActionCmd(reef, InterfaceExecuteMode.DISABLE));
 
     driver
         .rightTrigger()
+        .and(() -> !singleDriver)
         .whileTrue(
-            new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF)
+            new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, -1, false, singleDriver)
                 .andThen(
                     () -> {})); // When right trigger is pressed, drive to the location selected
-    driver.rightTrigger().onFalse(new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE));
+    driver
+        .rightTrigger()
+        .and(() -> !singleDriver)
+        .onFalse(
+            new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, false, singleDriver));
 
     driver
         .rightBumper()
+        .and(() -> !singleDriver)
         .whileTrue(
-            new InterfaceActionCmd(reef, InterfaceExecuteMode.ALGAE)
+            new InterfaceActionCmd(reef, InterfaceExecuteMode.ALGAE, -1, false)
                 .andThen(
                     () -> {})); // When right trigger is pressed, drive to the location selected
-    driver.rightBumper().onFalse(new InterfaceActionCmd(reef, InterfaceExecuteMode.DISABLE));
+    driver
+        .rightTrigger()
+        .and(() -> !singleDriver)
+        .onFalse(new InterfaceActionCmd(reef, InterfaceExecuteMode.DISABLE, -1, false));
 
-    driver.b().onTrue(new FlipperScoreCmd(elevator, 1.0));
+    /*
+        ---- LED TRIGGERS ----
+    */
 
-    // We need to find an available button for the gripper toggle command
-    // Since X is already used for X pattern and we want to keep B for scoring
-    // The D-pad is used for pickup station selection
-    // Let's use a button chord (simultaneous button press) combination
+    // flash white for 1s when a coral is obtained
+    Command ledCmdWhite =
+        Commands.runOnce(() -> leds.setMode(Constants.LEDMode.CORAL_IN, true))
+            .andThen(Commands.waitSeconds(1))
+            .andThen(Commands.runOnce(leds::unlock));
+    ledCmdWhite.addRequirements(leds);
+    new Trigger(elevator::hasObtainedCoral).onTrue(ledCmdWhite);
+
+    // flash blue while taking out algae
+    Command ledCmdBlue =
+        Commands.runOnce(() -> leds.setMode(Constants.LEDMode.ALGAE_OUT, true))
+            .andThen(Commands.waitSeconds(1))
+            .andThen(Commands.runOnce(leds::unlock));
+    ledCmdBlue.addRequirements(leds);
+    driver.y().onTrue(ledCmdBlue);
+
+    // flash green while scoring
+    Command ledCmdGreen =
+        Commands.runOnce(() -> leds.setMode(Constants.LEDMode.CORAL_OUT, true))
+            .andThen(Commands.waitSeconds(1))
+            .andThen(Commands.runOnce(leds::unlock));
+    ledCmdGreen.addRequirements(leds);
+    driver
+        .rightTrigger()
+        .and(() -> singleDriver)
+        .or(driver.leftTrigger())
+        .or(driver.leftBumper())
+        .or(driver.rightBumper())
+        .or(driver.a())
+        .or(driver.povRight())
+        .onTrue(ledCmdGreen);
+
+    // flash rainbow when climbed
+    Command ledCmdRainbow =
+        Commands.runOnce(() -> leds.setMode(Constants.LEDMode.RAINBOW, true))
+            .andThen(Commands.waitSeconds(1))
+            .andThen(Commands.runOnce(leds::unlock));
+    ledCmdRainbow.addRequirements(leds);
+    new Trigger(climber::getClimberUsed).onTrue(ledCmdRainbow);
+
+    Command ledCmdAir = new InstantCommand((() -> leds.setPSI(drive.getPressurePSI())));
+    ledCmdAir.addRequirements(leds);
+    leds.setDefaultCommand(ledCmdAir);
+
+    /*
+       ---- DRIVER CONTROLS ----
+    */
+
+    // manual elevator control
+    driver
+        .povUp()
+        .and(() -> singleDriver)
+        .onTrue(
+            new InstantCommand(
+                    () -> {
+                      elevator.centererClosePending = false;
+                      elevator.centerer.set(false);
+                      elevator.setInScoringMode(true);
+                    })
+                .andThen(Commands.waitSeconds(0.18))
+                .andThen(
+                    () -> {
+                      elevator.inHoldingState = true;
+                      elevator.raiseElevator(4);
+                    }));
+    driver
+        .povLeft()
+        .and(() -> singleDriver)
+        .onTrue(
+            new InstantCommand(
+                    () -> {
+                      elevator.centererClosePending = false;
+                      elevator.centerer.set(false);
+                      elevator.setInScoringMode(true);
+                    })
+                .andThen(Commands.waitSeconds(0.18))
+                .andThen(
+                    () -> {
+                      elevator.inHoldingState = true;
+                      elevator.raiseElevator(3);
+                    }));
+    driver
+        .povDown()
+        .and(() -> singleDriver)
+        .onTrue(
+            new InstantCommand(
+                    () -> {
+                      elevator.centererClosePending = false;
+                      elevator.centerer.set(false);
+                      elevator.setInScoringMode(true);
+                    })
+                .andThen(Commands.waitSeconds(0.18))
+                .andThen(
+                    () -> {
+                      elevator.inHoldingState = true;
+                      elevator.raiseElevator(2);
+                    }));
+
+    // right l3
+    driver
+        .rightTrigger()
+        .and(() -> singleDriver)
+        .whileTrue(
+            new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, 3, true, singleDriver)
+                .andThen(
+                    () -> {})); // When right trigger is pressed, drive to the location selected
+    driver
+        .rightTrigger()
+        .and(() -> singleDriver)
+        .onFalse(
+            new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, true, singleDriver));
+
+    // right l3
+    driver
+        .rightBumper()
+        .and(() -> singleDriver)
+        .whileTrue(
+            new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, 3, true, singleDriver)
+                .andThen(
+                    () -> {})); // When right trigger is pressed, drive to the location selected
+    driver
+        .rightBumper()
+        .and(() -> singleDriver)
+        .onFalse(
+            new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, true, singleDriver));
+
+    // left l3
+    driver
+        .leftTrigger()
+        .and(() -> singleDriver)
+        .whileTrue(
+            new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, 3, false, singleDriver)
+                .andThen(
+                    () -> {})); // When right trigger is pressed, drive to the location selected
+    driver
+        .leftTrigger()
+        .and(() -> singleDriver)
+        .onFalse(
+            new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, false, singleDriver));
+
+    // left l4
     driver
         .leftBumper()
+        .and(() -> singleDriver)
+        .whileTrue(
+            new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, 4, false, singleDriver)
+                .andThen(
+                    () -> {})); // When right trigger is pressed, drive to the location selected
+    driver
+        .leftBumper()
+        .and(() -> singleDriver)
+        .onFalse(
+            new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, false, singleDriver));
+
+    // right l4
+    driver
+        .rightBumper()
+        .and(() -> singleDriver)
+        .whileTrue(
+            new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, 4, true, singleDriver)
+                .andThen(
+                    () -> {})); // When right trigger is pressed, drive to the location selected
+    driver
+        .rightBumper()
+        .and(() -> singleDriver)
+        .onFalse(
+            new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, true, singleDriver));
+
+    // left l2
+    driver
+        .povRight()
+        .and(() -> singleDriver)
+        .whileTrue(
+            new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, 2, false, singleDriver)
+                .andThen(
+                    () -> {})); // When right trigger is pressed, drive to the location selected
+    driver
+        .povRight()
+        .and(() -> singleDriver)
+        .onFalse(
+            new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, false, singleDriver));
+    // right l2
+    driver
+        .a()
+        .and(() -> singleDriver)
+        .whileTrue(
+            new InterfaceActionCmd2(reef, InterfaceExecuteMode.REEF, 2, true, singleDriver)
+                .andThen(
+                    () -> {})); // When right trigger is pressed, drive to the location selected
+    driver
+        .a()
+        .and(() -> singleDriver)
+        .onFalse(
+            new InterfaceActionCmd2(reef, InterfaceExecuteMode.DISABLE, -1, false, singleDriver));
+
+    // algae removal
+    driver
+        .y()
+        .and(() -> singleDriver)
+        .whileTrue(
+            new InterfaceActionCmd(reef, InterfaceExecuteMode.ALGAE, -1, false)
+                .andThen(
+                    () -> {})); // When right trigger is pressed, drive to the location selected
+    driver
+        .y()
+        .and(() -> singleDriver)
+        .onFalse(new InterfaceActionCmd(reef, InterfaceExecuteMode.DISABLE, -1, false));
+
+    // manual drop coral
+    driver.b().onTrue(new FlipperScoreCmd(elevator, 1.0, reef));
+
+    // un-grip
+    driver
+        .x()
         .onTrue(
             new GripperToggleCmd(
                 elevator, true)); // Use B+LB to toggle gripper and reset holding state
-
-    // Add elevator toggle button for testing
-    //    driver
-    //        .x()
-    //        .onTrue(
-    //            new ElevatorToggleCmd(elevator)); // Press left stick to toggle elevator between 0
-    // and 2
-    //            new ElevatorCmd(elevator, 2, true)
-    //                .andThen(new FlipperScoreCmd(flipper, 1.0))
-    //                .andThen(
-    //                    new ElevatorCmd(
-    //                        elevator, 0,
-    //                        false))); // TODO: CLEAN UP INTO INTERFACE COMMAND, this is meant to
-    // raise
-    // elevator to selected level and actuate flipper
 
     //    Codriver Bindings
     //
@@ -455,5 +567,24 @@ public class RobotContainer {
   public void updateCageFromChooser() {
     int selectedCage = cageChooser.get();
     new CageSelectCmd(selectedCage).schedule();
+  }
+
+  public static CommandXboxController getController() {
+    return driver;
+  }
+
+  public void updateControlSchemeFromChooser() {
+    String chosen = controlChooser.get();
+    if (chosen != null) {
+      singleDriver = chosen.equals("a");
+    }
+  }
+
+  public static LEDSubsystem getLEDSubsystem() {
+    return leds;
+  }
+
+  public static double getPressureProxy() {
+    return drive.getPressurePSI();
   }
 }

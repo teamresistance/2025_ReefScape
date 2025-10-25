@@ -10,11 +10,22 @@ public class InterfaceActionCmd2 extends Command {
   private final InterfaceSubsystem subsystem;
   private final InterfaceExecuteMode loc;
   private boolean finished = true;
+  private final int level;
+  private final boolean right;
+  private final boolean singleDriver;
 
-  public InterfaceActionCmd2(InterfaceSubsystem subsystem, InterfaceExecuteMode loc) {
+  public InterfaceActionCmd2(
+      InterfaceSubsystem subsystem,
+      InterfaceExecuteMode loc,
+      int level,
+      boolean right,
+      boolean singleDriver) {
     addRequirements(subsystem);
     this.subsystem = subsystem;
     this.loc = loc;
+    this.level = level;
+    this.right = right;
+    this.singleDriver = singleDriver;
   }
 
   // Called when the command is initially scheduled.
@@ -27,7 +38,7 @@ public class InterfaceActionCmd2 extends Command {
   @Override
   public void execute() {
     //    Logger.recordOutput("finished work", false);
-    subsystem.driveToLoc2(loc, this);
+    subsystem.driveToLoc2(loc, level, right, singleDriver);
   }
 
   // Called once the command ends or is interrupted.
